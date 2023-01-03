@@ -1,0 +1,51 @@
+{
+	"name": "rivervanrain/indieweb",
+	"type": "elgg-plugin",
+	"description": "IndieWeb integration for Elgg",
+    "license": "AGPL-3.0-or-later",
+	"keywords": ["indieweb", "webmentions", "microformats", "microsub", "micropub", "indieauth", "websub", "fediverse"],
+	"homepage": "https://wzm.me",
+	"authors": [
+		{
+		  "name": "Nikolai Shcherbin",
+		  "email": "support@wzm.me"
+		}
+	],
+	"config": {
+        "fxp-asset": {
+            "enabled": false
+        },
+		"allow-plugins": {
+			"composer/installers": true
+		}
+    },
+	"require": {
+		"php": "^7.4|^8.0",
+		"guzzlehttp/guzzle": "^7.0",
+        "masterminds/html5": "^2.0",
+		"indieweb/mention-client": "^1.2.1",
+		"p3k/xray": "^1.12.0",
+		"p3k/micropub": "^0.0.3",
+		"p3k/websub": "^0.0.1",
+		"indieauth/client": "^1.1",
+		"lcobucci/jwt": "4.0.*",
+		"symfony/dom-crawler": "^5.4"
+	},
+	"autoload": {
+		"psr-0": {
+			"": "classes/"
+		}
+	},
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+	"conflict": {
+		"elgg/elgg": "<4.3"
+	},
+	"support": {
+		"source": "https://wzm.me"
+	}
+}
