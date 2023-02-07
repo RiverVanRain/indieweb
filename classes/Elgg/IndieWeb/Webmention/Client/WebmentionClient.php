@@ -12,7 +12,6 @@ namespace Elgg\IndieWeb\Webmention\Client;
 use Elgg\Traits\Di\ServiceFacade;
 use GuzzleHttp\ClientInterface as GuzzleClient;
 use Elgg\IndieWeb\Webmention\Entity\Webmention;
-use IndieWeb\MentionClient;
 
 class WebmentionClient {
 	
@@ -57,8 +56,6 @@ class WebmentionClient {
 		return $is_silo_url;
 	}
 
-	//WIP
-	/*
 	public function sourceExistsAsSyndication(Webmention $webmention) {
 		$exists = false;
 		
@@ -67,15 +64,27 @@ class WebmentionClient {
 			
 			$path_parts = explode('/', $parts['path']);
 			
-			
 			if (!empty($path_parts[4])) {
-				$exists = \Drupal::entityTypeManager()->getStorage('indieweb_syndication')->checkIdenticalSyndication($path_parts[5]);
+				$exists = $this->checkIdenticalSyndication($webmention, $path_parts[5]);
 			}
 		}
 
 		return $exists;
 	}
-	*/
+	
+	public function checkIdenticalSyndication(Webmention $webmention, $like) {
+		return elgg_get_entities([
+			'type' => 'object',
+			'subtype' => 'webmention',
+			'guid' => $webmention->guid,
+			'search_name_value_pairs' => [
+				'name' => ['source'],
+				'value' => "%$like%",
+				'operand' => 'LIKE',
+				'case_sensitive' => false,
+			],
+		]);
+	}
 	
 	public function createComment(Webmention $webmention) {
 		if ($webmention->hasCapability('commentable')) {
@@ -118,65 +127,11 @@ class WebmentionClient {
 		return true;
 	}
 	
-//WIP
-/*
+	public static function getSyndicationTargets(): array {
+		$syndication_targets = elgg_get_plugin_setting('webmention_syndication_targets', 'indieweb', 'Twitter (bridgy)|https://brid.gy/publish/twitter');
+		$syndication_targets = preg_split('/\\r\\n?|\\n/', $syndication_targets);
+		$syndication_targets = array_filter($syndication_targets);
 
-  public function createQueueItem($source, $target, $entity_id = '', $entity_type_id = '') {
-    static $seen = [];
-
-    // If the target is not a URL, don't send.
-    if (!filter_var($target, FILTER_VALIDATE_URL)) {
-      return;
-    }
-
-    $data = [
-      'source' => $source,
-      'target' => $target,
-      'entity_id' => $entity_id,
-      'entity_type_id' => $entity_type_id,
-    ];
-
-    // Different domain for content.
-    $config = \Drupal::config('indieweb_webmention.settings');
-    $content_domain = $config->get('webmention_content_domain');
-    if (!empty($content_domain)) {
-      $data['source'] = str_replace(\Drupal::request()->getSchemeAndHttpHost(), $content_domain, $data['source']);
-    }
-
-    // Check if this is a silo url. In case it is, swap with a potential
-    // syndication target like Brid.gy. At the moment the silo url only
-    // returns for twitter, so check https://brid.gy/publish/twitter.
-    if ($this->isSiloURL($target)) {
-      $targets = indieweb_get_syndication_targets();
-      if (isset($targets['https://brid.gy/publish/twitter'])) {
-        $data['target'] = 'https://brid.gy/publish/twitter';
-      }
-      else {
-        // No need to go through because Twitter doesn't support webmentions
-        // anyway.
-        return;
-      }
-    }
-
-    // Calculate hash.
-    $hash = md5(implode(",", $data));
-
-    // No need to it the queue more than once.
-    if (isset($seen[$hash])) {
-      return;
-    }
-
-    $seen[$hash] = $hash;
-
-    try {
-      \Drupal::queue(INDIEWEB_WEBMENTION_QUEUE)->createItem($data);
-    }
-    catch (\Exception $e) {
-      \Drupal::logger('indieweb_queue')->notice('Error creating queue item: @message', ['@message' => $e->getMessage()]);
-	  return false;
-    }
-  }
-
-
-*/
+		return $syndication_targets;
+	}
 }

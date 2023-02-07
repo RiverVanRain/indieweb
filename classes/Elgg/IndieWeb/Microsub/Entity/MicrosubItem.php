@@ -39,7 +39,7 @@ class MicrosubItem extends \ElggObject {
 	 * {@inheritdoc}
 	 */
 	public function getChannelId(): int {
-		return $this->channel_id ?? 0;
+		return $this->channel_id ?: $this->guid;
 	}
 	
 	/**

@@ -18,7 +18,7 @@ $options = [
 	'metadata_name_value_pairs' => [
 		[
 			'name' => 'property',
-			'value' => 'received',
+			'value' => 'send',
 		],
 	],
 ];
@@ -27,7 +27,7 @@ $count = elgg_get_entities($options);
 
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
-		'base_url' => '/admin/indieweb/webmention/received',
+		'base_url' => '/admin/indieweb/webmention/send',
 		'offset' => $offset,
 		'count' => $count,
 		'limit' => elgg_get_config('default_limit'),

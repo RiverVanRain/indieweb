@@ -20,6 +20,10 @@ class SettingsAction {
 		$result = false;
 
 		foreach ($params as $k => $v) {
+			if (is_array($v)) {
+				$v = serialize($v);
+			}
+			
 			$result = $plugin->setSetting($k, $v);
 			if (!$result) {
 				return elgg_error_response(elgg_echo('plugins:settings:save:fail', [$plugin_name]));

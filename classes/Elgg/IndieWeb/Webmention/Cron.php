@@ -322,17 +322,13 @@ class Cron {
 				}
 			}
 			
-			//WIP
-			/*
 			// Send push notification.
 			if (!empty($valid_webmentions)) {
 				if ((bool) elgg_get_plugin_setting('enable_microsub', 'indieweb')) {
-					$svc_microsub = \Drupal::service('indieweb.microsub.client');
-					$svc_microsub->sendPushNotification($valid_webmentions);
+					$microsub_client = elgg()->microsub;
+					$microsub_client->sendPushNotification($valid_webmentions);
 				}
 			}
-			*/
-
 			
 		// restore access
 		});

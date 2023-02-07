@@ -13,4 +13,5 @@ return [
 	'microsub' => \DI\create(\Elgg\IndieWeb\Microsub\Client\MicrosubClient::class),
 	'aperture' => \DI\create(\Elgg\IndieWeb\Microsub\Client\ApertureClient ::class),
 	'mediaCacher' => \DI\autowire(\Elgg\IndieWeb\Cache\MediaCacher::class),
+	'postContext' => \DI\create(\Elgg\IndieWeb\PostContext\Client\PostContextClient ::class),
 ];

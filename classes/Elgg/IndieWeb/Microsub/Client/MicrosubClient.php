@@ -325,8 +325,7 @@ class MicrosubClient {
 				$source->setMetadata('fetch_tries', $tries);
 			
 				$source->save();
-		    }
-			catch (\Exception $e) {
+		    } catch (\Exception $e) {
 				elgg_log('Error fetching new items for ' . $url  . ' : ' . $e->getMessage(), 'ERROR');
 				return false;
 			}
@@ -336,7 +335,7 @@ class MicrosubClient {
 	/**
 	 * Saves an item
 	 *
-     * @param $item
+     * @param $data
      * @param int $tries
      * @param int $source_id
      * @param int $channel_id
@@ -345,14 +344,14 @@ class MicrosubClient {
 	 *
 	 * @return string
 	 */
-	protected function saveItem($item, &$tries = 0, $source_id = 0, $channel_id = 0, $empty = false, $context = []) {
+	protected function saveItem($data, &$tries = 0, $source_id = 0, $channel_id = 0, $empty = false, $context = []) {
 		// Prefer uid, then url, then hash the content
-		if (isset($item['uid'])) {
-		  $id = '@' . $item['uid'];
-		} else if (isset($item['url'])) {
-		  $id = $item['url'];
+		if (isset($data['uid'])) {
+		  $id = '@' . $data['uid'];
+		} else if (isset($data['url'])) {
+		  $id = $data['url'];
 		} else {
-		  $id = '#' . md5(json_encode($item));
+		  $id = '#' . md5(json_encode($data));
 		}
 
 		// Check if this MicrosubItem exists
@@ -382,20 +381,20 @@ class MicrosubClient {
 		$tries = 0;
 		
 		// Save MicrosubItem
-		elgg_call(ELGG_IGNORE_ACCESS, function () use ($id, $item, $source_id, $channel_id, $empty) {
+		elgg_call(ELGG_IGNORE_ACCESS, function () use ($id, &$data, $source_id, $channel_id, $empty) {
 			$entity = new MicrosubItem();
 			$entity->owner_guid = elgg_get_site_entity()->guid;
 			$entity->container_guid = $source_id;
 			$entity->access_id = ACCESS_PUBLIC;
 			$entity->channel_id = $channel_id;
-			$entity->data = json_encode($item);
+			$entity->data = json_encode($data);
 			$entity->id = $id;
 			$entity->is_read = $empty ? 1 : 0;
-			$entity->context = '';
-			$entity->post_type = isset($item['post-type']) ? $item['post-type'] : 'unknown';
+			$entity->post_context = '';
+			$entity->post_type = isset($data['post-type']) ? $data['post-type'] : 'unknown';
 			
-			if (isset($item['published'])) {
-				$entity->timestamp = strtotime($item['published']);
+			if (isset($data['published'])) {
+				$entity->timestamp = strtotime($data['published']);
 				if (empty($entity->timestamp) || !$entity->timestamp || (is_numeric($entity->timestamp) && $entity->timestamp < 0)) {
 					$entity->timestamp = time();
 				}
@@ -428,11 +427,10 @@ class MicrosubClient {
 						$key = 'repost-of';
 						break;
 				}
-				/* -- WIP
-				if ($key && !empty($item[$key][0])) {
-					\Drupal::service('indieweb.post_context.client')->createQueueItem($item[$key][0], $entity->guid, 'microsub_item');
+
+				if ($key && !empty($data[$key][0])) {
+					_elgg_services()->postContext->createMicrosubItem($entity, $data[$key][0]);
 				}
-				*/
 			}
 		}
 
@@ -476,26 +474,26 @@ class MicrosubClient {
 				}
 				
 				if ($parsed && isset($parsed['data']['type']) && $parsed['data']['type'] == 'entry') {
-					$item = $parsed['data'];
+					$data = $parsed['data'];
 					
 					foreach (['like-of', 'repost-of', 'bookmark-of', 'in-reply-to', 'mention-of'] as $item_url) {
-						if (isset($item[$item_url]) && !empty($item[$item_url][0])) {
-							$item[$item_url][0] = $target;
+						if (isset($data[$item_url]) && !empty($data[$item_url][0])) {
+							$data[$item_url][0] = $target;
 							
 							// Make sure the array is unique
-							$item[$item_url] = array_unique($item[$item_url]);
+							$data[$item_url] = array_unique($data[$item_url]);
 						}
 					}
 					
 					// Set url to canonical webmention for in-reply-to. This makes sure
 					// that you can  reply to it from a reader as the micropub endpoint
 					// will get the right entity.
-					if (isset($item['in-reply-to']) && !empty($item['in-reply-to'][0])) {
-						$item['url'] = $target;
+					if (isset($data['in-reply-to']) && !empty($data['in-reply-to'][0])) {
+						$data['url'] = $target;
 					}
 
 					$tries = 0;
-					$this->saveItem($item, $tries, 0, $channel_id);
+					$this->saveItem($data, $tries, 1, $channel_id);
 				}
 			}
 			catch (\Exception $e) {
@@ -543,8 +541,7 @@ class MicrosubClient {
 
 			try {
 				$this->http_client($config)->post('https://indigenous.realize.be/send-notification', ['form_params' => $post]);
-			}
-			catch (\Exception $e) {
+			} catch (\Exception $e) {
 				elgg_log('Error sending push notification: ' . $e->getMessage(), 'ERROR');
 				return false;
 			}

@@ -40,10 +40,41 @@ Also, last but not least, don't forget to set public access level to view webmen
 	'settings:indieweb:webmention_excerpt' => 'Use an excerpt from Webmention content',
 	'settings:indieweb:webmention_excerpt:help' => 'Set character limits to excerpt from Webmention content. Leave 0 to disable excerpt.',
 	
+	'settings:indieweb:webmention:sending' => 'Sending',
+	'settings:indieweb:webmention:sending:help' => "The easiest way to syndicate content on social networks is by using https://brid.gy.
+You have to create an account by signing in with your preferred social network. Bridgy is open source so you can also host the service yourself.
+
+Syndicating and sending webmentions can be done per entity in the 'Publish to' fieldset, which is protected with the 'send webmentions' permission.
+If no targets are configured, there is nothing to do. There is a syndication field on every entity and comment type available to render your syndications for POSSE-Post-Discovery https://indieweb.org/posse-post-discovery
+If comments are enabled, put those fields only on the microformat view mode. The comment itself is available on comment/indieweb/cid and it is this URL that will be used for sending webmentions.",
+
+	'settings:indieweb:syndication_targets' => 'Syndication targets',
+	'settings:indieweb:syndication_targets:help' => "Enter every target line by line if you want to publish content, in following format:
+
+Name|webmention_url|selected|extra class
+- selected is optional. Set to 1 so the target is default selected on the entity form.
+- extra class is optional. Add a custom class to the link.
+
+Example
+Twitter (bridgy)|https://brid.gy/publish/twitter
+Fediverse|https://fed.brid.gy/
+IndieNews|https://news.indieweb.org/en|0|u-category
+
+When you add or remove targets, extra fields will be enabled on the manage display screens of every entity type (you will have to clear cache to see them showing up).
+These need to be added on the page (usually on the 'full' view mode) because bridgy will check for the url in the markup, along with the proper microformat classes.
+The field will print them hidden in your markup, even if you do not publish to that target, that will be altered later.
+You can also add them yourself:
+<a href='https://brid.gy/publish/twitter'></a>
+These targets are also used for the syndicate-to request if you are using Micropub.
+Consult the README file that comes with this module if you want to integrate with the Fediverse.",
+
+	'settings:indieweb:webmention_syndication_targets_custom' => 'Custom URL',
+	'settings:indieweb:webmention_syndication_targets_custom:help' => 'Add a textfield to enter a custom URL to send a Webmention to.',
+	
 	'settings:indieweb:use_webmentions' => 'Select objects you want to enable Webmention for',
 	
-	'admin:indieweb:webmention:received' => 'Received',
-	'admin:indieweb:webmention:send' => 'Send',
+	'admin:indieweb:webmention:received' => 'Received webmentions',
+	'admin:indieweb:webmention:send' => 'Send webmentions',
 
 	'item:object:webmention' => 'Webmention',
 	'collection:object:webmention' => 'Webmentions',
@@ -56,6 +87,7 @@ Also, last but not least, don't forget to set public access level to view webmen
 	'webmention:target:url:error' => 'Invalid target URL',
 	'webmention:blocked:domain' => 'Domain %s is blocked to send webmentions',
 	'webmention:recieved:success' => 'Webmention with GUID %s has been recieved and saved',
+	'webmention:send:success' => 'Webmention with GUID %s has been send and saved',
 	'webmention:syndication:source:error' => 'Duplicate source URL %s to target URL %s for Syndication with GUID: %s',
 	'webmention:duplicate:error' => 'Duplicate source %s, target %s and property %s',
 	'webmention:create_comment:error' => 'Failed to create a comment: %s',
@@ -77,12 +109,14 @@ Also, last but not least, don't forget to set public access level to view webmen
 	'indieweb:webmention:content_text' => 'Text content',
 	'indieweb:webmention:status' => 'Status',
 	'indieweb:webmention:published' => 'Published',
-	'indieweb:webmention:none' => 'No webmentions received yet.',
+	'indieweb:webmention:none' => 'No webmentions yet.',
 	'indieweb:webmention:byline' => 'By %s',
 	'indieweb:webmention:byline:on' => 'on %s',
+	'indieweb:webmention:syndication_targets_custom' => 'Enter a custom URL',
+	'indieweb:webmention:publish' => 'Publish to',
 	
 	// pingback
-	'settings:indieweb:wpingback_blocked_domains' => 'Block domains',
+	'settings:indieweb:pingback_blocked_domains' => 'Block domains',
 	'settings:indieweb:pingback_blocked_domains:help' => 'Block domains from sending pingbacks. Enter domains line per line.',
 	'pingback:blocked:domain' => 'Domain %s is blocked to send pingbacks',
 	
@@ -132,6 +166,12 @@ Indigenous (iOS and Android) are also microsub readers.',
 Allows you to expose a microsub header link which can either be the built-in microsub server or set to an external service.',
 	'settings:indieweb:microsub_endpoint' => 'External microsub endpoint',
 	'settings:indieweb:microsub_endpoint:help' => 'Enter a custom microsub endpoint URL in case you do not use the built-in endpoint. Leave blank to use internal Microsub endpoint',
+	'indieweb:microsub:anonymous' => 'Enable anonymous requests',
+	'indieweb:microsub:anonymous:help' => "Whether anonymous requests on the Microsub endpoint are allowed or not.
+
+This allows getting channels and the posts in that channel.
+Write operations (like managing channels, subscribing, search, marking (un)read etc) will not be allowed when the request is anonymous.",
+	
 	'indieweb:microsub:cleanup_feeds' => 'Cleanup feed items',
 	'indieweb:microsub:cleanup_feeds:help' => 'You can configure the number of items to keep per feed.',
 	'indieweb:microsub:mark_unread' => 'Mark items unread on first import',
@@ -139,6 +179,10 @@ Allows you to expose a microsub header link which can either be the built-in mic
 	'indieweb:microsub:allow_video' => 'Allow video in feeds',
 	'indieweb:microsub:allow_video:help' => 'By default videos embedded with an iframe in content are stripped. Switch on this setting to allow YouTube and Vimeo in content.',
 	'settings:indieweb:microsub_user_agent' => 'Default User agent when calling feeds',
+	'indieweb:microsub:context' => 'Post context',
+	'indieweb:microsub:context:label' => 'Enable post context',
+	'indieweb:microsub:context:help' => 'When you create a post with a link which is a reply, like, repost or bookmark of an external post, you can fetch content from that URL so you can render more context.
+You can also enable fetching of contexts on microsub items when you use the built-in microsub server.',
 	'indieweb:microsub:aggregated_feeds' => 'Aggregated feeds',
 	'indieweb:microsub:aggregated_feeds:help' => "Some readers support viewing feeds per author (source), but this will not work in case of aggregated feeds.
 Enter the base url's line by line which, in case they match will trigger a search instead internally on the author name so the response will work.",
@@ -161,6 +205,9 @@ Following webmentions are send: likes, reposts, bookmarks, mentions and replies.
 	'indieweb:microsub:channels:title' => 'Configure your channels and sources for the built-in Microsub server. In case the server is not enabled, no items will be fetched.',
 	'add:object:microsub_channel' => 'Add Channel',
 	'edit:object:microsub_channel' => 'Edit Channel: %s',
+	'add:object:microsub_channel:notifications' => 'Add Notifications channel',
+	'add:object:microsub_channel:notifications:help' => 'To start work with Channels, you should create an internal Notifications channel',
+	'indieweb:microsub_channel:notifications:create' => 'Click on Save to add Notifications channel',
 	'indieweb:microsub:microsub_channel:enable' => 'Enabled',
 	'indieweb:microsub:microsub_channel:disable' => 'Disabled',
 	'indieweb:microsub:microsub_channel:weight' => 'Weight',
@@ -185,6 +232,7 @@ Following webmentions are send: likes, reposts, bookmarks, mentions and replies.
 	'indieweb:microsub:microsub_channel:none' => 'No Microsub channels created yet.',
 	'indieweb:microsub:microsub_channel:sources:view' => 'View sources list',
 	'indieweb:microsub:microsub_channel:sources:list' => 'Sources in channel: %s',
+	'indieweb:microsub_channel:notifications' => 'Notifications',
 	
 	'item:object:microsub_source' => 'Microsub source',
 	'collection:object:microsub_source' => 'Microsub sources',

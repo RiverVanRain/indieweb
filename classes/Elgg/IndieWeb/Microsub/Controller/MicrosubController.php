@@ -12,101 +12,95 @@ namespace Elgg\IndieWeb\Microsub\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Elgg\Exceptions\Http\BadRequestException;
 
 class MicrosubController {
-	
-	 /**
-	   * @var  \Drupal\Core\Config\Config
-	   */
-	  protected $config;
+	/**
+	 * A collection of urls for aggregated feeds.
+	 *
+	 * @var array
+	 */
+	protected $aggregated_feeds;
 
-	  /**
-	   * A collection of urls for aggregated feeds.
-	   *
-	   * @var array
-	   */
-	  protected $aggregated_feeds;
+	/**
+	 * Request object.
+	 *
+	 * @var \Symfony\Component\HttpFoundation\Request $request
+	 */
+	protected $request;
 
-	  /**
-	   * Request object.
-	   *
-	   * @var \Symfony\Component\HttpFoundation\Request $request
-	   */
-	  protected $request;
+	/**
+	   * @var \Elgg\IndieWeb\IndieAuth\Client\IndieAuthClient
+	*/
+	protected $indieAuth;
 
-	  /**
-	   * @var \Drupal\indieweb_indieauth\IndieAuthClient\IndieAuthClientInterface
-	   */
-	  protected $indieAuth;
+	/**
+	 * Whether this is an authenticated request or not.
+	 *
+	 * @var bool
+	 */
+	protected $isAuthenticatedRequest = false;
 
-	  /**
-	   * Whether this is an authenticated request or not.
-	   *
-	   * @var bool
-	   */
-	  protected $isAuthenticatedRequest = FALSE;
+	/**
+	 * Whether anonymous requests on the Microsub endpoint are allowed or not.
+	 *
+	 * This allows getting channels and the posts in that channel. Write
+	 * operations (like managing channels, subscribing, search, marking (un)read
+	 * etc) will not be allowed when enabled and the request is anonymous.
+	 *
+	 * @return boolean
+	 */
+	private function allowAnonymousRequest(): bool {
+		return elgg_get_plugin_setting('microsub_anonymous', 'indieweb');
+	}
 
-	  /**
-	   * Whether anonymous requests on the Microsub endpoint are allowed or not.
-	   *
-	   * This allows getting channels and the posts in that channel. Write
-	   * operations (like managing channels, subscribing, search, marking (un)read
-	   * etc) will not be allowed when enabled and the request is anonymous.
-	   *
-	   * @return boolean
-	   */
-	  private function allowAnonymousRequest() {
-		return Settings::get('indieweb_microsub_anonymous', FALSE);
-	  }
-
-	  /**
-	   * Whether this is an authenticated request or not.
-	   *
-	   * @return bool
-	   */
-	  private function isAuthenticatedRequest() {
+	/**
+	 * Whether this is an authenticated request or not.
+	 *
+	 * @return bool
+	 */
+	private function isAuthenticatedRequest() {
 		return $this->isAuthenticatedRequest;
-	  }
+	}
 
-	  /**
-	   * Search feeds based on URL.
-	   *
-	   * @param \Symfony\Component\HttpFoundation\Request $request
-	   *
-	   * @return \Symfony\Component\HttpFoundation\JsonResponse
-	   */
-	  public function searchFeeds(Request $request) {
+	/**
+	 * Search feeds based on URL.
+	 *
+	 * @param \Symfony\Component\HttpFoundation\Request $request
+	 *
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
+	public function searchFeeds(Request $request) {
 		$results = [];
 
 		// Get the typed string from the URL, if it exists.
 		if (($input = $request->query->get('q')) && strlen($input) > 6) {
-
-		  // Add a protocol if needed.
-		  if ( $parts = parse_url($input) ) {
-			if ( !isset($parts["scheme"]) ) {
-			  $input = "http://$input";
+			
+			// Add a protocol if needed.
+			if ($parts = parse_url($input)) {
+				if (!isset($parts["scheme"])) {
+					$input = "http://$input";
+				}
 			}
-		  }
-
-		  if (filter_var($input, FILTER_VALIDATE_URL) !== FALSE) {
-			/** @var \Drupal\indieweb_microsub\MicrosubClient\MicrosubClientInterface $microsubClient */
-			$microsubClient = \Drupal::service('indieweb.microsub.client');
-			$feeds = $microsubClient->searchFeeds($input);
-			if (!empty($feeds['feeds'])) {
-			  foreach ($feeds['feeds'] as $feed) {
-				$results[] = (object) [
-				  'value' => $feed['url'],
-				  'label' => $feed['url'] . ' (' . $feed['type'] . ')',
-				];
-			  }
+			
+			if (filter_var($input, filter_validate_url) !== false) {
+				
+				/** @var \Elgg\IndieWeb\Microsub\Client\MicrosubClient $microsubClient */
+				$microsubClient = elgg()->microsub;
+				$feeds = $microsubClient->searchFeeds($input);
+				
+				if (!empty($feeds['feeds'])) {
+					foreach ($feeds['feeds'] as $feed) {
+						$results[] = (object) [
+							'value' => $feed['url'],
+							'label' => $feed['url'] . ' (' . $feed['type'] . ')',
+						];
+					}
+				}
 			}
-		  }
 		}
 
 		return new JsonResponse($results);
-	  }
-	
+	}
 
 	/**
 	 * Routing callback: internal webmention endpoint.
@@ -117,52 +111,48 @@ class MicrosubController {
 		}
 		
 		if(!(empty) elgg_get_plugin_setting('microsub_endpoint', 'indieweb')) {
-			throw new BadRequestException();
+			throw new \Elgg\Exceptions\Http\BadRequestException();
 		}
 		
 		// Default response code and message.
 		$response = [
-		  'message' => 'Bad request',
-		  'code' => 400,
+			'message' => 'Bad request',
+			'code' => 400,
 		];
 
 		// Determine scope.
-		$scope = NULL;
+		$scope = null;
 		$request_method = $request->getMethod();
 		$action = $request->get('action');
 
 		if ($action == 'channels' && $request_method == 'POST') {
 			$scope = 'channels';
-		}
-		elseif (in_array($action, ['follow', 'unfollow', 'search', 'preview'])) {
+		} else if (in_array($action, ['follow', 'unfollow', 'search', 'preview'])) {
 			$scope = 'follow';
-		}
-		elseif ($action == 'channels' || $action == 'timeline') {
+		} else if ($action == 'channels' || $action == 'timeline') {
 			$scope = 'read';
 		}
 
 		// Get authorization header, response early if none found.
 		$auth_header = $this->indieAuth->getAuthorizationHeader();
 		if (!$auth_header) {
+			$response_code = 401;
+			$response_message = '';
+			
+			// Check anonymous requests.
+			if ($this->allowAnonymousRequest() && $scope == 'read' && $request_method == 'GET' && in_array($action, ['channels', 'timeline'])) {
+				switch ($action) {
+					case 'channels':
+						$response = $this->getChannelList();
+						break;
 
-		  $response_code = 401;
-		  $response_message = '';
+					case 'timeline':
+						$response = $this->getTimeline();
+						break;
+				}
 
-		  // Check anonymous requests.
-		  if ($this->allowAnonymousRequest() && $scope == 'read' && $request_method == 'GET' && in_array($action, ['channels', 'timeline'])) {
-			  switch ($action) {
-
-				case 'channels':
-				  $response = $this->getChannelList();
-				  break;
-
-				case 'timeline':
-				  $response = $this->getTimeline();
-				  break;
-			  }
-
-			  $response_message = isset($response['response']) ? $response['response'] : '';
-			  $response_code = isset($response['code']) ? $response['code'] : 200;
+				$response_message = isset($response['response']) ? $response['response'] : '';
+				$response_code = isset($response['code']) ? $response['code'] : 200;
 			}
 
 		  return new JsonResponse($response_message, $response_code);
@@ -170,132 +160,113 @@ class MicrosubController {
 
 		// Validate token.
 		if (!$this->indieAuth->isValidToken($auth_header, $scope)) {
-		  return new JsonResponse('', 403);
+			return new JsonResponse('', 403);
 		}
 
 		// If we get to here, this is an authenticated request.
-		$this->isAuthenticatedRequest = TRUE;
+		$this->isAuthenticatedRequest = true;
 
-		// ---------------------------------------------------------
 		// GET actions.
-		// ---------------------------------------------------------
-
 		if ($request_method == 'GET') {
+			switch ($action) {
+				case 'channels':
+					$response = $this->getChannelList();
+					break;
 
-		  switch ($action) {
+				case 'timeline':
+					$response = $this->getTimeline();
+					break;
 
-			case 'channels':
-			  $response = $this->getChannelList();
-			  break;
+				case 'follow':
+					$response = $this->getSources();
+					break;
 
-			case 'timeline':
-			  $response = $this->getTimeline();
-			  break;
+				case 'search':
+					$response = $this->search();
+					break;
 
-			case 'follow':
-			  $response = $this->getSources();
-			  break;
-
-			case 'search':
-			  $response = $this->search();
-			  break;
-
-			case 'preview':
-			  $response = $this->previewUrl();
-			  break;
-
-		  }
+				case 'preview':
+					$response = $this->previewUrl();
+					break;
+			}
 		}
 
-		// ---------------------------------------------------------
 		// POST actions.
-		// ---------------------------------------------------------
-
 		if ($request_method == 'POST') {
-		  switch ($action) {
+			switch ($action) {
+				// Channels
+				case 'channels':
+					$method = $request->get('method');
+					if (!$method) {
+						$method = 'create';
+						if ($id = $request->get('channel')) {
+							$method = 'update';
+						}
+					}
 
-			// ---------------------------------------------------------
-			// Channels
-			// ---------------------------------------------------------
+					if ($method == 'create') {
+						$response = $this->createChannel();
+					}
 
-			case 'channels':
-			  $method = $request->get('method');
-			  if (!$method) {
-				$method = 'create';
-				if ($id = $request->get('channel')) {
-				  $method = 'update';
-				}
-			  }
+					if ($method == 'update') {
+						$response = $this->updateChannel();
+					}
 
-			  if ($method == 'create') {
-				$response = $this->createChannel();
-			  }
+					if ($method == 'order') {
+						$response = $this->orderChannels();
+					}
 
-			  if ($method == 'update') {
-				$response = $this->updateChannel();
-			  }
+					if ($method == 'delete') {
+						$response = $this->deleteChannel();
+					}
+					break;
 
-			  if ($method == 'order') {
-				$response = $this->orderChannels();
-			  }
+				// Timeline
+				case 'timeline':
+					$method = $request->get('method');
+					if (in_array($method, ['mark_read', 'mark_unread'])) {
+						$status = $method == 'mark_read' ? 1 : 0;
+						$response = $this->timelineChangeReadStatus($status);
+					}
 
-			  if ($method == 'delete') {
-				$response = $this->deleteChannel();
-			  }
-			  break;
+					if ($method == 'remove') {
+						$response = $this->removeItem();
+					}
 
-			// ---------------------------------------------------------
-			// Timeline
-			// ---------------------------------------------------------
+					if ($method == 'move') {
+						$response = $this->moveItem();
+					}
 
-			case 'timeline':
-			  $method = $request->get('method');
-			  if (in_array($method, ['mark_read', 'mark_unread'])) {
-				$status = $method == 'mark_read' ? 1 : 0;
-				$response = $this->timelineChangeReadStatus($status);
-			  }
+					break;
 
-			  if ($method == 'remove') {
-				$response = $this->removeItem();
-			  }
+				// Follow, Unfollow, Search and Preview
+				case 'follow':
+					$response = $this->followSource();
+					break;
 
-			  if ($method == 'move') {
-				$response = $this->moveItem();
-			  }
+				case 'unfollow':
+					$response = $this->deleteSource();
+					break;
 
-			  break;
+				case 'search':
+					$response = $this->search();
+					break;
 
-			// ---------------------------------------------------------
-			// Follow, Unfollow, Search and Preview
-			// ---------------------------------------------------------
-
-			case 'follow':
-			  $response = $this->followSource();
-			  break;
-
-			case 'unfollow':
-			  $response = $this->deleteSource();
-			  break;
-
-			case 'search':
-			  $response = $this->search();
-			  break;
-
-			case 'preview':
-			  $response = $this->previewUrl();
-			  break;
-
-		  }
+				case 'preview':
+					$response = $this->previewUrl();
+					break;
+			}
 		}
 
 		$response_message = isset($response['response']) ? $response['response'] : [];
 		$response_code = isset($response['code']) ? $response['code'] : 200;
 
 		return new JsonResponse($response_message, $response_code);
-		
 	}
 	
 	
+	
+	//WIP
 	 /**
 	  * Handle channels request.
 	  *

@@ -115,6 +115,14 @@ return [
 			'controller' => \Elgg\IndieWeb\Microsub\Actions\EditMicrosubSourceAction::class,
 			'access' => 'admin',
 		],
+		'microsub/channel/notifications' => [
+			'controller' => \Elgg\IndieWeb\Microsub\Actions\NotificationsMicrosubChannelAction::class,
+			'access' => 'admin',
+		],
+		//core
+		'blog/save' => [
+			'controller' => \Elgg\IndieWeb\Actions\Blog\SaveAction::class,
+		],
 	],
 	
 	//HOOKS
@@ -155,8 +163,8 @@ return [
 	
 	//EVENTS
 	'events' => [
-		'create:after' => [
-			'river' => [
+		'publish' => [
+			'object' => [
 				'Elgg\IndieWeb\Webmention\Events\Events::createObject' => [],
 			],
 		],
@@ -184,6 +192,11 @@ return [
 			'walled' => false,
 		],
 		//microsub
+		'default:view:microsub' => [
+			'path' => '/microsub',
+			'controller' => 'Elgg\IndieWeb\Microsub\Controller\MicrosubController::callback',
+			'walled' => false,
+		],
 		'add:object:microsub_channel' => [
 			'path' => '/microsub/channel/add/{guid?}',
 			'resource' => 'microsub/channel/add',
@@ -212,15 +225,21 @@ return [
 				AdminGatekeeper::class,
 			],
 		],
-		'default:view:microsub' => [
-			'path' => '/microsub',
-			'controller' => 'Elgg\IndieWeb\Microsub\Controller\MicrosubController::callback',
-			'walled' => false,
+		'add:object:microsub_channel:notifications' => [
+			'path' => '/microsub/channel/add/notifications/{guid?}',
+			'resource' => 'microsub/channel/add_notifications',
+			'middleware' => [
+				AdminGatekeeper::class,
+			],
 		],
+		
 	],
 	
 	//VIEWS
 	'view_extensions' => [
+		'elgg.css' => [
+            'theme/indieweb.css' => ['priority' => 900],
+        ],
 		'object/elements/full/body' => [
             'mf2/object/elements/full/body' => [],
         ],
@@ -241,6 +260,7 @@ return [
 		'resources/microsub/channel/edit' => ['ajax' => true],
 		'resources/microsub/source/add' => ['ajax' => true],
 		'resources/microsub/source/edit' => ['ajax' => true],
+		'resources/microsub/channel/add_notifications' => ['ajax' => true],
 	],
 	
 	//SETTINGS
@@ -249,7 +269,9 @@ return [
 		'webmention_enable_debug' => false,
 		'webmention_enable_comment_create' => false,
 		'webmention_create_contact' => false,
+		'webmention_syndication_targets_custom' => true,
 		'enable_micropub' => false,
 		'enable_microsub' => false,
+		'microsub_anonymous' => true,
 	],
 ];

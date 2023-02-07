@@ -1,5 +1,40 @@
 <?php
 
+$offset = (int) get_input('offset');
+
+$options = [
+	'type' => 'object',
+	'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubChannel::SUBTYPE,
+	'count' => true,
+	'offset' => $offset,
+	'limit' => elgg_get_config('default_limit'),
+];
+
+$count = elgg_get_entities($options);
+
+if (empty($count)) {
+	elgg_register_menu_item('title', [
+		'name' => 'add:channel:notifications',
+		'icon' => 'plus',
+		'text' => elgg_echo('add:object:microsub_channel:notifications'),
+		'href' => elgg_generate_url('add:object:microsub_channel:notifications'),
+		'link_class' => [
+			'elgg-button',
+			'elgg-button-action',
+			'elgg-lightbox',
+		],
+		'data-colorbox-opts' => json_encode([
+			'width' => '1000px',
+			'height' => '98%',
+			'maxWidth' => '98%',
+		]),
+		'deps' => ['elgg/lightbox'],
+	]);
+	
+	echo elgg_format_element('div', [], elgg_echo('add:object:microsub_channel:notifications:help'));
+	return;
+}
+
 elgg_register_menu_item('title', [
 	'name' => 'add:channel',
 	'icon' => 'plus',

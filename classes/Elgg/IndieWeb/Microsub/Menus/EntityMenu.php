@@ -22,6 +22,13 @@ class EntityMenu {
 		
 		$menu = $hook->getValue();
 		
+		if (isset($entity->channel_id) && $entity->channel_id === 0) {
+			$menu->remove('edit');
+			$menu->remove('delete');
+			
+			return $menu;
+		}
+		
 		$menu->add(ElggMenuItem::factory([
 			'name' => 'edit',
 			'text' => elgg_echo('edit'),

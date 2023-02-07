@@ -1,0 +1,4 @@
+.webmention-syndication .elgg-field-label,
+.webmention-syndication-targets .elgg-field-label {
+    display: inline-block !important;
+}

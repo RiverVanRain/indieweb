@@ -26,6 +26,16 @@ echo elgg_view_field([
 		],
 		[
 			'#type' => 'checkbox',
+			'#label' => elgg_echo('indieweb:microsub:anonymous'),
+			'#help' => elgg_echo('indieweb:microsub:anonymous:help'),
+			'name' => 'params[microsub_anonymous]',
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->microsub_anonymous,
+			'switch' => true,
+		],
+		[
+			'#type' => 'checkbox',
 			'#label' => elgg_echo('indieweb:microsub:cleanup_feeds'),
 			'#help' => elgg_echo('indieweb:microsub:cleanup_feeds:help'),
 			'name' => 'params[microsub_cleanup_feeds]',
@@ -59,6 +69,24 @@ echo elgg_view_field([
 			'name' => 'params[microsub_user_agent]',
 			'value' => $entity->microsub_user_agent ?: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36',
 			'#label' => elgg_echo('settings:indieweb:microsub_user_agent'),
+		],
+	],
+]);
+
+//Post context
+echo elgg_view_field([
+	'#type' => 'fieldset',
+	'legend' => elgg_echo('indieweb:microsub:context'),
+	'fields' => [
+		[
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('indieweb:microsub:context:label'),
+			'#label' => elgg_echo('indieweb:microsub:context:help'),
+			'name' => 'params[microsub_post_context]',
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->microsub_post_context,
+			'switch' => true,
 		],
 	],
 ]);

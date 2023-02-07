@@ -104,6 +104,37 @@ echo elgg_view_field([
 	],
 ]);
 
+//Sending
+$svc = elgg()->webmention;
+$syndication_targets = $svc->getSyndicationTargets();
+
+echo elgg_view_field([
+	'#type' => 'fieldset',
+	'legend' => elgg_echo('settings:indieweb:webmention:sending'),
+	'fields' => [
+		[
+			'#html' => elgg_format_element('div', ['class' => 'elgg-text-help mbm'], elgg_echo('settings:indieweb:webmention:sending:help')),
+		],
+		[
+			'#type' => 'plaintext',
+			'name' => 'params[webmention_syndication_targets]',
+			'value' => implode("\r\n", $syndication_targets),
+			'#label' => elgg_echo('settings:indieweb:syndication_targets'),
+			'#help' => elgg_echo('settings:indieweb:syndication_targets:help'),
+		],
+		[
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:webmention_syndication_targets_custom'),
+			'#help' => elgg_echo('settings:indieweb:webmention_syndication_targets_custom:help'),
+			'name' => 'params[webmention_syndication_targets_custom]',
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->webmention_syndication_targets_custom,
+			'switch' => true,
+		],
+	],
+]);
+
 //Objects
 $objects = (array) elgg_extract('object', elgg_entity_types_with_capability('searchable'), []);
 
