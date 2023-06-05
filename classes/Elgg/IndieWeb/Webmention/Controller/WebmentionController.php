@@ -9,7 +9,6 @@
 
 namespace Elgg\IndieWeb\Webmention\Controller;
 
-use Elgg\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Elgg\Exceptions\Http\BadRequestException;
 
@@ -18,7 +17,7 @@ class WebmentionController {
 	/**
 	 * Routing callback: internal webmention endpoint.
 	 */
-	public static function callback(Request $request) {
+	public static function callback(\Elgg\Request $request) {
 		$response_code = 400;
 		
 		if (!(bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
@@ -47,7 +46,7 @@ class WebmentionController {
 			throw new BadRequestException(elgg_echo('webmention:target:url:error'));
 		}
 		
-		elgg_log("Accepting mentions", 'NOTICE');
+		elgg_log('Accepting mentions', 'NOTICE');
 		
 		// We validate the request and store it as a webmention which we'll handle later in cron.
 		if ($source != $target) {

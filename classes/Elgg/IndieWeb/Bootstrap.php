@@ -85,7 +85,11 @@ class Bootstrap extends DefaultPluginBootstrap {
 	 * @return void
 	 */
 	public function activate() {
-		
+		$dir = elgg_get_data_path() . '/indieweb/';
+
+		if (!is_dir($dir)) {
+			mkdir($dir, 0755, true);
+		}
 	}
 
 	/**

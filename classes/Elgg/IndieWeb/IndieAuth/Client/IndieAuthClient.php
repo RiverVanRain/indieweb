@@ -1,7 +1,8 @@
 <?php
 
-namespace Elgg\IndieWeb\IndieAuth\Client\;
+namespace Elgg\IndieWeb\IndieAuth\Client;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer;
@@ -9,336 +10,333 @@ use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha512;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\Parser;
+use Elgg\Http\Request;
+use Elgg\Traits\Di\ServiceFacade;
+use Elgg\IndieWeb\IndieAuth\Entity\IndieAuthToken;
 
 class IndieAuthClient {
+	use ServiceFacade;
+	
+	const CERT_CONFIG = [
+		'digest_alg' => 'sha512',
+		'private_key_bits' => 4096,
+		'private_key_type' => OPENSSL_KEYTYPE_RSA,
+	];
 
-  const CERT_CONFIG = [
-    "digest_alg" => "sha512",
-    "private_key_bits" => 4096,
-    "private_key_type" => OPENSSL_KEYTYPE_RSA,
-  ];
+	/**
+	* A valid internal token.
+	*
+	* @var \Elgg\IndieWeb\IndieAuth\Entity\IndieAuthToken $indieAuthToken
+	*/
+	protected $token;
 
-  /**
-   * A valid internal token.
-   *
-   * @var \Drupal\indieweb_indieauth\Entity\IndieAuthTokenInterface $indieAuthToken
-   */
-  protected $token;
+	/**
+	* The user guid of the token if the internal IndieAuth endpoint is used.
+	*
+	* @var integer
+	*/
+	protected $tokenOwnerId;
+	
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function name() {
+		return 'indieauth';
+	}
+	
+	/**
+	 * {@inheritdoc}
+	 */
+	public function __get($name) {
+		return $this->$name;
+	}
 
-  /**
-   * The user id of the token if the internal IndieAuth endpoint is used.
-   *
-   * @var integer
-   */
-  protected $tokenOwnerId;
+	/**
+	* {@inheritdoc}
+	*/
+	public function getAuthorizationHeader(Request $request) {
+		$auth = null;
+		$auth_header = $request->headers->get('Authorization');
+		if ($auth_header && preg_match('/Bearer\s(\S+)/', $auth_header, $matches)) {
+			$auth = $auth_header;
+		}
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getAuthorizationHeader() {
-    $auth = NULL;
-    $auth_header = \Drupal::request()->headers->get('Authorization');
-    if ($auth_header && preg_match('/Bearer\s(\S+)/', $auth_header, $matches)) {
-      $auth = $auth_header;
-    }
+		return $auth;
+	}
 
-    return $auth;
-  }
+	/**
+	* {@inheritdoc}
+	*/
+	public function isValidToken($auth_header, $scope_to_check = null) {
+		$token_endpoint = elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb');
 
-  /**
-   * {@inheritdoc}
-   */
-  public function isValidToken($auth_header, $scope_to_check = NULL) {
-    $indieauth = \Drupal::config('indieweb_indieauth.settings');
-    $internal = $indieauth->get('auth_internal');
+		if ((bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
+			return $this->validateTokenInternal($auth_header, $scope_to_check);
+		} else {
+			return $this->validateTokenOnExternalService($auth_header, $token_endpoint, $scope_to_check);
+		}
+	}
 
-    if ($internal) {
-      return $this->validateTokenInternal($auth_header, $scope_to_check);
-    }
-    else {
-      return $this->validateTokenOnExternalService($auth_header, $indieauth->get('token_endpoint'), $scope_to_check);
-    }
-  }
+	/**
+	* {@inheritdoc}
+	*/
+	public function checkAuthor() {
+		if ((bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
+			return $this->tokenOwnerId;
+		}
 
-  /**
-   * {@inheritdoc}
-   */
-  public function checkAuthor() {
-    $config = \Drupal::config('indieweb_indieauth.settings');
-    $internal = $config->get('auth_internal');
-    if ($internal) {
-      return $this->tokenOwnerId;
-    }
+		return false;
+	}
 
-    return FALSE;
-  }
+	/**
+	* {@inheritdoc}
+	*/
+	public function getToken() {
+		if ($this->token) {
+			return $this->token;
+		}
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getToken() {
-    if ($this->token) {
-      return $this->token;
-    }
+		return false;
+	}
+	
+	/**
+	* {@inheritdoc}
+	*/
+	public function getTokens($access_token) {
+		$tokens = elgg_get_entities([
+			'type' => 'object',
+			'subtype' => IndieAuthToken::SUBTYPE,
+			'limit' => false,
+			'metadata_name_value_pairs' => [
+				'name' => 'access_token',
+				'value' => $access_token,
+			],
+		]);
+		
+		return count($tokens) === 1 ? array_shift($tokens) : null;
+	}
 
-    return FALSE;
-  }
+	/**
+	* {@inheritdoc}
+	*/
+	public function revokeToken($token) {
+		$signer = new Sha512();
+		$public_key = elgg_get_plugin_setting('indieauth_public_key', 'indieweb');
 
-  /**
-   * {@inheritdoc}
-   */
-  public function revokeToken($token) {
-    $signer = new Sha512();
-    $config = \Drupal::config('indieweb_indieauth.settings');
+		$access_token = '';
+		
+		try {
+			$parser = new Parser(new JoseEncoder());
+			$key = Key\InMemory::plainText(file_get_contents($public_key));
+			$JWT = $parser->parse($token);
+			
+			if ($this->verifyToken($JWT, $signer, $key)) {
+				$access_token = $JWT->headers()->get('jti');
+			}
+		} catch (\Exception $e) {
+			elgg_log('Error revoking token: ' . $e->getMessage(), 'ERROR');
+		}
+		
+		$indieAuthToken = $this->getTokens($access_token);
 
-    $access_token = '';
-    try {
-      $parser = new Parser(new JoseEncoder());
-      $key = Key\InMemory::plainText(file_get_contents($config->get('public_key')));
-      $JWT = $parser->parse($token);
-      if ($this->verifyToken($JWT, $signer, $key)) {
-        $access_token = $JWT->headers()->get('jti');
-      }
-    }
-    catch (\Exception $e) {
-      \Drupal::Logger('indieweb_token_verify')->notice('Error revoking token: @message', ['@message' => $e->getMessage()]);
-    }
+		if ($indieAuthToken instanceof IndieAuthToken) {
+			try {
+				$indieAuthToken->revoke()->save();
+			} catch (\Exception $ignored) {}
+		}
+	}
 
-    if ($access_token) {
-      /** @var \Drupal\indieweb_indieauth\Entity\IndieAuthTokenInterface $indieAuthToken */
-      $indieAuthToken = \Drupal::entityTypeManager()->getStorage('indieweb_indieauth_token')->getIndieAuthTokenByAccessToken($access_token);
-      if ($indieAuthToken) {
-        try {
-          $indieAuthToken->revoke()->save();
-        }
-        catch (\Exception $ignored) {}
-      }
-    }
+	/**
+	* {@inheritdoc}
+	*/
+	public function generateKeys() {
+		if (!extension_loaded('openssl')) {
+			throw new \Elgg\Exceptions\Http\BadRequestException('OpenSSL PHP extension is not loaded.');
+		}
+		
+		$return = false;
 
-  }
+		try {
+			// Generate Resource
+			$resource = openssl_pkey_new(self::CERT_CONFIG);
 
-  /**
-   * {@inheritdoc}
-   */
-  public function generateKeys() {
-    $return = FALSE;
+			// Get Private Key
+			openssl_pkey_export($resource, $pkey);
 
-    if (!extension_loaded('openssl')) {
-      \Drupal::logger('indieweb_indieauth')->notice('OpenSSL PHP extension is not loaded.');
-      return $return;
-    }
+			// Get Public Key
+			$pubkey = openssl_pkey_get_details($resource);
 
-    try {
+			$keys = [
+				'private' => $pkey,
+				'public' => $pubkey['key'],
+			];
 
-      // Generate Resource.
-      $resource = openssl_pkey_new(self::CERT_CONFIG);
+			$paths = [];
+			$dir_path = elgg_get_data_path() . '/indieweb/indieauth';
 
-      // Get Private Key.
-      openssl_pkey_export($resource, $pkey);
+			if (!is_dir($dir_path)) {
+				mkdir($dir_path, 0755, true);
+			}
 
-      // Get Public Key.
-      $pubkey = openssl_pkey_get_details($resource);
+			foreach (['public', 'private'] as $name) {
+				// Key uri
+				$key_uri = "$dir_path/$name.key";
 
-      $keys = [
-        'private' => $pkey,
-        'public' => $pubkey['key'],
-      ];
+				// Remove old key
+				if (file_exists($key_uri)) {
+					unlink($key_uri);
+				}
 
-      $paths = [];
-      $dir_path = Settings::get('indieauth_keys_path', 'public://indieauth');
-      \Drupal::service('file_system')->prepareDirectory($dir_path, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
+				// Write key content to key file
+				file_put_contents($key_uri, $keys[$name]);
 
-      foreach (['public', 'private'] as $name) {
+				// Set correct permission to key file
+				chmod($key_uri, 0600);
 
-        // Key uri.
-        $key_uri = "$dir_path/$name.key";
+				$paths[$name . '_key'] = $key_uri;
+			}
 
-        // Remove old key.
-        if (file_exists($key_uri)) {
-          \Drupal::service('file_system')->unlink($key_uri);
-        }
+			$return = $paths;
+		} catch (\Exception $e) {
+			elgg_log('Error generating keys: '. $e->getMessage(), 'ERROR');
+		}
 
-        // Write key content to key file.
-        file_put_contents($key_uri, $keys[$name]);
+		return $return;
+	}
 
-        // Set correct permission to key file.
-        \Drupal::service('file_system')->chmod($key_uri, 0600);
+	/**
+	* Verify a token.
+	*
+	* @param \Lcobucci\JWT\Token $JWT
+	* @param \Lcobucci\JWT\Signer $signer
+	* @param $key
+	*
+	* @return bool
+	*/
+	private function verifyToken(Token $JWT, Signer $signer, $key) {
+		if ($JWT->headers()->get('alg') !== $signer->algorithmId()) {
+			return false;
+		}
 
-        $paths[$name . '_key'] = $key_uri;
-      }
+		return $signer->verify($JWT->signature()->hash(), $JWT->payload(), $key);
+	}
 
-      $return = $paths;
-    }
-    catch (\Exception $e) {
-      \Drupal::logger('indieweb_indieauth')->notice('Error generating keys: @message', ['@message' => $e->getMessage()]);
-    }
+	/**
+	* Internal IndieAuth token validation.
+	*
+	* @param $auth_header
+	* @param $scope_to_check
+	*
+	* @return bool
+	*/
+	private function validateTokenInternal($auth_header, $scope_to_check) {
+		$valid_token = false;
 
-    return $return;
-  }
+		$matches = [];
+		$bearer_token = '';
+		preg_match('/Bearer\s(\S+)/', $auth_header, $matches);
+		if (isset($matches[1])) {
+			$bearer_token = $matches[1];
+		}
 
-  /**
-   * {@inheritdoc}
-   */
-  public function externalauthMapAccount($uid, $domain, $is_drush = FALSE) {
-    if (\Drupal::moduleHandler()->moduleExists('externalauth')) {
+		$signer = new Sha512();
+		$public_key = elgg_get_plugin_setting('indieauth_public_key', 'indieweb');
 
-      /** @var \Drupal\user\UserInterface $account */
-      $account = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
-      if ($account) {
-        /** @var \Drupal\externalauth\ExternalAuthInterface $external_auth */
-        $external_auth = \Drupal::service('externalauth.externalauth');
-        $authname = str_replace(['https://', 'http://'], '', $domain);
-        $external_auth->linkExistingAccount($authname, 'indieweb', $account);
+		$access_token = '';
+		
+		try {
+			$parser = new Parser(new JoseEncoder());
+			$key = Key\InMemory::plainText(file_get_contents($public_key));
+			$JWT = $parser->parse($bearer_token);
+			
+			if ($this->verifyToken($JWT, $signer, $key)) {
+				$access_token = $JWT->headers()->get('jti');
+			}
+		} catch (\Exception $e) {
+			elgg_log('Error verifying token: ' . $e->getMessage(), 'ERROR');
+		}
 
-        if ($is_drush) {
-          print_r(dt('Mapped uid @uid with @domain.', ['@uid' => $uid, '@domain' => $domain]));
-        }
-      }
-      else {
-        if ($is_drush) {
-          dt('Account with uid @uid not found.', ['@uid' => $uid]);
-        }
-      }
+		// Return early already, no need to verify further.
+		if (!$access_token) {
+			return false;
+		}
+		
+		$indieAuthToken = $this->getTokens($access_token);
 
-    }
-    else {
-      if ($is_drush) {
-        print_r('The External Authentication module is not enabled.');
-      }
-    }
-  }
+		if ($indieAuthToken instanceof IndieAuthToken && $indieAuthToken->isValid()) {
+			// The token is valid
+			$valid_token = true;
 
-  /**
-   * Verify a token.
-   *
-   * @param \Lcobucci\JWT\Token $JWT
-   * @param \Lcobucci\JWT\Signer $signer
-   * @param $key
-   *
-   * @return bool
-   */
-  private function verifyToken(Token $JWT, Signer $signer, $key) {
-    if ($JWT->headers()->get('alg') !== $signer->algorithmId()) {
-      return FALSE;
-    }
+			// Scope check
+			if (!empty($scope_to_check)) {
+				$scopes = $indieAuthToken->getScopes();
+				
+				if (empty($scopes) || !in_array($scope_to_check, $scopes)) {
+					$valid_token = false;
+					elgg_log("Scope {$scope_to_check} insufficient", 'ERROR');
+				}
+			}
 
-    return $signer->verify($JWT->signature()->hash(), $JWT->payload(), $key);
-  }
+			// Update changed if valid and set owner id
+			if ($valid_token) {
+				$this->tokenOwnerId = $indieAuthToken->getOwnerId();
+				$this->token = $indieAuthToken;
+				$indieAuthToken->setMetadata('changed', time())->save();
+			}
+		}
 
-  /**
-   * Internal IndieAuth token validation.
-   *
-   * @param $auth_header
-   * @param $scope_to_check
-   *
-   * @return bool
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   */
-  private function validateTokenInternal($auth_header, $scope_to_check) {
-    $valid_token = FALSE;
+		return $valid_token;
+	}
 
-    $matches = [];
-    $bearer_token = '';
-    preg_match('/Bearer\s(\S+)/', $auth_header, $matches);
-    if (isset($matches[1])) {
-      $bearer_token = $matches[1];
-    }
+	/**
+	* External IndieAuth token validation.
+	*
+	* @param $auth_header
+	* @param $token_endpoint
+	* @param $scope_to_check
+	*
+	* @return bool
+	*/
+	private function validateTokenOnExternalService($auth_header, $token_endpoint, $scope_to_check) {
+		$valid_token = false;
 
-    $config = \Drupal::config('indieweb_indieauth.settings');
-    $signer = new Sha512();
+		try {
+			$headers = [
+				'Accept' => 'application/json',
+				'Authorization' => $auth_header,
+			];
+			$response = $this->http_client()->get($token_endpoint, ['headers' => $headers]);
+			$json = json_decode($response->getBody());
 
-    $access_token = '';
-    try {
-      $parser = new Parser(new JoseEncoder());
-      $key = Key\InMemory::plainText(file_get_contents($config->get('public_key')));
-      $JWT = $parser->parse($bearer_token);
-      if ($this->verifyToken($JWT, $signer, $key)) {
-        $access_token = $JWT->headers()->get('jti');
-      }
-    }
-    catch (\Exception $e) {
-      \Drupal::Logger('indieweb_token_verify')->notice('Error verifying token: @message', ['@message' => $e->getMessage()]);
-    }
+			// Compare me with current domain. We don't support multi-user authentication yet.
+			if (isset($json->me) && rtrim($json->me, '/') === elgg_get_site_entity()->getDomain()) {
+				// The token is valid
+				$valid_token = true;
 
-    // Return early already, no need to verify further.
-    if (!$access_token) {
-      return FALSE;
-    }
+				// Scope check.
+				if (!empty($scope_to_check)) {
+					$scopes = isset($json->scope) ? explode(' ', $json->scope) : [];
+					
+					if (empty($scopes) || !in_array($scope_to_check, $scopes)) {
+						$valid_token = false;
+						elgg_log("Scope {$scope_to_check} insufficient", 'ERROR');
+					}
+				}
+			}
+		} catch (GuzzleException $e) {
+			elgg_log('Error validating the access token: ' . $e->getMessage(), 'ERROR');
+		}
 
-    /** @var \Drupal\indieweb_indieauth\Entity\IndieAuthTokenInterface $indieAuthToken */
-    $indieAuthToken = \Drupal::entityTypeManager()->getStorage('indieweb_indieauth_token')->getIndieAuthTokenByAccessToken($access_token);
-    if ($indieAuthToken && $indieAuthToken->isValid()) {
-
-      // The token is valid.
-      $valid_token = TRUE;
-
-      // Scope check.
-      if (!empty($scope_to_check)) {
-        $scopes = $indieAuthToken->getScopes();
-        if (empty($scopes) || !in_array($scope_to_check, $scopes)) {
-          $valid_token = FALSE;
-          \Drupal::Logger('indieweb_scope')->notice('Scope "@scope" insufficient', ['@scope' => $scope_to_check]);
-        }
-      }
-
-      // Update changed if valid and set owner id.
-      if ($valid_token) {
-        $this->tokenOwnerId = $indieAuthToken->getOwnerId();
-        $this->token = $indieAuthToken;
-        $indieAuthToken->set('changed', \Drupal::time()->getRequestTime())->save();
-      }
-    }
-
-    return $valid_token;
-  }
-
-  /**
-   * External IndieAuth token validation.
-   *
-   * @param $auth_header
-   * @param $token_endpoint
-   * @param $scope_to_check
-   *
-   * @return bool
-   */
-  private function validateTokenOnExternalService($auth_header, $token_endpoint, $scope_to_check) {
-    $valid_token = FALSE;
-
-    try {
-      $client = \Drupal::httpClient();
-      $headers = [
-        'Accept' => 'application/json',
-        'Authorization' => $auth_header,
-      ];
-
-      $response = $client->get($token_endpoint, ['headers' => $headers]);
-      $json = json_decode($response->getBody());
-
-      // Compare me with current domain. We don't support multi-user
-      // authentication yet.
-      $domain = rtrim(\Drupal::request()->getSchemeAndHttpHost(), '/');
-      if (isset($json->me) && rtrim($json->me, '/') === $domain) {
-
-        // The token is valid.
-        $valid_token = TRUE;
-
-        // Scope check.
-        if (!empty($scope_to_check)) {
-          $scopes = isset($json->scope) ? explode(' ', $json->scope) : [];
-          if (empty($scopes) || !in_array($scope_to_check, $scopes)) {
-            $valid_token = FALSE;
-            \Drupal::Logger('indieweb_scope')->notice('Scope "@scope" insufficient', ['@scope' => $scope_to_check]);
-          }
-        }
-      }
-    }
-    catch (GuzzleException $e) {
-      \Drupal::Logger('indieweb_token')->notice('Error validating the access token: @message', ['@message' => $e->getMessage()]);
-    }
-
-    return $valid_token;
-  }
+		return $valid_token;
+	}
+	
+	public function http_client($options = []) {
+		$config = [
+			'verify' => true,
+			'timeout' => 30,
+		];
+		$config = $config + $options;
+		
+		return new Client($config);
+	}
 }

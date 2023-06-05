@@ -81,7 +81,7 @@ echo elgg_view_field([
 		[
 			'#type' => 'checkbox',
 			'#label' => elgg_echo('indieweb:microsub:context:label'),
-			'#label' => elgg_echo('indieweb:microsub:context:help'),
+			'#help' => elgg_echo('indieweb:microsub:context:help'),
 			'name' => 'params[microsub_post_context]',
 			'value' => 1,
 			'default' => 0,

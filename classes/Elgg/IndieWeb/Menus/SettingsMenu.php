@@ -128,6 +128,47 @@ class SettingsMenu {
 			'priority' => 320,
 		]);
 		
+		//IndieAuth
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:indieauth',
+			'parent_name' => 'indieweb',
+			'href' => false,
+			'text' => elgg_echo('admin:indieweb:indieauth'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 400,
+		]);
+		
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:indieauth:basic',
+			'parent_name' => 'indieweb:indieauth',
+			'href' => 'admin/indieweb/indieauth',
+			'text' => elgg_echo('settings:indieweb:indieauth'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 410,
+		]);
+		
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:indieauth:tokens',
+			'parent_name' => 'indieweb:indieauth',
+			'href' => 'admin/indieweb/indieauth/tokens',
+			'text' => elgg_echo('settings:indieweb:indieauth:tokens'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 420,
+		]);
+		
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:indieauth:codes',
+			'parent_name' => 'indieweb:indieauth',
+			'href' => 'admin/indieweb/indieauth/codes',
+			'text' => elgg_echo('settings:indieweb:indieauth:codes'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 430,
+		]);
+		
 		return $menu;
 	}
 }

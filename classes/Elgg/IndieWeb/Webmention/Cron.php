@@ -9,7 +9,6 @@
 
 namespace Elgg\IndieWeb\Webmention;
 
-use Elgg\Hook;
 use Elgg\IndieWeb\Webmention\Entity\Webmention;
 use Elgg\IndieWeb\Webmention\Entity\Syndication;
 use Exception;
@@ -18,7 +17,7 @@ use p3k\XRay;
 
 class Cron {
 	
-	public static function processWebmentions(Hook $hook) {
+	public static function processWebmentions(Elgg\Hook $hook) {
 		
 		echo "Processes received webmentions starting" . PHP_EOL;
 		elgg_log("Processes received webmentions starting", 'NOTICE');

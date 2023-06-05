@@ -14,7 +14,6 @@ use Elgg\Includer;
 use Elgg\Database\QueryBuilder;
 use Elgg\Database\Clauses\OrderByClause;
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface as GuzzleClient;
 use IndieWeb\MentionClient;
 use GuzzleHttp\Psr7\Request;
 use p3k\XRay\Formats\HTML;

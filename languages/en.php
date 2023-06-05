@@ -180,7 +180,7 @@ Write operations (like managing channels, subscribing, search, marking (un)read 
 	'indieweb:microsub:allow_video:help' => 'By default videos embedded with an iframe in content are stripped. Switch on this setting to allow YouTube and Vimeo in content.',
 	'settings:indieweb:microsub_user_agent' => 'Default User agent when calling feeds',
 	'indieweb:microsub:context' => 'Post context',
-	'indieweb:microsub:context:label' => 'Enable post context',
+	'indieweb:microsub:context:label' => 'Fetch content',
 	'indieweb:microsub:context:help' => 'When you create a post with a link which is a reply, like, repost or bookmark of an external post, you can fetch content from that URL so you can render more context.
 You can also enable fetching of contexts on microsub items when you use the built-in microsub server.',
 	'indieweb:microsub:aggregated_feeds' => 'Aggregated feeds',
@@ -278,8 +278,102 @@ A subscribe request will be send after submit.',
 	'indieweb:microsub:notification:author' => 'You have a notification from %s',
 	'indieweb:microsub:notification:bookmark' => 'Bookmark available on <a href="%s">%s</a>',
 	'indieweb:microsub:notification:mention' => 'You were mentioned',
-
+	
+	// INDIEAUTH
+	'admin:indieweb:indieauth' => 'IndieAuth',
+	'settings:indieweb:indieauth' => 'Basic Config',
+	'settings:indieweb:indieauth:tokens' => 'Tokens',
+	'settings:indieweb:indieauth:codes' => 'Authorization codes',
+	'admin:indieweb:indieauth:tokens' => 'IndieAuth Tokens',
+	'admin:indieweb:indieauth:codes' => 'IndieAuth Authorization codes',
+	'settings:indieweb:indieauth:api' => 'Authentication',
+	'settings:indieweb:indieauth:login' => 'Enable login',
+	'settings:indieweb:indieauth:login:help' => 'Allow users to login into this site by using their domain. A "Sign-In" block is available where users can enter their domain to login.
+<div>After authentication a new user account will be created if this domain does not exist yet. The account will automatically be verified</div>.',
+	'settings:indieweb:indieauth:endpoint' => 'Use built-in authentication endpoint',
+	'settings:indieweb:indieauth:endpoint:help' => "Use the internal authorize and token endpoints to authenticate with an Elgg user. The user needs the site administrator permission.
+<div>The endpoints are available at <strong>".elgg_get_site_url()."indieauth/auth</strong> and <strong>".elgg_get_site_url()."indieauth/token</strong></div>",
+	'settings:indieweb:indieauth:keys' => 'Keys',
+	'settings:indieweb:indieauth:keys:public_key' => 'Public key',
+	'settings:indieweb:indieauth:keys:public_key:help' => 'The path to the public key file',
+	'settings:indieweb:indieauth:keys:private_key' => 'Private key',
+	'settings:indieweb:indieauth:keys:private_key:help' => 'The path to the private key file',
+	'settings:indieweb:indieauth:keys:generate_keys' => 'Generate keys on save',
+	'settings:indieweb:indieauth:keys:help' => 'Configure the paths to the public and private keys which are used for encrypting the access tokens.
+<div>If you choose to generate keys, the default path where these keys are stored is set to DATA_DIRECTORY/indieweb/indieauth.</div>
+<div>Check the README for more information.</div>',
+	'settings:indieweb:indieauth:external' => 'External endpoint',
+	'settings:indieweb:indieauth:external:auth' => 'External authorization endpoint',
+	'settings:indieweb:indieauth:external:endpoint' => 'External token endpoint',
+	'settings:indieweb:indieauth:notes' => 'If you use apps like Quill (https://quill.p3k.io - web) or Indigenous (iOS, Android) or other clients which can post via Micropub or read via Microsub, the easiest way to let those clients log you in with your domain is by using indieauth.com and exchange access tokens for further requests. Only expose those links if you want to use Micropub or Microsub.
+<div><strong>Important</strong>: if you add the token endpoint manually, and the endpoint is an external service, you still need to enter the URL here because it is used by the Micropub and/or Microsub endpoint.</div>',
+	
+	'item:object:indieauth_token' => 'IndieAuth token',
+	'collection:object:indieauth_token' => 'IndieAuth tokens',
+	'add:object:indieauth_token' => 'Add token',
+	'indieweb:indieauth:token:no_results' => 'No tokens yet.',
+	'indieweb:indieauth:token' => 'Token',
+	'indieweb:indieauth:token:status' => 'Status',
+	'indieweb:indieauth:token:status:active' => 'Active',
+	'indieweb:indieauth:token:status:revoked' => 'Revoked',
+	'indieweb:indieauth:token:client' => 'Client',
+	'indieweb:indieauth:token:access' => 'Last access',
+	'indieweb:indieauth:token:actions' => 'Actions',
+	
+	'item:object:indieauth_code' => 'IndieAuth authorization code',
+	'collection:object:indieauth_code' => 'IndieAuth authorization codes',
+	'indieweb:indieauth:code:no_results' => 'No codes yet.',
+	'indieweb:indieauth:code' => 'Code',
+	'indieweb:indieauth:code:status' => 'Status',
+	'indieweb:indieauth:code:client' => 'Client',
+	'indieweb:indieauth:code:expires' => 'Expires',
+	'indieweb:indieauth:code:actions' => 'Actions',
+	'indieweb:indieauth:code:status:active' => 'Active',
+	'indieweb:indieauth:code:status:revoked' => 'Revoked',
+	
+	'indieweb:indieauth:keys:generate_keys' => 'Something went wrong generating the keys, please check your logs.',
+	'indieweb:indieauth:auth:no_login' => 'Login first with your account. You will be redirected to the authorize screen on success.',
+	'indieweb:indieauth:auth:invalid' => 'Invalid request, missing parameters.',
+	'indieweb:indieauth:auth:permission' => 'You do not have permission to authorize.',
+	
+	'indieweb:indieauth:authorize' => 'Authorize with IndieAuth',
+	'indieweb:indieauth:authorize:title' => 'The app <strong>%s</strong> would like to access your app, using the credentials of <strong>%s</strong>',
+	'indieweb:indieauth:authorize:scopes' => 'The app is requesting the following <a href="https://indieweb.org/scope" target="_blank">scopes</a>',
+	'indieweb:indieauth:authorize:redirect' => 'You will be redirected to <strong>%s</strong> after authorizing this app.',
+	'indieweb:indieauth:authorize:submit' => 'Authorize',
+	'indieweb:indieauth:authorize:authorized' => 'Authorized',
+	'indieweb:indieauth:authorize:cancel' => 'Cancelled',
+	'indieweb:indieauth:authorize:fail' => 'Authorization Code creation failed',
+	'indieweb:indieauth:deauthorize' => 'Deauthorize IndieAuth',
+	'indieweb:indieauth:login' => 'Authorize with IndieAuth',
+	'indieweb:indieauth:login:label' => 'Add web address',
+	'indieweb:indieauth:login:help' => 'In order to sign in to '.elgg_get_site_entity()->getDisplayName().', you will need the built-in IndieAuth auth and token endpoints.',
+	'indieweb:indieauth:login:email' => 'Add your valid email',
+	'indieweb:indieauth:login:email:help' => elgg_get_site_entity()->getDisplayName().' requires an email address to register a new account. 
+<div>If you have already registered on '.elgg_get_site_entity()->getDisplayName().', add the email address from your account.</div>',
+	'indieweb:indieauth:login:success' => 'You have successfully authorized with IndieAuth.',
+	'indieweb:indieauth:login:success:already' => 'You are already authorized with this URL.',
+	'indieweb:indieauth:login:fail' => 'No authorization endpoint found.',
+	
+	'indieweb:indieauth:token:save:success' => 'IndieAuth token has been saved',
+	'indieweb:indieauth:token:save:fail' => 'Failed to save IndieAuth token',
+	'indieweb:indieauth:token:activate' => 'Activate',
+	'indieweb:indieauth:token:activate:success' => 'IndieAuth token has been activated',
+	'indieweb:indieauth:token:revoke' => 'Revoke',
+	'indieweb:indieauth:token:revoke:success' => 'IndieAuth token has been revoked',
+	'indieweb:indieauth:token:status:fail' => 'Failed to change a status',
+	'indieweb:indieauth:view_jwt' => 'View JWT token',
+	'indieweb:indieauth:view_jwt:title' => 'JWT token',
+	'indieweb:indieauth:view_jwt:info' => 'Copy this string which can be used for requests to the Micropub or Microsub endpoint.',
+	
+	'indieauth:token:scope' => 'Scope',
+	'indieauth:token:scope:help' => 'Separate scopes by space',
+	'indieauth:token:client_id' => 'Client',
 ];
+
+
+
+
 
 
 

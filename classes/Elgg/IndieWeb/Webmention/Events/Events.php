@@ -59,7 +59,7 @@ final class Events {
 			$client->enableDebug();
 		}
 		
-		elgg_log("Sending mentions", 'NOTICE');
+		elgg_log('Sending mentions', 'NOTICE');
 		
 		$targets = unserialize($entity->syndication_targets);
 		

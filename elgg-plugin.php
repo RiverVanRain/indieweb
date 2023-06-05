@@ -90,6 +90,27 @@ return [
 				'searchable' => false,
 			],
 		],
+		//IndieAuth
+		[
+			'type' => 'object',
+			'subtype' => 'indieauth_token',
+			'class' => \Elgg\IndieWeb\IndieAuth\Entity\IndieAuthToken::class,
+			'capabilities' => [
+				'commentable' => false,
+				'likable' => false,
+				'searchable' => false,
+			],
+		],
+		[
+			'type' => 'object',
+			'subtype' => 'indieauth_code',
+			'class' => \Elgg\IndieWeb\IndieAuth\Entity\IndieAuthAuthorizationCode::class,
+			'capabilities' => [
+				'commentable' => false,
+				'likable' => false,
+				'searchable' => false,
+			],
+		],
 	],
 	
 	//ACTIONS
@@ -106,6 +127,10 @@ return [
 			'controller' => \Elgg\IndieWeb\Actions\SettingsAction::class,
 			'access' => 'admin',
 		],
+		'admin/indieweb/indieauth' => [
+			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\SettingsAction::class,
+			'access' => 'admin',
+		],
 		//microsub
 		'microsub/channel/edit' => [
 			'controller' => \Elgg\IndieWeb\Microsub\Actions\EditMicrosubChannelAction::class,
@@ -117,6 +142,30 @@ return [
 		],
 		'microsub/channel/notifications' => [
 			'controller' => \Elgg\IndieWeb\Microsub\Actions\NotificationsMicrosubChannelAction::class,
+			'access' => 'admin',
+		],
+		//indieauth
+		'indieauth/authorize' => [
+			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\AuthorizeAction::class,
+			'access' => 'admin',
+		],
+		'indieauth/deauthorize' => [
+			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\DeauthorizeAction::class,
+			'access' => 'admin',
+		],
+		'indieauth/login' => [
+			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\LoginAction::class,
+			'access' => 'public',
+		],
+		'indieauth/cancel' => [
+			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\CancelAction::class,
+		],
+		'indieauth/token/toggle_status' => [
+			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\Token\ToggleStatusAction::class,
+			'access' => 'admin',
+		],
+		'indieauth/token/save' => [
+			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\Token\SaveAction::class,
 			'access' => 'admin',
 		],
 		//core
@@ -132,16 +181,36 @@ return [
 				// Webmention
 				'Elgg\IndieWeb\Webmention\Cron::processWebmentions' => [],
 			],
+			'daily' => [
+				// IndieAuth
+				'Elgg\IndieWeb\IndieAuth\Cron::processCodes' => [],
+			],
 		],
 		'head' => [
 			'page' => [
 				\Elgg\IndieWeb\Views\SetupHead::class => [],
 			],
 		],
+		'permissions_check' => [
+			'object' => [
+				'Elgg\IndieWeb\IndieAuth\Permissions\AuthorizationCode::canEdit' => [],
+				'Elgg\IndieWeb\IndieAuth\Permissions\Token::canEdit' => [],
+			],
+		],
+		'permissions_check:delete' => [
+			'object' => [
+				'Elgg\IndieWeb\IndieAuth\Permissions\AuthorizationCode::canDelete' => [],
+				'Elgg\IndieWeb\IndieAuth\Permissions\Token::canDelete' => [],
+			],
+		],
 		'register' => [
 			'menu:entity' => [
+				// Microsub
 				'Elgg\IndieWeb\Microsub\Menus\EntityMenu::microsubChannelEntityMenu' => [],
 				'Elgg\IndieWeb\Microsub\Menus\EntityMenu::microsubSourceEntityMenu' => [],
+				// IndieAuth
+				'Elgg\IndieWeb\IndieAuth\Menus\EntityMenu::codeEntityMenu' => [],
+				'Elgg\IndieWeb\IndieAuth\Menus\EntityMenu::tokenEntityMenu' => [],
 			],
 			'menu:page' => [
 				\Elgg\IndieWeb\Menus\SettingsMenu::class => [],
@@ -188,13 +257,13 @@ return [
 		//webmention
 		'default:view:webmention' => [
 			'path' => '/webmention',
-			'controller' => 'Elgg\IndieWeb\Webmention\Controller\WebmentionController::callback',
+			'controller' => [\Elgg\IndieWeb\Webmention\Controller\WebmentionController::class, 'callback'],
 			'walled' => false,
 		],
 		//microsub
 		'default:view:microsub' => [
 			'path' => '/microsub',
-			'controller' => 'Elgg\IndieWeb\Microsub\Controller\MicrosubController::callback',
+			'controller' => [\Elgg\IndieWeb\Microsub\Controller\MicrosubController::class, 'callback'],
 			'walled' => false,
 		],
 		'add:object:microsub_channel' => [
@@ -232,7 +301,27 @@ return [
 				AdminGatekeeper::class,
 			],
 		],
-		
+		//indieauth
+		'indieauth:login' => [
+			'path' => '/indieauth/login',
+			'controller' => \Elgg\IndieWeb\IndieAuth\Controller\LoginController::class,
+			'walled' => false,
+		],
+		'indieauth:auth' => [
+			'path' => '/indieauth/auth',
+			'controller' => \Elgg\IndieWeb\IndieAuth\Controller\IndieAuthController::class,
+			'walled' => false,
+		],
+		'indieauth:auth:form' => [
+			'path' => '/indieauth/authorize',
+			'controller' => \Elgg\IndieWeb\IndieAuth\Controller\AuthFormController::class,
+			'walled' => false,
+		],
+		'indieauth:token' => [
+			'path' => '/indieauth/token',
+			'controller' => \Elgg\IndieWeb\IndieAuth\Controller\TokenController::class,
+			'walled' => false,
+		],
 	],
 	
 	//VIEWS
@@ -252,15 +341,34 @@ return [
 		'object/comment' => [
 			'mf2/object/comment' => [],
         ],
+		'forms/login' => [
+			'indieauth/login' => [
+				'priority' => 850
+			],
+		],
+		'forms/register' => [
+			'indieauth/login' => [
+				'priority' => 850
+			],
+		],
+		'core/settings/account' => [
+			'indieauth/authorize' => [
+				'priority' => 900
+			],
+		],
+		
     ],
 	
 	'view_options' => [
-		//Microsub
+		// Microsub
 		'resources/microsub/channel/add' => ['ajax' => true],
 		'resources/microsub/channel/edit' => ['ajax' => true],
 		'resources/microsub/source/add' => ['ajax' => true],
 		'resources/microsub/source/edit' => ['ajax' => true],
 		'resources/microsub/channel/add_notifications' => ['ajax' => true],
+		// IndieAuth
+		'indieauth/token/jwt' => ['ajax' => true],
+		'forms/indieauth/token/save' => ['ajax' => true],
 	],
 	
 	//SETTINGS
@@ -273,5 +381,8 @@ return [
 		'enable_micropub' => false,
 		'enable_microsub' => false,
 		'microsub_anonymous' => true,
+		'enable_indieauth_login' => false,
+		'enable_indieauth_endpoint' => false,
+		'indieauth_generate_keys' => false,
 	],
 ];
