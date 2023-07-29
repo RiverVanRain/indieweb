@@ -85,7 +85,7 @@ class IndieAuthClient {
 			return $this->tokenOwnerId;
 		}
 
-		return false;
+		return null;
 	}
 
 	/**

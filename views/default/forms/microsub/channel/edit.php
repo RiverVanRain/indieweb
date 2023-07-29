@@ -82,7 +82,7 @@ echo elgg_view_field([
 	'#label' => elgg_echo('indieweb:microsub:microsub_channel:weight'),
 	'name' => 'weight',
 	'value' => (int) elgg_extract('weight', $vars, 0),
-	'min' => 0,
+	'min' => -10,
 	'max' => 10,
 	'step' => 1,
 ]);

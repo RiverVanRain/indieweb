@@ -40,6 +40,11 @@ class SetupHead {
 		}
 		
 		//indieauth
+		$return['links'][] = [
+			'rel' => 'me',
+			'href' => 'mailto:' . elgg_get_site_entity()->email,
+		];
+			
 		if ((bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
 			$return['links'][] = [
 				'rel' => 'authorization_endpoint',
@@ -65,14 +70,20 @@ class SetupHead {
 			elgg_set_http_header('Link: <' . elgg_get_plugin_setting('indieauth_external_auth', 'indieweb', 'https://indieauth.com/auth') . '>; rel="authorization_endpoint"');
 			elgg_set_http_header('Link: <' . elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb', 'https://tokens.indieauth.com/token') . '>; rel="token_endpoint"');
 		}
-
-		$owner = elgg_get_page_owner_entity();
 		
-		if ((elgg_in_context('profile') || elgg_in_context('profile_view') || elgg_in_context('creator')) && $owner instanceof \ElggUser) {
+		//websub
+		if ((bool) elgg_get_plugin_setting('enable_websub', 'indieweb') && !empty(elgg_get_plugin_setting('websub_endpoint', 'indieweb'))) {
 			$return['links'][] = [
-				'rel' => 'me',
-				'href' => $owner->getURL(),
+				'rel' => 'hub',
+				'href' => elgg_get_plugin_setting('websub_endpoint', 'indieweb'),
 			];
+			$return['links'][] = [
+				'rel' => 'self',
+				'href' => elgg_get_site_url(),
+			];
+			
+			elgg_set_http_header('Link: <' . elgg_get_plugin_setting('websub_endpoint', 'indieweb') . '>; rel="hub"');
+			elgg_set_http_header('Link: <' . elgg_get_site_url() . '>; rel="self"');
 		}
 
 		return $return;

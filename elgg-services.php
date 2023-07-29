@@ -15,4 +15,5 @@ return [
 	'mediaCacher' => \DI\autowire(\Elgg\IndieWeb\Cache\MediaCacher::class),
 	'postContext' => \DI\create(\Elgg\IndieWeb\PostContext\Client\PostContextClient::class),
 	'indieauth' => \DI\create(\Elgg\IndieWeb\IndieAuth\Client\IndieAuthClient::class),
+	'websub' => \DI\create(\Elgg\IndieWeb\WebSub\Client\WebSubClient::class),
 ];

@@ -10,7 +10,6 @@
 namespace Elgg\IndieWeb\Microsub\Client;
 
 use Elgg\Traits\Di\ServiceFacade;
-use Elgg\Includer;
 use Elgg\Database\QueryBuilder;
 use Elgg\Database\Clauses\OrderByClause;
 use GuzzleHttp\Client;
@@ -404,8 +403,6 @@ class MicrosubClient {
 			$entity->time_created = $empty ? $entity->timestamp : time();
 
 			$entity->save();
-			
-			elgg_log(elgg_echo('indieweb:microsub:microsub_item:saved', [$entity->guid]), 'ERROR');
 		});
 
 		// Save post context in queue
@@ -753,7 +750,7 @@ class MicrosubClient {
 		/** @var \Elgg\IndieWeb\Microsub\Entity\MicrosubItem[] $microsub_items */
 		$microsub_items = [];
 
-		//WIP -- offset ?
+		// WIP -- offset ?
 		// Set pager
 		$page = $this->request->get('after', 0);
 		if ($page > 0) {
@@ -922,7 +919,7 @@ class MicrosubClient {
 			}
 
 			// Calculate pager and after
-			//WIP -- offset ?
+			// WIP -- offset ?
 			$page++;
 			
 			$response = ['paging' => (object) ['after' => $page], 'items' => $items];
@@ -942,7 +939,7 @@ class MicrosubClient {
 			}
 		}
 
-		return ['response' => $response, 'code' => 200];
+		return $response;
 	}
 
 	/**
@@ -1005,16 +1002,24 @@ class MicrosubClient {
 	}
 
 	public static function aggregatedFeeds() {
+		$normalize = function($url) {
+			$url = trim($url);
+			return $url;
+		};
+		
 		$feeds = elgg_get_plugin_setting('microsub_aggregated_feeds', 'indieweb', '');
-		$feeds = preg_split('/$\R?^/m', $feeds);
-		$feeds = array_filter($feeds);
-
+		
 		if (empty($feeds)) {
-			$root = elgg_get_plugins_path();
-			$feeds = Includer::includeFile($root . '/indieweb/lib/aggregated_feeds.php');
+			return [];
 		}
 		
-		return $feeds;
+		if (is_string($feeds)) {
+			$feeds = preg_split('/$\R?^/m', $feeds);
+		}
+		
+		$feeds = array_filter($feeds);
+
+		return array_map($normalize, $feeds);
 	}
 	
 	public function http_client($options = []) {

@@ -61,5 +61,9 @@ function indieweb_get_guid(string $url): int {
  * @return mixed|null
  */
 function indieweb_microsub_http_client_user_agent() {
-	return elgg_get_plugin_setting('microsub_user_agent', 'indieweb');
+	$r1 = rand(0, 9999);
+	$r2 = rand(0, 99);
+	$generate_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.{$r1} Safari/537.{$r2}";
+	
+	return elgg_get_plugin_setting('microsub_user_agent', 'indieweb', $generate_ua);
 }

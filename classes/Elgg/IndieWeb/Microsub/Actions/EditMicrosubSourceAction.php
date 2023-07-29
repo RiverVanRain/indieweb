@@ -64,6 +64,8 @@ class EditMicrosubSourceAction {
 		$entity->fetch_interval = $fetch_interval;
 		$entity->items_to_keep = $items_to_keep;
 		$entity->websub = $websub;
+		$entity->channel_id = $container->guid;
+		$entity->uid = 1;
 		
 		foreach($post_context as $key => $value) {
 			$entity->$key = $value;
@@ -75,6 +77,7 @@ class EditMicrosubSourceAction {
 		
 		$entity->owner_guid = elgg_get_site_entity()->guid;
 		$entity->container_guid = $container->guid;
+		$entity->access_id = ACCESS_PUBLIC;
 
 		if (!$entity->save()) {
 			return elgg_error_response(elgg_echo('save:fail'));

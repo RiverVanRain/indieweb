@@ -25,6 +25,7 @@ foreach ($syndication_targets as $target) {
 		'class' => 'webmention-syndication-targets-checkbox',
 		'default' => false,
 		'label' => $target_name,
+		'switch' => true,
 	];
 
 	$fields[] = $field;

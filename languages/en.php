@@ -184,8 +184,9 @@ Write operations (like managing channels, subscribing, search, marking (un)read 
 	'indieweb:microsub:context:help' => 'When you create a post with a link which is a reply, like, repost or bookmark of an external post, you can fetch content from that URL so you can render more context.
 You can also enable fetching of contexts on microsub items when you use the built-in microsub server.',
 	'indieweb:microsub:aggregated_feeds' => 'Aggregated feeds',
-	'indieweb:microsub:aggregated_feeds:help' => "Some readers support viewing feeds per author (source), but this will not work in case of aggregated feeds.
-Enter the base url's line by line which, in case they match will trigger a search instead internally on the author name so the response will work.",
+	'indieweb:microsub:aggregated_feeds:help' => 'Some readers support viewing feeds per author (source), but this will not work in case of aggregated feeds.
+Enter the base url line by line which, in case they match will trigger a search instead internally on the author name so the response will work.
+<div>For example, you can use <u><a href="'.elgg_normalize_url('mod/indieweb/lib/aggregated_feeds.md').'">this list of the feeds</a></u>.</div>',
 	'indieweb:microsub:indigenous' => 'Indigenous',
 	'indieweb:microsub:indigenous_send_push' => 'Send push notification to Indigenous',
 	'indieweb:microsub:indigenous_api' => 'Push notification API key',
@@ -369,6 +370,30 @@ A subscribe request will be send after submit.',
 	'indieauth:token:scope' => 'Scope',
 	'indieauth:token:scope:help' => 'Separate scopes by space',
 	'indieauth:token:client_id' => 'Client',
+	
+	//WEBSUB
+	'admin:indieweb:websub' => 'WebSub',
+	'settings:indieweb:websub' => 'Basic Config',
+	'settings:indieweb:enable_websub' => 'Enable WebSub',
+	'settings:indieweb:enable_websub:help' => 'Allows to notify hubs when you publish content. You can subscribe to WebSub enabled feeds in all Microsub sources.',
+	'settings:indieweb:websub_endpoint' => 'Hub endpoint',
+	'settings:indieweb:websub_endpoint:help' => 'Configure the hub used to publish and where people can subscribe.',
+	'settings:indieweb:websub_pages' => 'Discovery',
+	'settings:indieweb:websub_pages:help' => 'Specify pages by using their paths to which people can subscribe to. Enter one path per line and do not use wildcards. / is the frontpage.',
+	'settings:indieweb:websub_send' => 'Send the publication to the hub',
+	'settings:indieweb:websub_send:help' => 'Publications are not send immediately, but are stored in a queue when the content is published.',
+	'settings:indieweb:websub_resubscribe' => 'Resubscribe to subscriptions',
+	'settings:indieweb:websub_resubscribe:help' => 'Subscriptions are active for a limited time, usually not more than two weeks.
+This allows you to automatically resubscribe, leave disabled if you do not have any WebSub subscriptions.',
+	'settings:indieweb:websub_notification' => 'Handle content notifications from hubs',
+	'settings:indieweb:websub_notification:help' => 'Incoming notifications from hubs with content your are subscribed to are not saved immediately but stored in a queue.',
+	'settings:indieweb:websub_micropub_publish' => 'Publish to the hub when you create a post with Micropub',
+	'settings:indieweb:websub_microsub_subscribe' => 'Send a subscribe or unsubscribe request when managing feeds through the Microsub API',
+	'settings:indieweb:websub_log_payload' => 'Log the payload and responses',
+	'settings:indieweb:use_websub' => 'Select objects you want to send a publication to the hub',
+	
+	'indieweb:websub:hub_publication' => 'WebSub',
+	'indieweb:websub:hub_publication:label' => 'Publish to hub',
 ];
 
 

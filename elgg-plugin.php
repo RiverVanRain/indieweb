@@ -384,5 +384,12 @@ return [
 		'enable_indieauth_login' => false,
 		'enable_indieauth_endpoint' => false,
 		'indieauth_generate_keys' => false,
+		'enable_websub' => false,
+		'websub_send' => false,
+		'websub_resubscribe' => false,
+		'websub_notification' => false,
+		'websub_micropub_publish' => false,
+		'websub_microsub_subscribe' => false,
+		'websub_log_payload' => false,
 	],
 ];

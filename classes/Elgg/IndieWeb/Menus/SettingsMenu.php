@@ -50,7 +50,7 @@ class SettingsMenu {
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:webmention:basic',
 			'parent_name' => 'indieweb:webmention',
-			'href' => 'admin/indieweb/webmention',
+			'href' => elgg_normalize_url('admin/indieweb/webmention'),
 			'text' => elgg_echo('settings:indieweb:webmention'),
 			'context' => ['admin'],
 			'section' => 'configure',
@@ -60,7 +60,7 @@ class SettingsMenu {
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:webmention:received',
 			'parent_name' => 'indieweb:webmention',
-			'href' => 'admin/indieweb/webmention/received',
+			'href' => elgg_normalize_url('admin/indieweb/webmention/received'),
 			'text' => elgg_echo('admin:indieweb:webmention:received'),
 			'context' => ['admin'],
 			'section' => 'configure',
@@ -70,7 +70,7 @@ class SettingsMenu {
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:webmention:send',
 			'parent_name' => 'indieweb:webmention',
-			'href' => 'admin/indieweb/webmention/send',
+			'href' => elgg_normalize_url('admin/indieweb/webmention/send'),
 			'text' => elgg_echo('admin:indieweb:webmention:send'),
 			'context' => ['admin'],
 			'section' => 'configure',
@@ -91,7 +91,7 @@ class SettingsMenu {
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:micropub:basic',
 			'parent_name' => 'indieweb:micropub',
-			'href' => 'admin/indieweb/micropub',
+			'href' => elgg_normalize_url('admin/indieweb/micropub'),
 			'text' => elgg_echo('settings:indieweb:micropub'),
 			'context' => ['admin'],
 			'section' => 'configure',
@@ -111,7 +111,7 @@ class SettingsMenu {
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:microsub:basic',
 			'parent_name' => 'indieweb:microsub',
-			'href' => 'admin/indieweb/microsub',
+			'href' => elgg_normalize_url('admin/indieweb/microsub'),
 			'text' => elgg_echo('settings:indieweb:microsub'),
 			'context' => ['admin'],
 			'section' => 'configure',
@@ -121,7 +121,7 @@ class SettingsMenu {
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:microsub:channels',
 			'parent_name' => 'indieweb:microsub',
-			'href' => 'admin/indieweb/microsub/channels',
+			'href' => elgg_normalize_url('admin/indieweb/microsub/channels'),
 			'text' => elgg_echo('admin:indieweb:microsub:channels'),
 			'context' => ['admin'],
 			'section' => 'configure',
@@ -142,7 +142,7 @@ class SettingsMenu {
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:indieauth:basic',
 			'parent_name' => 'indieweb:indieauth',
-			'href' => 'admin/indieweb/indieauth',
+			'href' => elgg_normalize_url('admin/indieweb/indieauth'),
 			'text' => elgg_echo('settings:indieweb:indieauth'),
 			'context' => ['admin'],
 			'section' => 'configure',
@@ -152,7 +152,7 @@ class SettingsMenu {
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:indieauth:tokens',
 			'parent_name' => 'indieweb:indieauth',
-			'href' => 'admin/indieweb/indieauth/tokens',
+			'href' => elgg_normalize_url('admin/indieweb/indieauth/tokens'),
 			'text' => elgg_echo('settings:indieweb:indieauth:tokens'),
 			'context' => ['admin'],
 			'section' => 'configure',
@@ -162,11 +162,31 @@ class SettingsMenu {
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:indieauth:codes',
 			'parent_name' => 'indieweb:indieauth',
-			'href' => 'admin/indieweb/indieauth/codes',
+			'href' => elgg_normalize_url('admin/indieweb/indieauth/codes'),
 			'text' => elgg_echo('settings:indieweb:indieauth:codes'),
 			'context' => ['admin'],
 			'section' => 'configure',
 			'priority' => 430,
+		]);
+		
+		//WebSub
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:websub',
+			'parent_name' => 'indieweb',
+			'href' => false,
+			'text' => elgg_echo('admin:indieweb:websub'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 500,
+		]);
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:websub:basic',
+			'parent_name' => 'indieweb:websub',
+			'href' => elgg_normalize_url('admin/indieweb/websub'),
+			'text' => elgg_echo('settings:indieweb:websub'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 510,
 		]);
 		
 		return $menu;

@@ -29,9 +29,9 @@ class SaveAction {
 			$new_post = true;
 			
 			$syndication_targets = (array) $request->getParam('syndication_targets');
-			elgg_log(var_export($syndication_targets, true), 'error');
-			
 			$blog->syndication_targets = serialize($syndication_targets);
+			
+			$blog->websub_hub_publication = (bool) $request->getParam('websub_hub_publication');
 		}
 
 		// set the previous status for the hooks to update the time_created and river entries
@@ -150,7 +150,7 @@ class SaveAction {
 			]);
 		}
 
-		if ($blog->status == 'published' || !$save) {
+		if ($blog->status === 'published' || !$save) {
 			$forward_url = $blog->getURL();
 		} else {
 			$forward_url = elgg_generate_url('edit:object:blog', [

@@ -45,8 +45,24 @@ if ($content) {
 
 $layout_content .= elgg_view("forms/edit/$entity->type/$entity->subtype", $vars);
 
-if (elgg_is_active_plugin('indieweb') && (bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb')) {
+if (elgg_is_active_plugin('indieweb') && (bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb') && !$entity->guid) {
 	$layout_content .= elgg_view('webmention/forms/syndication_targets', $vars);
+}
+
+if (elgg_is_active_plugin('indieweb') && (bool) elgg_get_plugin_setting('enable_websub', 'indieweb') && (bool) elgg_get_plugin_setting("can_websub:object:$entity->subtype", 'indieweb')&& !$entity->guid) {
+	$layout_content .= elgg_view_field([
+		'#type' => 'fieldset',
+		'#class' => 'websub-hub',
+		'#label' => elgg_echo('indieweb:websub:hub_publication'),
+		'fields' => [
+			'#type' => 'checkbox',
+			'name' => 'websub_hub_publication',
+			'value' => 1,
+			'default' => 0,
+			'label' => elgg_echo('indieweb:websub:hub_publication:label'),
+			'switch' => true,
+		],
+	]);
 }
 
 $footer = $view_fields($filter($fields, 'footer'));

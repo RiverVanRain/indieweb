@@ -84,7 +84,7 @@ class MicrosubChannel extends \ElggObject {
 	 * {@inheritdoc}
 	 */
 	public function getUnreadCount($count = true) {
-		$options = [
+		$return = elgg_count_entities([
 			'type' => 'object',
 			'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubItem::SUBTYPE,
 			'limit' => false,
@@ -104,17 +104,23 @@ class MicrosubChannel extends \ElggObject {
 					'value' => 0,
 				],
 			],
-			'count' => $count,
-		];
+		]);
 		
-		return elgg_get_entities($options);
+		if ((bool) $count) {
+			return $return;
+		} else {
+			if ($return > 0) {
+				return true;
+			}
+			return false;
+		} 
 	}
 	
 	/**
 	 * {@inheritdoc}
 	 */
 	public function getItemCount() {
-		$options = [
+		return elgg_count_entities([
 			'type' => 'object',
 			'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubItem::SUBTYPE,
 			'limit' => false,
@@ -126,10 +132,7 @@ class MicrosubChannel extends \ElggObject {
 					'value' => $this->guid,
 				],
 			],
-			'count' => true,
-		];
-		
-		return elgg_get_entities($options);
+		]);
 	}
 	
 }

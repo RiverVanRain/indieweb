@@ -62,10 +62,13 @@ class EditMicrosubChannelAction {
 		
 		$entity->owner_guid = elgg_get_site_entity()->guid;
 		$entity->container_guid = elgg_get_site_entity()->guid;
+		$entity->access_id = ACCESS_PUBLIC;
 
 		if (!$entity->save()) {
 			return elgg_error_response(elgg_echo('save:fail'));
 		}
+		
+		$entity->setMetadata('channel_id', $entity->guid);
 
 		elgg_clear_sticky_form('microsub/channel/edit');
 
