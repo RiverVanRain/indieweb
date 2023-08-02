@@ -379,7 +379,8 @@ A subscribe request will be send after submit.',
 	'settings:indieweb:websub_endpoint' => 'Hub endpoint',
 	'settings:indieweb:websub_endpoint:help' => 'Configure the hub used to publish and where people can subscribe.',
 	'settings:indieweb:websub_pages' => 'Discovery',
-	'settings:indieweb:websub_pages:help' => 'Specify pages by using their paths to which people can subscribe to. Enter one path per line and do not use wildcards. / is the frontpage.',
+	'settings:indieweb:websub_pages:help' => "Specify pages by using their paths to which people can subscribe to. Enter one path per line and do not use wildcards. You can also include RSS pages. 
+<div>We recommend add the pages of those objects that you have chosen for publication to the hub. E.g., for blog it would be <em>".elgg_get_site_url()."blog/all</em>, <em>".elgg_get_site_url()."blog/all?view=rss</em></div>",
 	'settings:indieweb:websub_send' => 'Send the publication to the hub',
 	'settings:indieweb:websub_send:help' => 'Publications are not send immediately, but are stored in a queue when the content is published.',
 	'settings:indieweb:websub_resubscribe' => 'Resubscribe to subscriptions',
@@ -389,11 +390,30 @@ This allows you to automatically resubscribe, leave disabled if you do not have 
 	'settings:indieweb:websub_notification:help' => 'Incoming notifications from hubs with content your are subscribed to are not saved immediately but stored in a queue.',
 	'settings:indieweb:websub_micropub_publish' => 'Publish to the hub when you create a post with Micropub',
 	'settings:indieweb:websub_microsub_subscribe' => 'Send a subscribe or unsubscribe request when managing feeds through the Microsub API',
+	'settings:indieweb:websubpub_clean' => 'Clean the published WebSub publications',
+	'settings:indieweb:websubpub_clean:help' => 'Published WebSubPubs will be deleted daily',
 	'settings:indieweb:websub_log_payload' => 'Log the payload and responses',
 	'settings:indieweb:use_websub' => 'Select objects you want to send a publication to the hub',
 	
+	'admin:indieweb:websub:pub' => 'WebSubPub',
+	
 	'indieweb:websub:hub_publication' => 'WebSub',
 	'indieweb:websub:hub_publication:label' => 'Publish to hub',
+	'indieweb:websub:create:notification:item' => 'Error create notification item: URL - %s',
+	
+	'indieweb:websub:hub_publication' => 'WebSub',
+	'indieweb:websub:hub:subject' => 'WebSub notification',
+	'indieweb:websub:hub:body' => 'You have received the following content:
+%s
+
+Source: %s
+',
+	'item:object:websubpub' => 'WebSubPub',
+	'indieweb:websub:entity_type_id' => 'Entity type',
+	'indieweb:websub:entity_id' => 'Entity GUID',
+	'indieweb:websub:published' => 'Published',
+	'indieweb:websub:none' => 'No WebSupPubs yet.',
+	'indieweb:websub:websubpub:view' => '(View)',
 ];
 
 

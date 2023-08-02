@@ -23,13 +23,15 @@ echo elgg_view_field([
 			'value' => $entity->websub_endpoint ?: 'https://switchboard.p3k.io/',
 			'#label' => elgg_echo('settings:indieweb:websub_endpoint'),
 			'#help' => elgg_echo('settings:indieweb:websub_endpoint:help'),
+			'required' => true,
 		],
 		[
 			'#type' => 'plaintext',
 			'name' => 'params[websub_pages]',
-			'value' => $entity->websub_pages ?: '',
+			'value' => $entity->websub_pages ?: elgg_get_site_url(),
 			'#label' => elgg_echo('settings:indieweb:websub_pages'),
 			'#help' => elgg_echo('settings:indieweb:websub_pages:help'),
+			'required' => true,
 		],
 		[
 			'#type' => 'checkbox',
@@ -77,6 +79,16 @@ echo elgg_view_field([
 			'value' => 1,
 			'default' => 0,
 			'checked' => (bool) $entity->websub_microsub_subscribe,
+			'switch' => true,
+		],
+		[
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:websubpub_clean'),
+			'#help' => elgg_echo('settings:indieweb:websubpub_clean:help'),
+			'name' => 'params[websubpub_clean]',
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->websubpub_clean,
 			'switch' => true,
 		],
 		[

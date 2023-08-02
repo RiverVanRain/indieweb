@@ -206,7 +206,7 @@ class Cron {
 										try {
 											$syndication_source = get_entity($syndication->getSourceId());
 											
-											if($syndication_source instanceof \ElggEntity) {
+											if ($syndication_source instanceof \ElggEntity) {
 												$syndication_source_url = indieweb_get_path($syndication_source->getURL());
 												
 												if ($syndication_source_url != $target) {

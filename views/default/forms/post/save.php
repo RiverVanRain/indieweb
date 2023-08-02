@@ -55,12 +55,14 @@ if (elgg_is_active_plugin('indieweb') && (bool) elgg_get_plugin_setting('enable_
 		'#class' => 'websub-hub',
 		'#label' => elgg_echo('indieweb:websub:hub_publication'),
 		'fields' => [
-			'#type' => 'checkbox',
-			'name' => 'websub_hub_publication',
-			'value' => 1,
-			'default' => 0,
-			'label' => elgg_echo('indieweb:websub:hub_publication:label'),
-			'switch' => true,
+			[
+				'#type' => 'checkbox',
+				'name' => 'websub_hub_publication',
+				'value' => 1,
+				'default' => 0,
+				'label' => elgg_echo('indieweb:websub:hub_publication:label'),
+				'switch' => true,
+			],
 		],
 	]);
 }

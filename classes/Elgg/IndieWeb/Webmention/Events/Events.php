@@ -9,15 +9,11 @@
 
 namespace Elgg\IndieWeb\Webmention\Events;
 
-use Elgg\Event;
 use IndieWeb\MentionClient;
 
-/**
- * @access private
- */
-final class Events {
+class Events {
 	// Listen to object publish events and see if we can send webmentions. Currently looks for urls in description
-	public static function createObject(Event $event) {
+	public static function createObject(\Elgg\Event $event) {
 
 		if (!(bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
 		   return;
@@ -30,7 +26,7 @@ final class Events {
 		}
 
 		if(!(bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb')) {
-			return false;
+			return;
 		}
 
 		if ($entity->access_id !== ACCESS_PUBLIC) {

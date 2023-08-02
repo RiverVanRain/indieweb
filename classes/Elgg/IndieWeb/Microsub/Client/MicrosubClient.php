@@ -66,7 +66,7 @@ class MicrosubClient {
 					$md_alias = $qb->joinMetadataTable($from_alias, 'guid', ['status']);
 					return $qb->compare("$md_alias.value", '=', 0, ELGG_VALUE_INTEGER);
 				},
-				'limit' => 0,
+				'limit' => false,
 				'batch' => true,
 				'batch_inc_offset' => false,
 			]);
@@ -364,14 +364,14 @@ class MicrosubClient {
 						'value' => $id,
 					],
 				],
-				'limit' => false,
+				'limit' => 1,
 				'callback' => function ($row) {
 					return $row->guid;
 				},
 			]);
 		});
 		
-		if ($exists) {
+		if ($exists > 0) {
 			return $id;
 		}
 

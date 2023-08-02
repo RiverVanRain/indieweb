@@ -179,6 +179,7 @@ class SettingsMenu {
 			'section' => 'configure',
 			'priority' => 500,
 		]);
+		
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:websub:basic',
 			'parent_name' => 'indieweb:websub',
@@ -187,6 +188,16 @@ class SettingsMenu {
 			'context' => ['admin'],
 			'section' => 'configure',
 			'priority' => 510,
+		]);
+		
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:websub:pub',
+			'parent_name' => 'indieweb:websub',
+			'href' => elgg_normalize_url('admin/indieweb/websub/pub'),
+			'text' => elgg_echo('admin:indieweb:websub:pub'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 520,
 		]);
 		
 		return $menu;

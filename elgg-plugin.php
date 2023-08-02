@@ -111,6 +111,27 @@ return [
 				'searchable' => false,
 			],
 		],
+		//WebSub 
+		[
+			'type' => 'object',
+			'subtype' => 'websubpub',
+			'class' => \Elgg\IndieWeb\WebSub\Entity\WebSubPub::class,
+			'capabilities' => [
+				'commentable' => false,
+				'likable' => false,
+				'searchable' => false,
+			],
+		],
+		[
+			'type' => 'object',
+			'subtype' => 'websubnotofication',
+			'class' => \Elgg\IndieWeb\WebSub\Entity\WebSubNotification::class,
+			'capabilities' => [
+				'commentable' => false,
+				'likable' => false,
+				'searchable' => false,
+			],
+		],
 	],
 	
 	//ACTIONS
@@ -128,6 +149,10 @@ return [
 			'access' => 'admin',
 		],
 		'admin/indieweb/indieauth' => [
+			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\SettingsAction::class,
+			'access' => 'admin',
+		],
+		'admin/indieweb/websub' => [
 			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\SettingsAction::class,
 			'access' => 'admin',
 		],
@@ -180,10 +205,19 @@ return [
 			'fiveminute' => [
 				// Webmention
 				'Elgg\IndieWeb\Webmention\Cron::processWebmentions' => [],
+				// WebSub
+				'Elgg\IndieWeb\WebSub\Cron::processWebSubPub' => [],
+				'Elgg\IndieWeb\WebSub\Cron::processNotifications' => [],
 			],
 			'daily' => [
 				// IndieAuth
 				'Elgg\IndieWeb\IndieAuth\Cron::processCodes' => [],
+				// WebSub
+				'Elgg\IndieWeb\WebSub\Cron::cleanupWebSubPub' => [],
+			],
+			'weekly' => [
+				// WebSub
+				'Elgg\IndieWeb\WebSub\Cron::processSubscribe' => [],
 			],
 		],
 		'head' => [
@@ -234,7 +268,10 @@ return [
 	'events' => [
 		'publish' => [
 			'object' => [
+				//webmention
 				'Elgg\IndieWeb\Webmention\Events\Events::createObject' => [],
+				//websub
+				'Elgg\IndieWeb\WebSub\Events\Events::createObject' => [],
 			],
 		],
 		'delete' => [
@@ -322,6 +359,12 @@ return [
 			'controller' => \Elgg\IndieWeb\IndieAuth\Controller\TokenController::class,
 			'walled' => false,
 		],
+		//websub
+		'default:view:websub' => [
+			'path' => '/websub/{websub_hash}',
+			'controller' => \Elgg\IndieWeb\WebSub\Controller\WebSubController::class,
+			'walled' => false,
+		],
 	],
 	
 	//VIEWS
@@ -391,5 +434,7 @@ return [
 		'websub_micropub_publish' => false,
 		'websub_microsub_subscribe' => false,
 		'websub_log_payload' => false,
+		'websub_endpoint' => 'https://switchboard.p3k.io/',
+		'websubpub_clean' => false,
 	],
 ];

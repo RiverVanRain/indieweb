@@ -72,7 +72,7 @@ class SetupHead {
 		}
 		
 		//websub
-		if ((bool) elgg_get_plugin_setting('enable_websub', 'indieweb') && !empty(elgg_get_plugin_setting('websub_endpoint', 'indieweb'))) {
+		if ((bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
 			$return['links'][] = [
 				'rel' => 'hub',
 				'href' => elgg_get_plugin_setting('websub_endpoint', 'indieweb'),
