@@ -11,13 +11,14 @@ namespace Elgg\IndieWeb\Webmention;
 
 use Elgg\IndieWeb\Webmention\Entity\Webmention;
 use Elgg\IndieWeb\Webmention\Entity\Syndication;
-use Exception;
-use IndieWeb\MentionClient;
 use p3k\XRay;
 
 class Cron {
 	
 	public static function processWebmentions(\Elgg\Hook $hook) {
+		if (!(bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
+			return;
+		}
 		
 		echo "Processes received webmentions starting" . PHP_EOL;
 		elgg_log("Processes received webmentions starting", 'NOTICE');
@@ -152,7 +153,7 @@ class Cron {
 						$webmention->setMetadata('property', $property);
 
 						// RSVP
-						if ($property == 'rsvp') {
+						if ($property === 'rsvp') {
 							$webmention->setMetadata('rsvp', $data['rsvp']);
 						}
 						
@@ -183,7 +184,7 @@ class Cron {
 						}
 						
 						// Check the urls in case of in-reply-to. When there are at least two, and there is a twitter url, then it comes from brid.gy which sends back to all parents
-						if ($property == 'in-reply-to' && count($urls) > 1 && strpos($webmention->getSource(), 'brid-gy.appspot') !== false) {
+						if ($property === 'in-reply-to' && count($urls) > 1 && strpos($webmention->getSource(), 'brid-gy.appspot') !== false) {
 							foreach ($urls as $u) {
 								if ((bool) $svc->isSiloURL($u)) {
 									$syndications = elgg_get_entities([
@@ -191,7 +192,7 @@ class Cron {
 										'subtype' => Syndication::SUBTYPE,
 										'metadata_name_value_pairs' => [
 											[
-												'name' => 'url',
+												'name' => 'source_url',
 												'value' => $u,
 											],
 										],

@@ -67,3 +67,43 @@ function indieweb_microsub_http_client_user_agent() {
 	
 	return elgg_get_plugin_setting('microsub_user_agent', 'indieweb', $generate_ua);
 }
+
+/**
+ * Returns the syndication targets.
+ *
+ * @param boolean $return_all_config Whether to return the syndication targets as an array with 'options' and 'default' key.
+ *
+ * @return array
+ */
+function indieweb_get_syndication_targets($return_all_config = false): array {
+	if (!(bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
+		return [];
+	}
+	
+	$syndication_targets = [];
+	$config = elgg_get_plugin_setting('webmention_syndication_targets', 'indieweb', 'Twitter (bridgy)|https://brid.gy/publish/twitter');
+		
+	if (!empty($config)) {
+		$lines = explode("\n", $config);
+		foreach ($lines as $line) {
+			$line = trim($line);
+			if (!empty($line)) {
+				$explode = explode('|', $line);
+				if (!empty($explode[0]) && !empty($explode[1])) {
+					if ($return_all_config) {
+						$syndication_targets['options'][$explode[1]] = $explode[0];
+
+						// Selected by default on the form.
+						if (isset($explode[2]) && !empty($explode[2]) && $explode[2] == '1') {
+							$syndication_targets['default'][] = $explode[1];
+						}
+					} else {
+						$syndication_targets[$explode[1]] = $explode[0];
+					}
+				}
+			}
+		}
+	}
+
+	return $syndication_targets;
+}

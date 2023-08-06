@@ -144,6 +144,10 @@ return [
 			'controller' => \Elgg\IndieWeb\Actions\SettingsAction::class,
 			'access' => 'admin',
 		],
+		'admin/indieweb/micropub/posts' => [
+			'controller' => \Elgg\IndieWeb\Actions\SettingsAction::class,
+			'access' => 'admin',
+		],
 		'admin/indieweb/microsub' => [
 			'controller' => \Elgg\IndieWeb\Actions\SettingsAction::class,
 			'access' => 'admin',
@@ -153,7 +157,7 @@ return [
 			'access' => 'admin',
 		],
 		'admin/indieweb/websub' => [
-			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\SettingsAction::class,
+			'controller' => \Elgg\IndieWeb\Actions\SettingsAction::class,
 			'access' => 'admin',
 		],
 		//microsub
@@ -297,6 +301,17 @@ return [
 			'controller' => [\Elgg\IndieWeb\Webmention\Controller\WebmentionController::class, 'callback'],
 			'walled' => false,
 		],
+		//micropub
+		'default:view:micropub' => [
+			'path' => '/micropub',
+			'controller' => [\Elgg\IndieWeb\Micropub\Controller\MicropubController::class, 'postEndpoint'],
+			'walled' => false,
+		],
+		'view:micropub:media' => [
+			'path' => '/micropub/media',
+			'controller' => [\Elgg\IndieWeb\Micropub\Controller\MicropubController::class, 'mediaEndpoint'],
+			'walled' => false,
+		],
 		//microsub
 		'default:view:microsub' => [
 			'path' => '/microsub',
@@ -416,17 +431,30 @@ return [
 	
 	//SETTINGS
 	'settings' => [
+		// Webmention
 		'enable_webmention' => true,
 		'webmention_enable_debug' => false,
 		'webmention_enable_comment_create' => false,
 		'webmention_create_contact' => false,
 		'webmention_syndication_targets_custom' => true,
+		// Micropub
 		'enable_micropub' => false,
+		'enable_micropub_media' => false,
+		'micropub_enable_update' => false,
+		'micropub_enable_delete' => false,
+		'micropub_enable_source' => false,
+		'micropub_enable_category' => false,
+		'micropub_enable_geo' => false,
+		'micropub_enable_contact' => false,
+		'micropub_log_payload' => false,
+		// Microsub
 		'enable_microsub' => false,
 		'microsub_anonymous' => true,
+		// IndieAuth
 		'enable_indieauth_login' => false,
 		'enable_indieauth_endpoint' => false,
 		'indieauth_generate_keys' => false,
+		// WebSub
 		'enable_websub' => false,
 		'websub_send' => false,
 		'websub_resubscribe' => false,

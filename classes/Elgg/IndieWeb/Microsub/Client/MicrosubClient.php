@@ -200,7 +200,7 @@ class MicrosubClient {
 				if ($parse && $source->getHash() != $hash) {
 					// Parse the body.
 					$parsed = $xray->parse($url, $body, $parse_options);
-					if ($parsed && isset($parsed['data']['type']) && $parsed['data']['type'] == 'feed') {
+					if ($parsed && isset($parsed['data']['type']) && $parsed['data']['type'] === 'feed') {
 						$context = $post_context_enabled ? $source->getPostContext() : [];
 						$items_to_keep = $source->getKeepItemsInFeed();
 						$items_in_feed = $source->getItemsInFeed();

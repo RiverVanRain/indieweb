@@ -52,9 +52,7 @@ class Bootstrap extends DefaultPluginBootstrap {
 	 * @return void
 	 */
 	public function init() {
-		$hooks = $this->elgg()->hooks;
-		$events = $this->elgg()->events;
-		
+
 	}
 	
 	/**

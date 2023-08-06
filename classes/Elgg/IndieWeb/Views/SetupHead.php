@@ -27,6 +27,16 @@ class SetupHead {
 			elgg_set_http_header('Link: <' . $webmention_server . '>; rel="webmention"');
 		}
 		
+		//micropub
+		if ((bool) elgg_get_plugin_setting('enable_micropub', 'indieweb')) {
+			$return['links'][] = [
+				'rel' => 'micropub',
+				'href' => elgg_generate_url('default:view:micropub'),
+			];
+			
+			elgg_set_http_header('Link: <' . elgg_generate_url('default:view:micropub') . '>; rel="micropub"');
+		}
+		
 		//microsub
 		if ((bool) elgg_get_plugin_setting('enable_microsub', 'indieweb')) {
 			$microsub_endpoint = !empty(elgg_get_plugin_setting('microsub_endpoint', 'indieweb')) ? elgg_get_plugin_setting('microsub_endpoint', 'indieweb') : elgg_generate_url('default:view:microsub');

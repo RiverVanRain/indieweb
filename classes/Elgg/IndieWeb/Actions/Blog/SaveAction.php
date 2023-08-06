@@ -15,7 +15,7 @@ class SaveAction {
 
 		if ($guid) {
 			$entity = get_entity($guid);
-			if ($entity instanceof ElggBlog && $entity->canEdit()) {
+			if ($entity instanceof \ElggBlog && $entity->canEdit()) {
 				$blog = $entity;
 			} else {
 				return elgg_error_response(elgg_echo('blog:error:post_not_found'));

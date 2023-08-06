@@ -24,14 +24,6 @@ class Syndication extends \ElggObject {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getURL() {
-		$url = $this->url;
-		return elgg_normalize_url($url);
-	}
-	
-	/**
-	 * {@inheritdoc}
-	 */
 	public function getSourceId(): int {
 		return $this->source_id ?? 0;
 	}

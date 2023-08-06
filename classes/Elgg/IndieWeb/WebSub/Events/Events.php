@@ -37,7 +37,7 @@ class Events {
 			return;
 		}
 
-		if ($entity->published_status === 'draft') {
+		if ($entity->published_status === 'draft' || $entity->status === 'draft') {
 			return;
 		}
 		

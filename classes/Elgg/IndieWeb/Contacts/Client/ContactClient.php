@@ -29,7 +29,7 @@ class ContactClient {
 	
 	public function storeContact(array $values) {
 		if (!empty($values['name'])) {
-			 $contacts = elgg_get_entities([
+			$contacts = elgg_get_entities([
                 'type' => 'object',
                 'subtype' => Contact::SUBTYPE,
                 'metadata_name_value_pairs' => [
@@ -63,7 +63,7 @@ class ContactClient {
 						$entity->setMetadata('nickname', $values['nickname']);
 					}
 					if (!empty($values['url'])) {
-						$entity->setMetadata('url', $values['url']);
+						$entity->setMetadata('website', $values['url']);
 					}
 					if (!empty($values['photo'])) {
 						$entity->setMetadata('photo', $values['photo']);

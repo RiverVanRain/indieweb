@@ -11,11 +11,9 @@ return [
 	// GENERAL
 	'admin:indieweb' => 'IndieWeb',
 	'settings:indieweb' => 'IndieWeb',
-	'admin:indieweb:webmention' => 'Webmention',
-	'admin:indieweb:micropub' => 'Micropub',
-	'admin:indieweb:microsub' => 'Microsub',
 	
 	// WEBMENTION
+	'admin:indieweb:webmention' => 'Webmention',
 	'settings:indieweb:webmention' => 'Basic Config',
 	'settings:indieweb:enable_webmention' => 'Enable Webmention',
 	'settings:indieweb:webmention_proxy' => 'Set proxy',
@@ -50,23 +48,19 @@ If comments are enabled, put those fields only on the microformat view mode. The
 
 	'settings:indieweb:syndication_targets' => 'Syndication targets',
 	'settings:indieweb:syndication_targets:help' => "Enter every target line by line if you want to publish content, in following format:
-
-Name|webmention_url|selected|extra class
-- selected is optional. Set to 1 so the target is default selected on the entity form.
-- extra class is optional. Add a custom class to the link.
-
-Example
-Twitter (bridgy)|https://brid.gy/publish/twitter
-Fediverse|https://fed.brid.gy/
-IndieNews|https://news.indieweb.org/en|0|u-category
-
+<div>Name|webmention_url|selected|extra class</div>
+<div>- selected is optional. Set to 1 so the target is default selected on the entity form.</div>
+<div>- extra class is optional. Add a custom class to the link.</div>
+<div>Example</div>
+<div>Twitter (bridgy)|https://brid.gy/publish/twitter</div>
+<div>Fediverse|https://fed.brid.gy/</div>
+<div>IndieNews|https://news.indieweb.org/en|0|u-category</div>
+<div>
 When you add or remove targets, extra fields will be enabled on the manage display screens of every entity type (you will have to clear cache to see them showing up).
 These need to be added on the page (usually on the 'full' view mode) because bridgy will check for the url in the markup, along with the proper microformat classes.
 The field will print them hidden in your markup, even if you do not publish to that target, that will be altered later.
-You can also add them yourself:
-<a href='https://brid.gy/publish/twitter'></a>
 These targets are also used for the syndicate-to request if you are using Micropub.
-Consult the README file that comes with this module if you want to integrate with the Fediverse.",
+Consult the README file that comes with this plugin if you want to integrate with the Fediverse.",
 
 	'settings:indieweb:webmention_syndication_targets_custom' => 'Custom URL',
 	'settings:indieweb:webmention_syndication_targets_custom:help' => 'Add a textfield to enter a custom URL to send a Webmention to.',
@@ -75,6 +69,7 @@ Consult the README file that comes with this module if you want to integrate wit
 	
 	'admin:indieweb:webmention:received' => 'Received webmentions',
 	'admin:indieweb:webmention:send' => 'Send webmentions',
+	'admin:indieweb:webmention:syndications' => 'Syndications',
 
 	'item:object:webmention' => 'Webmention',
 	'collection:object:webmention' => 'Webmentions',
@@ -114,6 +109,10 @@ Consult the README file that comes with this module if you want to integrate wit
 	'indieweb:webmention:byline:on' => 'on %s',
 	'indieweb:webmention:syndication_targets_custom' => 'Enter a custom URL',
 	'indieweb:webmention:publish' => 'Publish to',
+	'indieweb:webmention:syndication:view' => '(View)',
+	'indieweb:syndication:source_id' => 'Source GUID',
+	'indieweb:syndication:url' => 'Source URL',
+	'indieweb:syndication:none' => 'No Syndications yet.',
 	
 	// pingback
 	'settings:indieweb:pingback_blocked_domains' => 'Block domains',
@@ -121,21 +120,35 @@ Consult the README file that comes with this module if you want to integrate wit
 	'pingback:blocked:domain' => 'Domain %s is blocked to send pingbacks',
 	
 	// MICROPUB
+	'admin:indieweb:micropub' => 'Micropub',
 	'settings:indieweb:micropub' => 'Basic Config',
 	'settings:indieweb:enable_micropub' => 'Enable Micropub',
-	'settings:indieweb:enable_micropub:help' => 'Allow posting to your site. Before you can post, you need to authenticate and enable the IndieAuth Authentication API.
-See IndieAuth to configure. <a href="https://indieweb.org/Micropub">More information about micropub</a>.
+	'settings:indieweb:enable_micropub:help' => 'Allow posting to your Eldd app. Before you can post, you need to authenticate and enable the IndieAuth Authentication API.
+See <u><a href="'.elgg_normalize_url('admin/indieweb/indieauth').'">IndieAuth</a></u> to configure.',
 
-A very good client to test is https://quill.p3k.io. A full list is available at https://indieweb.org/Micropub/Clients.
-Indigenous (iOS and Android) are also microsub readers.',
+	'settings:indieweb:enable_micropub_media' => 'Enable media endpoint',
+	'settings:indieweb:enable_micropub_media:help' => 'This will enable the Micropub media endpoint to receive files, limited to images (JPG, PNG, GIF).',
+	'settings:indieweb:micropub_enable_update' => 'Enable post updates',
+	'settings:indieweb:micropub_enable_update:help' => 'Allow sending update requests to update any post or comment. Updating posts is currently limited to title, body and published status.',
+	'settings:indieweb:micropub_enable_delete' => 'Enable post deletes',
+	'settings:indieweb:micropub_enable_delete:help' => 'Allow sending delete requests to delete any post, comment or webmention.',
+	'settings:indieweb:micropub_enable_source' => 'Enable post queries',
+	'settings:indieweb:micropub_enable_source:help' => 'Allow clients to query for posts via q=source. This is experimental, leave disabled if your client does not support it.',
+	'settings:indieweb:micropub_enable_category' => 'Enable category request',
+	'settings:indieweb:micropub_enable_category:help' => 'Allow sending a request to return a list of tags.',
+	'settings:indieweb:micropub_enable_geo' => 'Enable geo location request',
+	'settings:indieweb:micropub_enable_geo:help' => 'Allow sending a request to return a geo location.',
+	'settings:indieweb:micropub_enable_contact' => 'Enable contacts',
+	'settings:indieweb:micropub_enable_contact:help' => 'This will allow requests on q=contact for managing Contacts. This includes listing, but also creating, updating or deleting Contacts via Micropub requests.',
+	'settings:indieweb:micropub_log_payload' => 'Log the payload and responses',
 
-	'indieweb:micropub:view:title' => 'Micropub endpoint',
-	'indieweb:micropub:view:subtitle' => 'Even if you do not decide to use the micropub endpoint, this screen gives you a good overview what kind of content types and fields you can create which can be used for sending webmentions or read by microformat parsers.',
-	
+	// posts
+	'admin:indieweb:micropub:posts' => 'Micropub posts',
+	'settings:indieweb:micropub:posts' => 'Posts',
 	'indieweb:micropub:view:article' => 'Article',
 	'indieweb:micropub:view:article:desc' => "An article request contains 'content', 'name' and the 'h' value is 'entry'. Think of it as a blog post.",
 	'indieweb:micropub:view:note' => 'Note',
-	'indieweb:micropub:view:note:desc' => "A note request contains 'content', but no 'name' and the 'h' value is 'entry'. Think of it as a Tweet.",
+	'indieweb:micropub:view:note:desc' => "A note request contains 'content', but no 'name' and the 'h' value is 'entry'. Think of it as a Tweet or The Wire post.",
 	'indieweb:micropub:view:like' => 'Like',
 	'indieweb:micropub:view:like:desc' => "A like request contains a URL in 'like-of' and 'h' value is 'entry'.",
 	'indieweb:micropub:view:reply' => 'Reply',
@@ -152,12 +165,51 @@ Indigenous (iOS and Android) are also microsub readers.',
 	'indieweb:micropub:view:issue:desc' => "An issue request contains 'content', 'name', a URL in 'in-reply-to' (which is the URL of a repository) and the 'h' value is 'entry'.",
 	'indieweb:micropub:view:checkin' => 'Checkin',
 	'indieweb:micropub:view:checkin:desc' => "Experimental! A checkin request contains 'checkin' which is an URL and optionally a name or an h-card which contains url, name, latitude and longitude. 'Content' and 'name' are optional and the 'h' value is 'entry'.",
-	'indieweb:micropub:view:geocache' => 'Geocache',
-	'indieweb:micropub:view:geocache:desc' => "Experimental! A geocache request contains 'p-geocache-log-type', 'checkin' which is an URL and optionally a name or an h-card which contains url, name, latitude and longitude. 'Content' and 'name' are optional and the 'h' value is 'entry'.",
-	'indieweb:micropub:view:trip' => 'Trip',
-	'indieweb:micropub:view:trip:desc' => "Experimental! A trip request contains 'route' which is an collection of Geo URI 's. 'Content is optional and the 'h' value is 'entry'.",
+	
+	'settings:indieweb:micropub:posts:enable' => 'Enable',
+	'settings:indieweb:micropub:posts:status' => 'Status published',
+	'settings:indieweb:micropub:posts:status:help' => 'When the payload contains the "post-status" property, its value will take precedence over this one. Disable to switch "Unpublished" status. See https://indieweb.org/Micropub-extensions#Post_Status',
+	'settings:indieweb:micropub:posts:author' => 'Author of the post',
+	'settings:indieweb:micropub:posts:author:help' => 'Default user when a post is created. If you are using the internal IndieAuth endpoint, the author of the post will be the owner of the token used in the Micropub request.',
+	'settings:indieweb:micropub:posts:type' => 'Post type',
+	'settings:indieweb:micropub:posts:type:help' => 'Select the post type to use for creating a post',
+	'settings:indieweb:micropub:posts:field:link' => 'Link field',
+	'settings:indieweb:micropub:posts:field:link:help' => 'Enable to store the link in the imprint, summary. Make sure the field exists on the post type.',
+	'settings:indieweb:micropub:posts:send_webmention' => 'Send webmention',
+	'settings:indieweb:micropub:posts:send_webmention:help' => 'Automatically send a Webmention to the URL that is found in the link field.',
+	'settings:indieweb:micropub:posts:field:content' => 'Content field',
+	'settings:indieweb:micropub:posts:field:content:help' => 'Enable to store the content in the body (text, description). Make sure the field exists on the post type.',
+	'settings:indieweb:micropub:posts:field:upload' => 'File upload field',
+	'settings:indieweb:micropub:posts:field:upload:help' => 'Enable to allow uploads the audio, images and videos, multiple if the field has this option. Make sure the field exists on the post type.',
+	'settings:indieweb:micropub:posts:field:upload:limit' => 'File upload limit',
+	'settings:indieweb:micropub:posts:field:tags' => 'Tags field',
+	'settings:indieweb:micropub:posts:field:tags:help' => 'Enable to store the tags. Make sure the field exists on the post type.',
+	'settings:indieweb:micropub:posts:field:date' => 'Date field',
+	'settings:indieweb:micropub:posts:field:date:help' => 'Enable to store the date (for events, e.g. date range field). Make sure the field exists on the post type.',
+	'settings:indieweb:micropub:posts:field:location' => 'Location field',
+	'settings:indieweb:micropub:posts:field:location:help' => 'Enable to store the geo location. Make sure the field exists on the post type.',
+	'settings:indieweb:micropub:posts:reply_create_comment' => 'Enable comment creation',
+	'settings:indieweb:micropub:posts:reply_create_comment:help' => 'If a reply post comes in and the reply-to-url is a post or comment on this site, or a webmention which target is a post or comment and property "in-reply-to", create a (child) comment from this reply.
+<u><a href="'.elgg_normalize_url('admin/indieweb/webmention').'">Create a comment</a></u> needs to be enabled and configured for this to work. In case the target is a webmention, the original url can be stored if a link field is configured on the comment type.',
+	
+	//RSVP
+	'field:rsvp' => 'RSVP',
+	'field:rsvp:help' => 'An RSVP is a reply to an event that says whether the sender is attending, is not attending, might attend, or is merely interested.',
+	'field:rsvp:yes' => 'I will attend',
+	'field:rsvp:no' => 'I am not going',
+	'field:rsvp:maybe' => 'I might attend',
+	'field:rsvp:interested' => 'I am interested',
+	
+	'indieweb:micropub:rsvp:title' => 'RSVP on %s',
+	'indieweb:micropub:checkin:title' => 'Checked in at %s',
+	'indieweb:micropub:repost:title' => 'Repost of %s',
+	'indieweb:micropub:bookmark:title' => 'Bookmark of %s',
+	'indieweb:micropub:like:title' => 'Like of %s',
+	'indieweb:micropub:reply:title' => 'In reply to %s',
+	'error:post:save' => 'The post could not be saved.',
 	
 	// MICROSUB
+	'admin:indieweb:microsub' => 'Microsub',
 	'settings:indieweb:microsub' => 'Basic Config',
 	'settings:indieweb:enable_microsub' => 'Enable Microsub',
 	'settings:indieweb:enable_microsub:help' => 'Microsub is an early draft of a spec that provides a standardized way for clients to consume and interact with feeds collected by a server. 

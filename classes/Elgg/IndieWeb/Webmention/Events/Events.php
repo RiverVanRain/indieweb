@@ -33,7 +33,7 @@ class Events {
 			return;
 		}
 
-		if ($entity->published_status === 'draft') {
+		if ($entity->published_status === 'draft' || $entity->status === 'draft') {
 			return;
 		}
 		
@@ -51,7 +51,7 @@ class Events {
 			$client->setUserAgent(elgg_get_plugin_setting('webmention_user_agent', 'indieweb'));
 		}
 		
-		if ((bool) (elgg_get_plugin_setting('webmention_enable_debug', 'indieweb'))) {
+		if ((bool) elgg_get_plugin_setting('webmention_enable_debug', 'indieweb')) {
 			$client->enableDebug();
 		}
 		
@@ -62,11 +62,24 @@ class Events {
 		if (!empty($targets)) {
 			foreach ($targets as $target) {
 				$client->sendWebmention($entity->getURL(), $target);
+				self::objectSyndication($entity->guid, $entity->getURL());
 				self::objectWebmention($entity->getURL(), $target);
 			}
 		} else {
 			$client->sendMentions($entity->getURL(), $entity->description);
 		}
+	}
+	
+	public static function objectSyndication($guid, $source) {
+		elgg_call(ELGG_IGNORE_ACCESS, function () use ($guid, $source) {
+			$syndication = new \Elgg\IndieWeb\Webmention\Entity\Syndication();
+			$syndication->owner_guid = elgg_get_site_entity()->guid;
+			$syndication->container_guid = elgg_get_site_entity()->guid;
+			$syndication->access_id = ACCESS_PRIVATE;
+			$syndication->source_id = $guid;
+			$syndication->source_url = $source;
+			$syndication->save();
+		});
 	}
 	
 	public static function objectWebmention($source, $target) {

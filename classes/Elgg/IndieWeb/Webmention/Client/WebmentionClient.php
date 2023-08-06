@@ -75,7 +75,7 @@ class WebmentionClient {
 	public function checkIdenticalSyndication(Webmention $webmention, $like) {
 		return elgg_get_entities([
 			'type' => 'object',
-			'subtype' => 'webmention',
+			'subtype' => Webmention::SUBTYPE,
 			'guid' => $webmention->guid,
 			'search_name_value_pairs' => [
 				'name' => ['source'],
@@ -88,8 +88,7 @@ class WebmentionClient {
 	
 	public function createComment(Webmention $webmention) {
 		if ($webmention->hasCapability('commentable')) {
-			if ($webmention->getProperty() == 'in-reply-to' && !empty($webmention->getPlainContent())) {
-				
+			if ($webmention->getProperty() === 'in-reply-to' && !empty($webmention->getPlainContent())) {
 				$container_guid = 0;
 				
 				$target_guid = $webmention->getTargetGuid();
@@ -107,7 +106,7 @@ class WebmentionClient {
 						}
 						
 						if ($container_guid !=0) {
-							$comment = new \Elgg\Comment();
+							$comment = new \ElggComment();
 							$comment->owner_guid = elgg_get_site_entity()->guid;
 							$comment->container_guid = $container_guid;
 							$comment->access_id = ACCESS_PUBLIC;

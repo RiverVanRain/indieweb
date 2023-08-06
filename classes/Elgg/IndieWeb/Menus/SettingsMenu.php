@@ -77,6 +77,16 @@ class SettingsMenu {
 			'priority' => 130,
 		]);
 		
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:webmention:syndications',
+			'parent_name' => 'indieweb:webmention',
+			'href' => elgg_normalize_url('admin/indieweb/webmention/syndications'),
+			'text' => elgg_echo('admin:indieweb:webmention:syndications'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 130,
+		]);
+		
 		//Micropub
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb:micropub',
@@ -96,6 +106,16 @@ class SettingsMenu {
 			'context' => ['admin'],
 			'section' => 'configure',
 			'priority' => 210,
+		]);
+		
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:micropub:posts',
+			'parent_name' => 'indieweb:micropub',
+			'href' => elgg_normalize_url('admin/indieweb/micropub/posts'),
+			'text' => elgg_echo('settings:indieweb:micropub:posts'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 220,
 		]);
 		
 		//Microsub

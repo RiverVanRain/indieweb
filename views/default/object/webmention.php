@@ -51,6 +51,10 @@ if (!empty($entity->audio)) {
 	$body .= elgg_format_element('div', ['class' => 'webmention-audio'], "<audio preload='none' controls><source src='{$entity->audio}'></audio>");
 }
 
+if ($entity->hasCapability('commentable')) {
+	$body .= elgg_view('object/elements/full/responses', $vars);
+}
+
 $params = [
 	'icon' => elgg_view_entity_icon($entity, 'small'),
 	'time_href' => $entity->source,

@@ -41,10 +41,6 @@ class MicrosubController {
 	 */
 	protected $isAuthenticatedRequest = false;
 	
-	public function __construct(Request $request) {
-		$this->request = $request;
-	}
-
 	/**
 	 * Whether anonymous requests on the Microsub endpoint are allowed or not.
 	 *
@@ -271,6 +267,8 @@ class MicrosubController {
 	 * @return array $response
 	*/
 	protected function getChannelList() {
+		$this->request = new Request;
+		
 		$channels = [];
 
 		$tree = $this->request->getParam('method') === 'tree';
@@ -372,6 +370,8 @@ class MicrosubController {
 	 * @return array
 	*/
 	protected function createChannel() {
+		$this->request = new Request;
+		
 		$return = [];
 		$response_code = 400;
 
@@ -415,6 +415,8 @@ class MicrosubController {
 	 * @return array
 	*/
 	protected function updateChannel() {
+		$this->request = new Request;
+		
 		$return = [];
 		$response_code = 400;
 
@@ -442,6 +444,8 @@ class MicrosubController {
 	 * @return array
 	*/
 	protected function deleteChannel() {
+		$this->request = new Request;
+		
 		$return = [];
 		$response_code = 400;
 		
@@ -464,6 +468,8 @@ class MicrosubController {
 	 *
 	*/
 	protected function orderChannels() {
+		$this->request = new Request;
+		
 		$return = [];
 		$response_code = 400;
 		
@@ -498,6 +504,8 @@ class MicrosubController {
 	 * @return array
 	*/
 	protected function timelineChangeReadStatus($status) {
+		$this->request = new Request;
+		
 		$channel_id = $this->request->getParam('channel');
 
 		// Notifications is stored as channel 0.
@@ -555,6 +563,8 @@ class MicrosubController {
 	 *
 	*/
 	protected function followSource() {
+		$this->request = new Request;
+		
 		$return = [];
 		$response_code = 400;
 
@@ -636,6 +646,8 @@ class MicrosubController {
 	 *
 	*/
 	protected function deleteSource() {
+		$this->request = new Request;
+		
 		$return = [];
 		$response_code = 400;
 
@@ -692,6 +704,8 @@ class MicrosubController {
 	 *
 	*/
 	protected function getSources(int $channel_id = 0, bool $include_unread = false) {
+		$this->request = new Request;
+		
 		$return = [];
 		$response_code = 400;
 
@@ -765,6 +779,8 @@ class MicrosubController {
 	 *
 	*/
 	protected function search() {
+		$this->request = new Request;
+		
 		$return = [];
 		$response_code = 400;
 
@@ -820,6 +836,8 @@ class MicrosubController {
 	 * @return array
 	*/
 	protected function previewUrl() {
+		$this->request = new Request;
+		
 		$return = [];
 		$response_code = 400;
 
@@ -855,6 +873,8 @@ class MicrosubController {
 	 *
 	*/
 	protected function removeItem() {
+		$this->request = new Request;
+		
 		$entry_id = $this->request->getParam('entry');
 		
 		if ($entry_id) {
@@ -883,6 +903,8 @@ class MicrosubController {
 	 *
 	*/
 	protected function moveItem() {
+		$this->request = new Request;
+		
 		$channel_id = $this->request->getParam('channel');
 
 		// Notifications is stored as channel 0.
