@@ -95,6 +95,15 @@ class SetupHead {
 			elgg_set_http_header('Link: <' . elgg_get_plugin_setting('websub_endpoint', 'indieweb') . '>; rel="hub"');
 			elgg_set_http_header('Link: <' . elgg_get_site_url() . '>; rel="self"');
 		}
+		
+		//feeds
+		$return['links'][] = [
+			'rel' => 'alternate',
+			'type' => 'application/jf2feed+json',
+			'href' => elgg_http_add_url_query_elements(elgg_get_current_url(), [
+				'view' => 'jf2feed',
+			]),
+		];
 
 		return $return;
 	}

@@ -14,9 +14,8 @@ use Elgg\Exceptions\Http\EntityPermissionsException;
 use Elgg\Exceptions\Http\BadRequestException;
 use Elgg\Exceptions\Http\PageNotFoundException;
 use Elgg\Database\Select;
-use p3k\XRay;
 use Symfony\Component\HttpFoundation\Response;
-use GuzzleHttp\Client;
+use p3k\XRay;
 use IndieWeb\MentionClient;
 
 class MicropubController {

@@ -11,6 +11,8 @@ use Elgg\Router\Middleware\AjaxGatekeeper;
 use Elgg\Router\Middleware\Gatekeeper;
 use Elgg\Router\Middleware\AdminGatekeeper;
 
+require_once(__DIR__ . '/lib/functions.php');
+
 $webmention_commentable = false;
 
 if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting('webmention_enable_comment_create', 'indieweb')) {
@@ -22,8 +24,6 @@ return [
 		'name' => 'IndieWeb',
 		'version' => '1.0.0',
 	],
-	
-	'bootstrap' => \Elgg\IndieWeb\Bootstrap::class,
 	
 	//ENTITIES
 	'entities' => [

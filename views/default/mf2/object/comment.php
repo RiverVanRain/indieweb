@@ -16,10 +16,6 @@ if (!$container instanceof \ElggEntity) {
 //author
 $user = $entity->getOwnerEntity();
 
-if (!$user instanceof \ElggUser) {
-	return;
-}
-
 $fullname = htmlspecialchars($user->getDisplayName() ?? '', ENT_QUOTES, 'UTF-8', false);
 
 $author = elgg_format_element('span', ['class' => 'p-author h-card'], elgg_view('output/url', [

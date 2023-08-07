@@ -11,7 +11,6 @@ namespace Elgg\IndieWeb\WebSub\Controller;
 
 use function IndieWeb\http_rels;
 use Elgg\IndieWeb\Microsub\Entity\MicrosubSource;
-use GuzzleHttp\Client;
 
 class WebSubController {
 
