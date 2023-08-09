@@ -425,7 +425,7 @@ class MicrosubClient {
 				}
 
 				if ($key && !empty($data[$key][0])) {
-					_elgg_services()->postContext->createMicrosubItem($entity, $data[$key][0]);
+					elgg()->postcontext->createMicrosubItem($entity, $data[$key][0]);
 				}
 			}
 		}
@@ -950,7 +950,7 @@ class MicrosubClient {
 	protected function applyCache($data) {
 		// Author images
 		if (isset($data->author->photo)) {
-			$image = _elgg_services()->mediaCacher->saveImageFromUrl($data->author->photo);
+			$image = elgg()->mediacacher->saveImageFromUrl($data->author->photo);
 			/** \Elgg\IndieWeb\Cache\MediaCacher **/
 			$data->author->photo = elgg_get_inline_url($image);
 		  
@@ -959,7 +959,7 @@ class MicrosubClient {
 		// Photos
 		if (isset($data->photo) && !empty($data->photo) && is_array($data->photo)) {
 			foreach ($data->photo as $i => $p) {
-				$image = _elgg_services()->mediaCacher->saveImageFromUrl($p, 'photo');
+				$image = elgg()->mediacacher->saveImageFromUrl($p, 'photo');
 				/** \Elgg\IndieWeb\Cache\MediaCacher **/
 				$data->photo[$i] =  elgg_get_inline_url($image);
 			}
@@ -970,7 +970,7 @@ class MicrosubClient {
 			foreach ($data->refs as $key => $ref) {
 				// Author images
 				if (isset($ref->author->photo) && !empty($ref->author->photo)) {
-					$image = _elgg_services()->mediaCacher->saveImageFromUrl($p, 'photo');
+					$image = elgg()->mediacacher->saveImageFromUrl($p, 'photo');
 					/** \Elgg\IndieWeb\Cache\MediaCacher **/
 					$data->refs->{$key}->author->photo = elgg_get_inline_url($image);
 				}
@@ -978,7 +978,7 @@ class MicrosubClient {
 				// Photos
 				if (isset($ref->photo) && !empty($ref->photo) && is_array($ref->photo)) {
 					foreach ($ref->photo as $i => $p) {
-						$image = _elgg_services()->mediaCacher->saveImageFromUrl($p, 'photo');
+						$image = elgg()->mediacacher->saveImageFromUrl($p, 'photo');
 						/** \Elgg\IndieWeb\Cache\MediaCacher **/
 						$data->refs->{$key}->photo[$i] = elgg_get_inline_url($image);
 					}

@@ -27,7 +27,7 @@ class PostContextClient {
 	 * {@inheritdoc}
 	 */
 	public static function name() {
-		return 'postContext';
+		return 'postcontext';
 	}
 	
 	/**

@@ -46,7 +46,7 @@ class TokenController {
 
 		// GET request, verify token
 		if ($request->getMethod() === 'GET') {
-			$auth_header = $indieAuthClient->getAuthorizationHeader($request);
+			$auth_header = $indieAuthClient->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				elgg_log('Missing Authorization Header', 'ERROR');
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
@@ -75,8 +75,8 @@ class TokenController {
 			throw new \Elgg\Exceptions\Http\PageNotFoundException();
 		}
 
-		// Token revocation request WIP $request->http_request->request->has('action')
-		if ($request->http_request->request->has('action') && $request->getParam('action') === 'revoke' && ($token = $request->getParam('token'))) {
+		// Token revocation request
+		if ($request->getHttpRequest()->request->has('action') && $request->getParam('action') === 'revoke' && ($token = $request->getParam('token'))) {
 			$indieAuthClient->revokeToken($token);
 			return elgg_ok_response([], '', REFERRER, 200);
 		}
@@ -116,8 +116,11 @@ class TokenController {
 			return elgg_error_response('Redirect URI does not match', REFERRER, 400);
 		}
 		
-		if ($authorization_code->getMe() != $params['me']) {
-			elgg_log('Me does not match ' . $params['me'], 'ERROR');
+		// Hack: For some reasons many clients don't send 'me' parameter
+		//if ($authorization_code->getMe() != $params['me']) {
+		if ($authorization_code->getMe() != elgg_get_site_url()) {	
+			//elgg_log('Me does not match ' . $params['me'], 'ERROR');
+			elgg_log('Me does not match ' . elgg_get_site_url(), 'ERROR');
 			return elgg_error_response('Me does not match', REFERRER, 400);
 		}
 		
@@ -152,7 +155,7 @@ class TokenController {
 		$key = Key\InMemory::plainText(file_get_contents(elgg_get_plugin_setting('indieauth_private_key', 'indieweb')));
 		$config = Configuration::forSymmetricSigner($signer, $key);
 		$JWT = $config->builder()
-			->issuedBy($request->getSchemeAndHttpHost())
+			->issuedBy($request->getHttpRequest()->getSchemeAndHttpHost())
 			->permittedFor($authorization_code->getClientId())
 			->identifiedBy($access_token)
 			->withHeader('jti', $access_token)
@@ -171,7 +174,7 @@ class TokenController {
 			'scope' => implode(' ', $authorization_code->getScopes()),
 		];
 		
-		elgg_call(ELGG_IGNORE_ACCESS, function () use ($authorization_code, &$values) {
+		$new_token = elgg_call(ELGG_IGNORE_ACCESS, function () use ($authorization_code, &$values) {
 			$token = new \Elgg\IndieWeb\IndieAuth\Entity\IndieAuthToken();
 			$token->access_id = ACCESS_PRIVATE;
 			$token->owner_guid = elgg_get_site_entity()->guid;
@@ -181,6 +184,8 @@ class TokenController {
 				$token->setMetadata($name, $value);
 			}
 			
+			$token->setMetadata('status', 1);
+			
 			if (!$token->save()) {
 				$token->delete();
 				elgg_log('IndieAuthToken creation failed', 'ERROR');
@@ -189,14 +194,16 @@ class TokenController {
 			
 			// Remove old code
 			$authorization_code->delete();
+			
+			return $token;
 		});
 
 		$data = [
-			'me' => $params['me'],
+			'me' => elgg_get_site_url(), //$params['me'],
 			'token_type' => 'Bearer',
-			'scope' => $token->getScopesAsString(),
+			'scope' => $new_token->getScopesAsString(),
 			'access_token' => $JWT->toString(),
-			'profile' => $this->getProfile($request, $token->getOwnerId()),
+			'profile' => $this->getProfile($request, $new_token->getOwnerId()),
 		];
 		
 		return elgg_ok_response($data);
@@ -212,10 +219,10 @@ class TokenController {
 	*/
 	public static function validateTokenRequestParameters(\Elgg\Request $request, &$reason, &$valid_request, &$params = null) {
 		foreach (self::$token_parameters as $parameter) {
-
 			$check = $request->getParam($parameter);
-
-			if (empty($check) && $parameter != 'code_verifier') {
+			
+			// For some reasons many clients don't send 'me' parameter
+			if (empty($check) && !in_array($parameter, ['me', 'code_verifier'])) {
 				$reason = "$parameter is empty";
 				$valid_request = false;
 				break;
@@ -237,17 +244,15 @@ class TokenController {
 	*/
 	public function getCodes($code) {
 		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($code) {
-			$codes = elgg_get_entities([
+			return elgg_get_entities([
 				'type' => 'object',
 				'subtype' => IndieAuthAuthorizationCode::SUBTYPE,
-				'limit' => false,
+				'limit' => 1,
 				'metadata_name_value_pairs' => [
 					'name' => 'code',
 					'value' => $code,
 				],
 			]);
-			
-			return count($codes) === 1 ? array_shift($codes) : null;
 		});
 	}
 	

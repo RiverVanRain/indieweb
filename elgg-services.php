@@ -12,8 +12,8 @@ return [
 	'indieweb.contact' => \DI\create(\Elgg\IndieWeb\Contacts\Client\ContactClient::class),
 	'microsub' => \DI\create(\Elgg\IndieWeb\Microsub\Client\MicrosubClient::class),
 	'aperture' => \DI\create(\Elgg\IndieWeb\Microsub\Client\ApertureClient ::class),
-	'mediaCacher' => \DI\autowire(\Elgg\IndieWeb\Cache\MediaCacher::class),
-	'postContext' => \DI\create(\Elgg\IndieWeb\PostContext\Client\PostContextClient::class),
+	'mediacacher' => \DI\create(\Elgg\IndieWeb\Cache\MediaCacher::class),
+	'postcontext' => \DI\create(\Elgg\IndieWeb\PostContext\Client\PostContextClient::class),
 	'indieauth' => \DI\create(\Elgg\IndieWeb\IndieAuth\Client\IndieAuthClient::class),
 	'websub' => \DI\create(\Elgg\IndieWeb\WebSub\Client\WebSubClient::class),
 ];

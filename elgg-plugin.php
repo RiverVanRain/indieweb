@@ -34,7 +34,7 @@ return [
 			'class' => \Elgg\IndieWeb\Webmention\Entity\Webmention::class,
 			'capabilities' => [
 				'commentable' => $webmention_commentable,
-				'likable' => false,
+				'likable' => true,
 				'searchable' => false,
 			],
 		],
@@ -304,7 +304,7 @@ return [
 		//micropub
 		'default:view:micropub' => [
 			'path' => '/micropub',
-			'controller' => [\Elgg\IndieWeb\Micropub\Controller\MicropubController::class, 'postEndpoint'],
+			'controller' => \Elgg\IndieWeb\Micropub\Controller\MicropubController::class,
 			'walled' => false,
 		],
 		'view:micropub:media' => [

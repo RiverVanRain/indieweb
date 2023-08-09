@@ -9,7 +9,6 @@
 
 namespace Elgg\IndieWeb\Micropub\Controller;
 
-use Elgg\Request;
 use Elgg\Exceptions\Http\EntityPermissionsException;
 use Elgg\Exceptions\Http\BadRequestException;
 use Elgg\Exceptions\Http\PageNotFoundException;
@@ -21,69 +20,54 @@ use IndieWeb\MentionClient;
 class MicropubController {
 	
 	/**
-	* The action of the request.
-	*
-	* @var string
-	*/
-	public $action = '';
-
-	/**
 	* The object type.
 	*/
-	public $object_type = null;
+	public $object_type;
 
 	/**
 	* The request input.
 	*
 	* @var array
 	*/
-	public $input = [];
+	public $input;
 
 	/**
 	* An object URL to act on.
 	*
 	* @var null
 	*/
-	public $object_url = null;
+	public $object_url;
 
 	/**
 	* The original payload
 	*
 	* @var null
 	*/
-	public $payload_original = null;
-
-	/**
-	* The entity which is being created.
-	*
-	* @var \ElggObject
-	*/
-	public $new_entity = null;
-	
-	/**
-	* The comment which is being created.
-	*
-	* @var \ElggComment
-	*/
-	public $comment = null;
+	public $payload_original;
 
 	/**
 	* Location properties.
 	*
 	* @var array
 	*/
-	protected $location = [];
-
+	protected $location;
+	
 	/**
-	* @var \Elgg\IndieWeb\IndieAuth\Client\IndieAuthClient
-	*/
-	protected $indieAuth;
+	 * Constructor
+	 */
+	public function __construct($object_type = null, $input = [], $object_url = null, $payload_original = null, $location = []) {
+		$this->object_type = $object_type;
+		$this->input = $input;
+		$this->object_url = $object_url;
+		$this->payload_original = $payload_original;
+		$this->location = $location;
+	}
 
 	/**
 	* Routing callback: Micropub post endpoint.
 	*/
-	public function postEndpoint(\Elgg\Request $request) {
-		$this->indieAuth = elgg()->indieauth;
+	public function __invoke(\Elgg\Request $request) {
+		$indieAuth = elgg()->indieauth;
 		
 		// Early response when endpoint is not enabled.
 		if (!(bool) elgg_get_plugin_setting('enable_micropub', 'indieweb')) {
@@ -100,17 +84,18 @@ class MicropubController {
 		// q=syndicate-to request.
 		if ($micropub_query === 'syndicate-to') {
 			// Get authorization header, response early if none found.
-			$auth_header = $this->indieAuth->getAuthorizationHeader();
+			$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
-			if ($this->indieAuth->isValidToken($auth_header)) {
+			if ($indieAuth->isValidToken($auth_header)) {
 				$response_code = 200;
 				$response_message = [
 					'syndicate-to' => $this->getSyndicationTargets(),
 				];
 			} else {
+				elgg_log('syndicate-to: No Valid Token', 'error');
 				return elgg_error_response('No Valid Token', REFERRER, 403);
 			}
 			
@@ -120,12 +105,12 @@ class MicropubController {
 		// q=config request.
 		if ($micropub_query === 'config') {
 			// Get authorization header, response early if none found.
-			$auth_header = $this->indieAuth->getAuthorizationHeader();
+			$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
-			if ($this->indieAuth->isValidToken($auth_header)) {
+			if ($indieAuth->isValidToken($auth_header)) {
 				$response_code = 200;
 
 				$supported_queries = ['config', 'syndicate-to'];
@@ -157,6 +142,7 @@ class MicropubController {
 					$response_message['media-endpoint'] = elgg_generate_url('view:micropub:media');
 				}
 			} else {
+				elgg_log('config: No Valid Token', 'error');
 				return elgg_error_response('No Valid Token', REFERRER, 403);
 			}
 
@@ -171,15 +157,16 @@ class MicropubController {
 			}
 
 			// Get authorization header, response early if none found.
-			$auth_header = $this->indieAuth->getAuthorizationHeader();
+			$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
-			if ($this->indieAuth->isValidToken($auth_header)) {
+			if ($indieAuth->isValidToken($auth_header)) {
 				$response_code = 200;
 				$response_message = $this->getSourceResponse($request);
 			} else {
+				elgg_log('source: No Valid Token', 'error');
 				return elgg_error_response('No Valid Token', REFERRER, 403);
 			}
 
@@ -194,15 +181,16 @@ class MicropubController {
 			}
 
 			// Get authorization header, response early if none found.
-			$auth_header = $this->indieAuth->getAuthorizationHeader();
+			$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
-			if ($this->indieAuth->isValidToken($auth_header)) {
+			if ($indieAuth->isValidToken($auth_header)) {
 				$response_code = 200;
 				$response_message = $this->getContactsResponse($request);
 			} else {
+				elgg_log('contact: No Valid Token', 'error');
 				return elgg_error_response('No Valid Token', REFERRER, 403);
 			}
 
@@ -217,15 +205,16 @@ class MicropubController {
 			}
 
 			// Get authorization header, response early if none found.
-			$auth_header = $this->indieAuth->getAuthorizationHeader();
+			$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
-			if ($this->indieAuth->isValidToken($auth_header)) {
+			if ($indieAuth->isValidToken($auth_header)) {
 				$response_code = 200;
 				$response_message = $this->getGeoResponse($request);
 			} else {
+				elgg_log('geo: No Valid Token', 'error');
 				return elgg_error_response('No Valid Token', REFERRER, 403);
 			}
 
@@ -240,15 +229,16 @@ class MicropubController {
 			}
 
 			// Get authorization header, response early if none found.
-			$auth_header = $this->indieAuth->getAuthorizationHeader();
+			$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
-			if ($this->indieAuth->isValidToken($auth_header)) {
+			if ($indieAuth->isValidToken($auth_header)) {
 				$response_code = 200;
 				$response_message = ['categories' => $this->getCategories()];
 			} else {
+				elgg_log('category: No Valid Token', 'error');
 				return elgg_error_response('No Valid Token', REFERRER, 403);
 			}
 
@@ -265,13 +255,15 @@ class MicropubController {
 		// Determine action and input from request. This can either be POST or JSON request. We use p3k/Micropub to handle that part.
 		$micropub_request = \p3k\Micropub\Request::create($input);
 		
+		$action = '';
+		
 		if ($micropub_request instanceof \p3k\Micropub\Request && $micropub_request->action) {
-			$this->action = $micropub_request->action;
+			$action = $micropub_request->action;
 
-			if ($this->action === 'update') {
+			if ($action === 'update') {
 				$this->input = $micropub_request->update;
 				$this->object_url = $micropub_request->url;
-			} else if ($this->action === 'delete') {
+			} else if ($action === 'delete') {
 				$this->object_url = $micropub_request->url;
 			} else {
 				$mf2 = $micropub_request->toMf2();
@@ -281,21 +273,22 @@ class MicropubController {
 			}
 		} else {
 			$description = $micropub_request->error_description ?: 'Unknown error';
-			elgg_log('Error parsing incoming request: ' . $description ' - ' . print_r($input, 1), 'error');
+			elgg_log('Error parsing incoming request: ' . $description . ' - ' . print_r($input, 1), 'error');
 			throw new BadRequestException();
 		}
 
 		// Attempt to delete a post, comment or webmention.
-		if ($this->action === 'delete' && (bool) elgg_get_plugin_setting('micropub_enable_delete', 'indieweb') && !empty($this->object_url)) {
+		if ($action === 'delete' && (bool) elgg_get_plugin_setting('micropub_enable_delete', 'indieweb') && !empty($this->object_url)) {
 			// Get authorization header, response early if none found.
-			$auth_header = $this->indieAuth->getAuthorizationHeader();
+			$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
 			// Validate token. Return early if it's not valid.
-			$valid_token = $this->indieAuth->isValidToken($auth_header, 'delete');
+			$valid_token = $indieAuth->isValidToken($auth_header, 'delete');
 			if (!$valid_token) {
+				elgg_log('delete: No Valid Token', 'error');
 				return elgg_error_response('No Valid Token', REFERRER, 403);
 			}
 
@@ -317,20 +310,21 @@ class MicropubController {
 				elgg_log('Error in deleting post: ' . $e->getMessage(), 'error');
 			}
 
-			return new Response($response_message, $response_code);
+			return elgg_ok_response($response_message, '', REFERRER, $response_code);
 		}
 
 		// Attempt to update a post
-		if ($this->action === 'update' && (bool) elgg_get_plugin_setting('micropub_enable_update', 'indieweb') && !empty($this->object_url) && !empty($this->input['replace'])) {
+		if ($action === 'update' && (bool) elgg_get_plugin_setting('micropub_enable_update', 'indieweb') && !empty($this->object_url) && !empty($this->input['replace'])) {
 			// Get authorization header, response early if none found.
-			$auth_header = $this->indieAuth->getAuthorizationHeader();
+			$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
 			// Validate token. Return early if it's not valid.
-			$valid_token = $this->indieAuth->isValidToken($auth_header, 'update');
+			$valid_token = $indieAuth->isValidToken($auth_header, 'update');
 			if (!$valid_token) {
+				elgg_log('update: No Valid Token', 'error');
 				return elgg_error_response('No Valid Token', REFERRER, 403);
 			}
 
@@ -367,7 +361,7 @@ class MicropubController {
 						if (!empty($this->input['replace']['name'][0])) {
 							$update = true;
 							
-							if (isset($entity->getMetadata('title'))) {
+							if (!empty($entity->title)) {
 								$entity->setDisplayName($this->input['replace']['name'][0]);
 							}
 						}
@@ -400,20 +394,21 @@ class MicropubController {
 				elgg_log('Error in updating object: ' . $e->getMessage(), 'error');
 			}
 
-			return new Response($response_message, $response_code);
+			return elgg_ok_response($response_message, '', REFERRER, $response_code);
 		}
 
 		// Attempt to create a post
-		if (!empty($this->input) && $this->action === 'create') {
+		if (!empty($this->input) && $action === 'create') {
 			// Get authorization header, response early if none found.
-			$auth_header = $this->indieAuth->getAuthorizationHeader();
+			$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
 			// Validate token. Return early if it's not valid.
-			$valid_token = $this->indieAuth->isValidToken($auth_header, 'create');
+			$valid_token = $indieAuth->isValidToken($auth_header, 'create');
 			if (!$valid_token) {
+				elgg_log('create: No Valid Token', 'error');
 				return elgg_error_response('No Valid Token', REFERRER, 403);
 			}
 
@@ -486,14 +481,13 @@ class MicropubController {
 					$contact['uid'] = 1;
 
 					// Override uid.
-					if ($tokenOwnerId = $this->indieAuth->checkAuthor()) {
+					if ($tokenOwnerId = $indieAuth->checkAuthor()) {
 						$contact['uid'] = $tokenOwnerId;
 					}
 
 					$entityContact = elgg()->{'indieweb.contact'}->storeContact($contact);
 
-					header('Location: ' . $entityContact->getURL());
-					return new Response('', 201);
+					return elgg_ok_response('', '', $entityContact->getURL());
 				}
 			}
 
@@ -504,62 +498,45 @@ class MicropubController {
 					$checkin_title = elgg_echo('indieweb:micropub:checkin:title', [$this->location['name']]);
 				}
 
-				$this->createEntity($checkin_title, 'checkin');
-				$response = $this->saveEntity();
-				if ($response instanceof Response) {
-					return $response;
-				}
+				$entity = $this->createEntity($checkin_title, 'checkin');
+				return $this->saveEntity($entity);
 			}
 
 			// Event support.
 			if ($this->createEntityFromPostType('event') && $this->isHEvent() && $this->hasRequiredInput(['start', 'end', 'name'])) {
-				$this->createEntity($this->input['name'], 'event');
+				$entity = $this->createEntity($this->input['name'], 'event');
 
 				// Date.
 				if ((bool) elgg_get_plugin_setting('micropub_field_date_event', 'indieweb')) {
-					$this->new_entity->setMetadata('event_start', strtotime($this->input['start'][0]));
-					$this->new_entity->setMetadata('event_end', strtotime($this->input['end'][0]));
+					$entity->setMetadata('event_start', strtotime($this->input['start'][0]));
+					$entity->setMetadata('event_end', strtotime($this->input['end'][0]));
 				}
 
-				$response = $this->saveEntity();
-				if ($response instanceof Response) {
-					return $response;
-				}
+				return $this->saveEntity($entity);
 			}
 
 			// RSVP support.
 			if ($this->createEntityFromPostType('rsvp') && $this->isHEntry() && $this->hasRequiredInput(['in-reply-to', 'rsvp'])) {
-				$this->createEntity(elgg_echo('indieweb:micropub:rsvp:title', [$this->input['in-reply-to'][0]]), 'rsvp', 'in-reply-to');
+				$entity = $this->createEntity(elgg_echo('indieweb:micropub:rsvp:title', [$this->input['in-reply-to'][0]]), 'rsvp', 'in-reply-to');
 
 				// RSVP field
 				if ((bool) elgg_get_plugin_setting('enable_micropub_rsvp', 'indieweb')) {
-					$this->new_entity->setMetadata('rsvp', $this->input['rsvp']);
+					$entity->setMetadata('rsvp', $this->input['rsvp']);
 				}
 
-				$response = $this->saveEntity();
-				if ($response instanceof Response) {
-					return $response;
-				}
+				return $this->saveEntity($entity);
 			}
 
 			// Repost support.
 			if ($this->createEntityFromPostType('repost') && $this->isHEntry() && $this->hasRequiredInput(['repost-of'])) {
-				$this->createEntity(elgg_echo('indieweb:micropub:repost:title', [$this->input['repost-of'][0]]), 'repost', 'repost-of');
-				
-				$response = $this->saveEntity();
-				if ($response instanceof Response) {
-					return $response;
-				}
+				$entity = $this->createEntity(elgg_echo('indieweb:micropub:repost:title', [$this->input['repost-of'][0]]), 'repost', 'repost-of');
+				return $this->saveEntity($entity);
 			}
 
 			// Bookmark support.
 			if ($this->createEntityFromPostType('bookmark') && $this->isHEntry() && $this->hasRequiredInput(['bookmark-of'])) {
-				$this->createEntity(elgg_echo('indieweb:micropub:bookmark:title', [$this->input['bookmark-of'][0]]), 'bookmark', 'bookmark-of');
-				
-				$response = $this->saveEntity();
-				if ($response instanceof Response) {
-					return $response;
-				}
+				$entity = $this->createEntity(elgg_echo('indieweb:micropub:bookmark:title', [$this->input['bookmark-of'][0]]), 'bookmark', 'bookmark-of');
+				return $this->saveEntity($entity);
 			}
 
 			// Like support.
@@ -579,22 +556,14 @@ class MicropubController {
 					}
 				} catch (\Exception $ignored) {}
 
-				$this->createEntity(elgg_echo('indieweb:micropub:bookmark:title', [$this->input['like-of'][0]]), 'like', 'like-of');
-				
-				$response = $this->saveEntity();
-				if ($response instanceof Response) {
-					return $response;
-				}
+				$entity = $this->createEntity(elgg_echo('indieweb:micropub:bookmark:title', [$this->input['like-of'][0]]), 'like', 'like-of');
+				return $this->saveEntity($entity);
 			}
 
 			// Issue support.
 			if ($this->createEntityFromPostType('issue') && $this->isHEntry() && $this->hasRequiredInput(['content', 'name', 'in-reply-to']) && $this->hasNoKeysSet(['bookmark-of', 'repost-of', 'like-of'])) {
-				$this->createEntity($this->input['name'], 'issue');
-				
-				$response = $this->saveEntity();
-				if ($response instanceof Response) {
-					return $response;
-				}
+				$entity = $this->createEntity($this->input['name'], 'issue');
+				return $this->saveEntity($entity);
 			}
 
 			// Reply support.
@@ -626,9 +595,7 @@ class MicropubController {
 										$link_field_url = $target->getContainerEntity()->getURL();
 									}
 								}
-							}
-							
-							catch (\Exception $ignored) {}
+							} catch (\Exception $ignored) {}
 							
 							// Create comment.
 							$comment = new \ElggComment();
@@ -671,10 +638,7 @@ class MicropubController {
 								}
 							}
 
-							$response = $this->saveComment();
-							if ($response instanceof Response) {
-								return $response;
-							}
+							return $this->saveComment($comment);
 						}
 					} catch (\Exception $e) {
 						elgg_log('Error trying to create a comment from reply: ' . $e->getMessage(), 'error');
@@ -682,32 +646,20 @@ class MicropubController {
 				}
 
 				// We got here, so it's a standard post
-				$this->createEntity(elgg_echo('indieweb:micropub:reply:title', [$this->input['in-reply-to'][0]]), 'reply', 'in-reply-to');
-				
-				$response = $this->saveEntity();
-				if ($response instanceof Response) {
-					return $response;
-				}
+				$entity = $this->createEntity(elgg_echo('indieweb:micropub:reply:title', [$this->input['in-reply-to'][0]]), 'reply', 'in-reply-to');
+				return $this->saveEntity($entity);
 			}
 
 			// Note post type.
 			if ($this->createEntityFromPostType('note') && $this->isHEntry() && $this->hasRequiredInput(['content']) && $this->hasNoKeysSet(['name', 'in-reply-to', 'bookmark-of', 'repost-of', 'like-of'])) {
-				$this->createEntity(elgg_echo('indieweb:micropub:view:note'), 'note');
-				$response = $this->saveEntity();
-				
-				if ($response instanceof Response) {
-					return $response;
-				}
+				$entity = $this->createEntity(elgg_echo('indieweb:micropub:view:note'), 'note');
+				return $this->saveEntity($entity);
 			}
 
 			// Article post type.
 			if ($this->createEntityFromPostType('article') && $this->isHEntry() && $this->hasRequiredInput(['content', 'name']) && $this->hasNoKeysSet(['in-reply-to', 'bookmark-of', 'repost-of', 'like-of'])) {
-				$this->createEntity($this->input['name'], 'article');
-				$response = $this->saveEntity();
-				
-				if ($response instanceof Response) {
-					return $response;
-				}
+				$entity = $this->createEntity($this->input['name'], 'article');
+				return $this->saveEntity($entity);
 			}
 		}
 		
@@ -718,8 +670,8 @@ class MicropubController {
 	* Upload files through the media endpoint.
 	*
 	*/
-	public function mediaEndpoint(\Elgg\Request $request) {
-		$this->indieAuth = elgg()->indieauth;
+	public static function mediaEndpoint(\Elgg\Request $request) {
+		$indieAuth = elgg()->indieauth;
 		
 		// Early response when endpoint is not enabled.
 		if (!(bool) elgg_get_plugin_setting('enable_micropub_media', 'indieweb')) {
@@ -730,15 +682,15 @@ class MicropubController {
 		$response_message = '';
 
 		// Get authorization header, response early if none found.
-		$auth_header = $this->indieAuth->getAuthorizationHeader();
+		$auth_header = $indieAuth->getAuthorizationHeader($request->getHttpRequest());
 		if (!$auth_header) {
 			return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 		}
 
-		if ($this->indieAuth->isValidToken($auth_header, 'media') && in_array($request->getMethod(), ['GET', 'POST'])) {
+		if ($indieAuth->isValidToken($auth_header, 'media') && in_array($request->getMethod(), ['GET', 'POST'])) {
 			$user_guid = 1;
 			// Override user guid if using internal indieauth.
-			if ($tokenOwnerId = $this->indieAuth->checkAuthor()) {
+			if ($tokenOwnerId = $indieAuth->checkAuthor()) {
 				$user_guid = $tokenOwnerId;
 			}
 
@@ -786,10 +738,11 @@ class MicropubController {
 						'url' => $file_url
 					];
 					
-					header('Location: ' . $file_url);
+					return elgg_ok_response($response_message, '', $file_url, $response_code);
 				}
 			}
 		} else {
+			elgg_log('upload: No Valid Token', 'error');
 			return elgg_error_response('No Valid Token', REFERRER, 403);
 		}
 
@@ -906,7 +859,7 @@ class MicropubController {
 		}
 		
 		// Override user guid.
-		if ($tokenOwnerId = $this->indieAuth->checkAuthor()) {
+		if ($tokenOwnerId = $indieAuth->checkAuthor()) {
 			$owner_guid = $tokenOwnerId;
 		}
 		
@@ -937,24 +890,24 @@ class MicropubController {
 		}
 
 		// Create node.
-		$this->new_entity = new \ElggObject;
-		$this->new_entity->setSubtype($subtype);
-		$this->new_entity->owner_guid = $owner_guid;
-		$this->new_entity->time_created = $time_created;
-		$this->new_entity->access_id = ACCESS_PUBLIC;
-		$this->new_entity->title = $title;
+		$entity = new \ElggObject;
+		$entity->setSubtype($subtype);
+		$entity->owner_guid = $owner_guid;
+		$entity->time_created = $time_created;
+		$entity->access_id = ACCESS_PUBLIC;
+		$entity->title = $title;
 		
 		if (elgg_is_active_plugin('theme')) {
-			$this->new_entity->published_status = $status;
+			$entity->published_status = $status;
 		} else {
-			$this->new_entity->status = $status;
+			$entity->status = $status;
 		}
 
 		// Content.
 		if (!empty($this->input['content'][0]) && (bool) elgg_get_plugin_setting('micropub_field_content_' . $post_type, 'indieweb')) {
 			$description = htmlspecialchars($this->input['content'][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-			$this->new_entity->description = $description;
+			$entity->description = $description;
 		}
 
 		// Link.
@@ -968,24 +921,26 @@ class MicropubController {
 			}
 
 			if ($uri) {
-				$this->new_entity->address = $uri;
+				$entity->address = $uri;
 			}
 		}
 
 		// Uploads.
 		if ((bool) elgg_get_plugin_setting('micropub_field_upload_' . $post_type, 'indieweb')) {
-			$this->handleUploads($post_type, $owner_guid);
+			$this->handleUploads($entity, $post_type, $owner_guid);
 		}
 
 		// Categories.
 		if ((bool) elgg_get_plugin_setting('micropub_field_tags_' . $post_type, 'indieweb')) { 
-			$this->handleCategories($post_type);
+			$this->handleCategories($entity, $post_type);
 		}
 
 		// Geo location.
 		if ((bool) elgg_get_plugin_setting('micropub_field_location_' . $post_type, 'indieweb')) { 
-			$this->handleGeoLocation($post_type);
+			$this->handleGeoLocation($entity, $post_type);
 		}
+		
+		return $entity;
 	}
 
 	/**
@@ -994,23 +949,22 @@ class MicropubController {
 	* @return \Symfony\Component\HttpFoundation\Response
 	*
 	*/
-	protected function saveEntity() {
-		if ($this->new_entity->save()) {
+	protected function saveEntity(\ElggObject $entity) {
+		if ($entity->save()) {
 			// Syndicate.
 			if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
-				$this->syndicateToPost();
+				$this->syndicateToPost($entity);
 			}
 
 			// WebSub.
 			if ((bool) elgg_get_plugin_setting('enable_websub', 'indieweb') && (bool) elgg_get_plugin_setting('websub_micropub_publish', 'indieweb')) {
-				$this->publishToHub();
+				$this->publishToHub($entity);
 			}
 
 			// Allow plugins to react after the post is saved.
-			elgg_trigger_plugin_hook('indieweb_micropub_post_saved', $this->new_entity->subtype, $this->input, []);
+			elgg_trigger_plugin_hook('indieweb_micropub_post_saved', $entity->subtype, $this->input, []);
 
-			header('Location: ' . $this->new_entity->getURL());
-			return new Response('', 201);
+			return elgg_ok_response('', '', $entity->getURL());
 		}
 		
 		return elgg_error_response(elgg_echo('error:post:save'));
@@ -1022,26 +976,25 @@ class MicropubController {
 	* @return \Symfony\Component\HttpFoundation\Response
 	*
 	*/
-	protected function saveComment() {
-		if ($this->comment->save()) {
+	protected function saveComment(\ElggComment $comment) {
+		if ($comment->save()) {
 			// only river for top level comments
-			if ($this->comment->getLevel() === 1) {
+			if ($comment->getLevel() === 1) {
 				// Add to river
 				elgg_create_river_item([
 					'view' => 'river/object/comment/create',
 					'action_type' => 'comment',
-					'object_guid' => $this->comment->guid,
-					'target_guid' => $this->comment->getContainerEntity()->guid,
+					'object_guid' => $comment->guid,
+					'target_guid' => $comment->getContainerEntity()->guid,
 				]);
 			}
 			
 			// Syndicate.
 			if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
-				$this->syndicateToComment();
+				$this->syndicateToComment($comment);
 			}
 
-			header('Location: ' . $this->comment->getURL());
-			return new Response('', 201);
+			return elgg_ok_response('', '', $comment->getURL());
 		}
 		
 		return elgg_error_response(elgg_echo('generic_comment:failure'));
@@ -1080,75 +1033,73 @@ class MicropubController {
 				continue;
 			}
 			
-			elgg_call(ELGG_IGNORE_ACCESS, function () use ($upload, &$files) {
-				$file = new \ElggFile;
-				/* @var $file ElggFile */
+			$file = new \ElggFile;
+			/* @var $file ElggFile */
 				
-				$originalfilename = $upload->getClientOriginalName();
-				$file->originalfilename = $originalfilename;
-				$file->title = htmlspecialchars($file->originalfilename, ENT_QUOTES, 'UTF-8');
-				$file->upload_time = time();
-				$prefix = $file->filestore_prefix ? : 'file';
-				$prefix = trim($prefix, '/');
-				$filename = elgg_strtolower("$prefix/{$file->upload_time}{$file->originalfilename}");
-				$file->setFilename($filename);
-				$file->filestore_prefix = $prefix;
+			$originalfilename = $upload->getClientOriginalName();
+			$file->originalfilename = $originalfilename;
+			$file->title = htmlspecialchars($file->originalfilename, ENT_QUOTES, 'UTF-8');
+			$file->upload_time = time();
+			$prefix = $file->filestore_prefix ? : 'file';
+			$prefix = trim($prefix, '/');
+			$filename = elgg_strtolower("$prefix/{$file->upload_time}{$file->originalfilename}");
+			$file->setFilename($filename);
+			$file->filestore_prefix = $prefix;
 				
-				$file->owner_guid = elgg_get_site_entity()->guid;
-				$file->access_id = ACCESS_PUBLIC;
+			$file->owner_guid = elgg_get_site_entity()->guid;
+			$file->access_id = ACCESS_PUBLIC;
 				
-				$mime_type = elgg()->mimetype->getMimeType($file->getFilenameOnFilestore(), $upload->getClientMimeType());
-				$simpletype = elgg()->mimetype->getSimpleType($mime_type);
+			$mime_type = elgg()->mimetype->getMimeType($file->getFilenameOnFilestore(), $upload->getClientMimeType());
+			$simpletype = elgg()->mimetype->getSimpleType($mime_type);
 				
-				if (!in_array($simpletype, ['audio', 'image', 'video'])) {
-					$file->delete();
-					continue;
-				}
+			if (!in_array($simpletype, ['audio', 'image', 'video'])) {
+				$file->delete();
+				continue;
+			}
 				
-				$file->simpletype = $simpletype;
+			$file->simpletype = $simpletype;
 
-				$hook_params = [
-					'file' => $file,
-					'upload' => $upload,
-				];
+			$hook_params = [
+				'file' => $file,
+				'upload' => $upload,
+			];
 
-				$uploaded = _elgg_services()->hooks->trigger('upload', 'file', $hook_params);
-				if ($uploaded !== true && $uploaded !== false) {
-					$filestorename = $file->getFilenameOnFilestore();
-					try {
-						$uploaded = $upload->move(pathinfo($filestorename, PATHINFO_DIRNAME), pathinfo($filestorename, PATHINFO_BASENAME));
-					} catch (\Symfony\Component\HttpFoundation\File\Exception\FileException $ex) {
-						elgg_log($ex->getMessage(), 'ERROR');
-						$uploaded = false;
-					}
+			$uploaded = _elgg_services()->hooks->trigger('upload', 'file', $hook_params);
+			if ($uploaded !== true && $uploaded !== false) {
+				$filestorename = $file->getFilenameOnFilestore();
+				try {
+					$uploaded = $upload->move(pathinfo($filestorename, PATHINFO_DIRNAME), pathinfo($filestorename, PATHINFO_BASENAME));
+				} catch (\Symfony\Component\HttpFoundation\File\Exception\FileException $ex) {
+					elgg_log($ex->getMessage(), 'ERROR');
+					$uploaded = false;
 				}
+			}
 
-				if (!$uploaded) {
-					continue;
-				}
+			if (!$uploaded) {
+				continue;
+			}
 
-				$mime_type = elgg()->mimetype->getMimeType($file->getFilenameOnFilestore(), $upload->getClientMimeType());
-				if ($mime_type === 'image/vnd.djvu' || $mime_type === 'image/vnd.djvu+multipage'){
-					$file->setMimeType('application/x-ext-djvu');
-				} else {
-					$file->setMimeType($mime_type);
-				}
+			$mime_type = elgg()->mimetype->getMimeType($file->getFilenameOnFilestore(), $upload->getClientMimeType());
+			if ($mime_type === 'image/vnd.djvu' || $mime_type === 'image/vnd.djvu+multipage'){
+				$file->setMimeType('application/x-ext-djvu');
+			} else {
+				$file->setMimeType($mime_type);
+			}
 				
-				_elgg_services()->events->triggerAfter('upload', 'file', $file);
+			_elgg_services()->events->triggerAfter('upload', 'file', $file);
 
-				if (!$file->save() || !$file->exists()) {
-					$file->delete();
-					continue;
-				}
+			if (!$file->save() || !$file->exists()) {
+				$file->delete();
+				continue;
+			}
 
-				if (($file->getMimeType() === 'image/jpeg' || $file->getMimeType() === 'image/png' || $file->getMimeType() === 'image/gif' || $file->getMimeType() === 'image/webp') && $file->saveIconFromElggFile($file)) {
-					$file->thumbnail = $file->getIcon('small')->getFilename();
-					$file->smallthumb = $file->getIcon('medium')->getFilename();
-					$file->largethumb = $file->getIcon('large')->getFilename();
-				}
+			if (($file->getMimeType() === 'image/jpeg' || $file->getMimeType() === 'image/png' || $file->getMimeType() === 'image/gif' || $file->getMimeType() === 'image/webp') && $file->saveIconFromElggFile($file)) {
+				$file->thumbnail = $file->getIcon('small')->getFilename();
+				$file->smallthumb = $file->getIcon('medium')->getFilename();
+				$file->largethumb = $file->getIcon('large')->getFilename();
+			}
 				
-				$files[] = $file;
-			});
+			$files[] = $file;
 		}
 		
 		return $files;
@@ -1162,24 +1113,22 @@ class MicropubController {
 	* @param int $owner_guid
 	*
 	*/
-	protected function handleUploads($post_type, int $owner_guid = 1) {
+	protected function handleUploads(\ElggObject $entity, $post_type, int $owner_guid = 1) {
 		foreach (['photo', 'audio', 'video'] as $upload_key) {
 			$limit = (int) elgg_get_plugin_setting('micropub_field_upload_limit_' . $post_type, 'indieweb', 1);
 	
 			$files = $this->saveUpload($upload_key, $limit);
 			
-			$entity = $this->new_entity;
-			
 			if ($files) {
 				elgg_call(ELGG_IGNORE_ACCESS, function () use ($entity, &$files) {
 					foreach ($files as $file) {
 						$file->owner_guid = $owner_guid;
-						$file->container_guid = $this->new_entity->guid;
+						$file->container_guid = $entity->guid;
 						$file->save();
 						
 						$entity->addRelationship($file->guid, 'attached');
 					}
-				}
+				});
 			}
 		}
 	}
@@ -1190,7 +1139,7 @@ class MicropubController {
 	* @param string $post_type
 	*
 	*/
-	protected function handleCategories($post_type) {
+	protected function handleCategories(\ElggObject $entity, $post_type) {
 		if (!empty($this->input['category'])) {
 			$values = [];
 			
@@ -1199,7 +1148,7 @@ class MicropubController {
 			}
 
 			if (!empty($values)) {
-				$this->new_entity->tags = $values;
+				$entity->tags = $values;
 			}
 		}
 	}
@@ -1210,10 +1159,10 @@ class MicropubController {
 	* @param string $post_type
 	*
 	*/
-	protected function handleGeoLocation($post_type) {
+	protected function handleGeoLocation(\ElggObject $entity, $post_type) {
 		if (!empty($this->location['lat']) && !empty($this->location['lon'])) {
 			try {
-				$this->new_entity->setLatLong($this->location['lat'], $this->location['lon']);
+				$entity->setLatLong($this->location['lat'], $this->location['lon']);
 			} catch (\Exception $e) {
 				elgg_log('Error saving geo location: ' . $e->getMessage(), 'error');
 			}
@@ -1224,9 +1173,7 @@ class MicropubController {
 	* Syndicate to for posts.
 	*
 	*/
-	protected function syndicateToPost() {
-		$entity = $this->new_entity;
-		
+	protected function syndicateToPost(\ElggObject $entity) {
 		if (!empty($this->input['mp-syndicate-to']) && ($entity->published_status === 'published' || $entity->status === 'published')) {
 			$client = new MentionClient();
 		
@@ -1279,9 +1226,7 @@ class MicropubController {
 	/**
 	* Publish to hub for WebSub.
 	*/
-	protected function publishToHub() {
-		$entity = $this->new_entity;
-		
+	protected function publishToHub(\ElggObject $entity) {
 		if ($entity->published_status === 'published' || $entity->status === 'published') {
 			elgg_call(ELGG_IGNORE_ACCESS, function () use ($entity) {
 				$websubpub = new \Elgg\IndieWeb\WebSub\Entity\WebSubPub();
@@ -1303,7 +1248,7 @@ class MicropubController {
 	/**
 	* Syndicate to for comments.
 	*/
-	protected function syndicateToComment() {
+	protected function syndicateToComment(\ElggComment $entity) {
 		if (!empty($this->input['mp-syndicate-to'])) {
 			$client = new MentionClient();
 		
@@ -1319,7 +1264,6 @@ class MicropubController {
 				$client->enableDebug();
 			}
 			
-			$entity = $this->comment;
 			$source = $entity->getURL();
 			$guid = $entity->guid;
 			
@@ -1378,7 +1322,7 @@ class MicropubController {
 
 		$post_types[] = (object) [
 			'type' => 'comment',
-			'name' => 'Commments'),
+			'name' => 'Commment',
 		];
 
 		return $post_types;

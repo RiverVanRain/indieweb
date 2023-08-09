@@ -129,7 +129,7 @@ echo elgg_view_field([
 	'name' => 'websub',
 	'value' => 1,
 	'default' => 0,
-	'checked' => (bool) $entity->websub,
+	'checked' => (bool) elgg_extract('websub', $vars),
 	'switch' => true,
 ]);
 

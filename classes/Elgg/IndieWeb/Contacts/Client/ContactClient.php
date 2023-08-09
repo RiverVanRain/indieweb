@@ -68,7 +68,7 @@ class ContactClient {
 					if (!empty($values['photo'])) {
 						$entity->setMetadata('photo', $values['photo']);
 						
-						$image = _elgg_services()->mediaCacher->saveImageFromUrl($values['photo']);
+						$image = elgg()->mediacacher->saveImageFromUrl($values['photo']);
 						/** \Elgg\IndieWeb\Cache\MediaCacher **/
 						
 						$entity->setMetadata('thumbnail_url', elgg_get_inline_url($image));

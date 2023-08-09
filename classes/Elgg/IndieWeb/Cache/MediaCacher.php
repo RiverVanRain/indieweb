@@ -2,31 +2,34 @@
 
 namespace Elgg\IndieWeb\Cache;
 
-use Exception;
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use Elgg\Traits\Di\ServiceFacade;
 
 /**
  * Caching of media
  */
 class MediaCacher {
-
-	/**
-	 * @var ClientInterface
-	 */
-	private $client;
 	
+	use ServiceFacade;
+
 	/**
 	 * @var array
 	 */
 	private static $cache;
 
 	/**
-	 * Constructor
-	 * @param ClientInterface $client HTTP Client
+	 * {@inheritdoc}
 	 */
-	public function __construct(ClientInterface $client) {
-		$this->client = $client;
+	public static function name() {
+		return 'mediacacher';
+	}
+	
+	/**
+	 * {@inheritdoc}
+	 */
+	public function __get($name) {
+		return $this->$name;
 	}
 	
 	/**
@@ -93,8 +96,9 @@ class MediaCacher {
 		}
 		if (!isset(self::$cache[$url])) {
 			try {
-				$response = $this->client->request('GET', $url);
-			} catch (Exception $e) {
+				$client = new Client();
+				$response = $client->request('GET', $url);
+			} catch (\Exception $e) {
 				$response = false;
 			}
 			self::$cache[$url] = $response;

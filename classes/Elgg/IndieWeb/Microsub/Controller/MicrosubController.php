@@ -132,7 +132,7 @@ class MicrosubController {
 		}
 
 		// Get authorization header, response early if none found.
-		$auth_header = elgg()->indieauth->getAuthorizationHeader($request);
+		$auth_header = elgg()->indieauth->getAuthorizationHeader($request->getHttpRequest());
 		if (!$auth_header) {
 			return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 		}

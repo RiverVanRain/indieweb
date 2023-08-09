@@ -68,13 +68,15 @@ class IndieAuthClient {
 	* {@inheritdoc}
 	*/
 	public function isValidToken($auth_header, $scope_to_check = null) {
-		$token_endpoint = elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb');
-
-		if ((bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
-			return $this->validateTokenInternal($auth_header, $scope_to_check);
-		} else {
-			return $this->validateTokenOnExternalService($auth_header, $token_endpoint, $scope_to_check);
-		}
+		elgg_call(ELGG_IGNORE_ACCESS, function () use ($auth_header, $scope_to_check) {
+			$token_endpoint = elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb');
+			
+			if ((bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
+				return $this->validateTokenInternal($auth_header, $scope_to_check);
+			} else {
+				return $this->validateTokenOnExternalService($auth_header, $token_endpoint, $scope_to_check);
+			}
+		});
 	}
 
 	/**
@@ -101,19 +103,24 @@ class IndieAuthClient {
 	
 	/**
 	* {@inheritdoc}
+	* WIP Проверить входящие данные хидера и ИП
 	*/
 	public function getTokens($access_token) {
-		$tokens = elgg_get_entities([
-			'type' => 'object',
-			'subtype' => IndieAuthToken::SUBTYPE,
-			'limit' => false,
-			'metadata_name_value_pairs' => [
-				'name' => 'access_token',
-				'value' => $access_token,
-			],
-		]);
-		
-		return count($tokens) === 1 ? array_shift($tokens) : null;
+		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($access_token) {
+			$indieAuthToken = elgg_get_entities([
+				'type' => 'object',
+				'subtype' => IndieAuthToken::SUBTYPE,
+				'limit' => 1,
+				'metadata_name_value_pairs' => [
+					'name' => 'access_token',
+					'value' => $access_token,
+				],
+			]);
+			
+			elgg_log('Token ' . $indieAuthToken->guid, 'error');
+
+			return $indieAuthToken;
+		});
 	}
 
 	/**
@@ -172,7 +179,7 @@ class IndieAuthClient {
 			];
 
 			$paths = [];
-			$dir_path = elgg_get_data_path() . '/indieweb/indieauth';
+			$dir_path = elgg_get_data_path() . 'indieweb/indieauth';
 
 			if (!is_dir($dir_path)) {
 				mkdir($dir_path, 0755, true);
@@ -258,12 +265,16 @@ class IndieAuthClient {
 
 		// Return early already, no need to verify further.
 		if (!$access_token) {
+			elgg_log('No access_token', 'error');
 			return false;
 		}
 		
 		$indieAuthToken = $this->getTokens($access_token);
+		elgg_log('access_token - ' . $access_token, 'error');
 
 		if ($indieAuthToken instanceof IndieAuthToken && $indieAuthToken->isValid()) {
+			elgg_log('indieAuthToken ' . $indieAuthToken->guid, 'error');
+			
 			// The token is valid
 			$valid_token = true;
 
@@ -281,7 +292,7 @@ class IndieAuthClient {
 			if ($valid_token) {
 				$this->tokenOwnerId = $indieAuthToken->getOwnerId();
 				$this->token = $indieAuthToken;
-				$indieAuthToken->setMetadata('changed', time())->save();
+				$indieAuthToken->setMetadata('changed', time());
 			}
 		}
 

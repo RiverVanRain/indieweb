@@ -40,7 +40,7 @@ class EntityMenu {
 		$menu->add(ElggMenuItem::factory([
 			'name' => 'revoke',
 			'text' => elgg_echo('indieweb:indieauth:token:revoke'),
-			'icon' => 'close',
+			'icon' => 'delete',
 			'href' => elgg_generate_action_url('indieauth/token/toggle_status', [
 				'guid' => $entity->guid,
 			]),
@@ -89,12 +89,14 @@ class EntityMenu {
 	}
 	
 	public static function codeEntityMenu(Hook $hook) {
+		$menu = $hook->getValue();
+		
 		$entity = $hook->getEntityParam();
 		if (!$entity instanceof \Elgg\IndieWeb\IndieAuth\Entity\IndieAuthAuthorizationCode) {
 			return null;
 		}
 		
-		if(!$entity->canEdit()) {
+		if (!$entity->canEdit()) {
 			return null;
 		}
 		

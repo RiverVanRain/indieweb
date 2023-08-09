@@ -32,7 +32,9 @@ foreach ($posts as $post) {
 		]),
 	]);
 	
-	$reply_create_comment = [];
+	$reply_create_comment = [
+		'#html' => ''
+	];
 	
 	if ($post === 'reply') {
 		$reply_create_comment = [

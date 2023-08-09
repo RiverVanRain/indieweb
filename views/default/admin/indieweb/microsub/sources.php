@@ -35,6 +35,7 @@ $offset = (int) get_input('offset');
 $options = [
 	'type' => 'object',
 	'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubSource::SUBTYPE,
+	'container_guid' => $entity->guid,
 	'count' => true,
 	'offset' => $offset,
 	'limit' => elgg_get_config('default_limit'),

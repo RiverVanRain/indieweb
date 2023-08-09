@@ -10,7 +10,6 @@
 namespace Elgg\IndieWeb\Webmention\Client;
 
 use Elgg\Traits\Di\ServiceFacade;
-use GuzzleHttp\ClientInterface as GuzzleClient;
 use Elgg\IndieWeb\Webmention\Entity\Webmention;
 
 class WebmentionClient {

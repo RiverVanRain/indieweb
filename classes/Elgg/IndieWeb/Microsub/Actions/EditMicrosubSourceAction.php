@@ -11,7 +11,7 @@ class EditMicrosubSourceAction {
 		elgg_make_sticky_form('microsub/source/edit');
 
 		$guid = (int) $request->getParam('guid');
-		$container_guid = (int) $request->getParam('container_guid', 0);
+		$container_guid = $request->getParam('container_guid', 0);
 		$title = $request->getParam('title');
 		$url = $request->getParam('url');
 		$status = (bool) $request->getParam('status', 1);
@@ -49,8 +49,14 @@ class EditMicrosubSourceAction {
 			$entity = new MicrosubSource();
 		}
 		
-		if ($container_guid > 0) {
-			$container = get_entity($container_guid);
+		$channel_id = $container_guid;
+		
+		if (is_array($container_guid)) {
+			$channel_id = $container_guid[0];
+		}
+
+		if ($channel_id > 0) {
+			$container = get_entity($channel_id);
 			if (!$container instanceof MicrosubChannel) {
 				throw new \Elgg\Exceptions\Http\EntityNotFoundException();
 			}

@@ -98,7 +98,7 @@ class Cron {
 									
 									// Cache the avatar
 									if ($key == 'photo') {
-										$image = _elgg_services()->mediaCacher->saveImageFromUrl($author_value);
+										$image = elgg()->mediacacher->saveImageFromUrl($author_value);
 										/** \Elgg\IndieWeb\Cache\MediaCacher **/
 										
 										$webmention->setMetadata('author_thumbnail_url', elgg_get_inline_url($image));
