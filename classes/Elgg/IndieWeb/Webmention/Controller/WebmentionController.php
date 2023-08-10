@@ -49,7 +49,7 @@ class WebmentionController {
 		elgg_log('Accepting mentions', 'NOTICE');
 		
 		// We validate the request and store it as a webmention which we'll handle later in cron.
-		if ($source != $target) {
+		if (($source != $target) && (parse_url($source, PHP_URL_HOST) != parse_url($target, PHP_URL_HOST))) {
 			// Check if the source is blocked.
 			if (!self::sourceIsBlocked($source)) {
 				elgg_call(ELGG_IGNORE_ACCESS, function () use ($source, $target) {

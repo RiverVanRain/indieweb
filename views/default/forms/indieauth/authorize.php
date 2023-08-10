@@ -6,29 +6,10 @@ if (!elgg_is_admin_logged_in()) {
 
 $client_id = elgg_extract('client_id', $vars, get_input('client_id'));
 $redirect_uri = elgg_extract('redirect_uri', $vars, get_input('redirect_uri'));
-$scopes_params = elgg_extract('scope', $vars, get_input('scope'));
-
-$scopes = [];
-if (isset($scopes_params)) {
-    foreach (explode(' ', $scopes_params) as $s) {
-        $scopes[$s] = $s;
-    }
-}
 
 echo elgg_view_field([
 	'#html' => elgg_format_element('div', ['class' => 'mbm'], elgg_echo('indieweb:indieauth:authorize:title', [$client_id, elgg_get_logged_in_user_entity()->getDisplayName()])),
 ]);
-
-if (!empty($scopes)) {
-	echo elgg_view_field([
-		'#type' => 'checkboxes',
-		'#label' => elgg_echo('indieweb:indieauth:authorize:scopes'),
-		'name' => 'scope',
-		'options' => $scopes,
-		'default' => false,
-		'switch' => true,
-	]);
-}
 
 $fields = [
 	[
@@ -68,6 +49,11 @@ $fields = [
 		'#type' => 'hidden',
 		'name' => 'state',
 		'value' => elgg_extract('state', $vars, get_input('state')),
+	],
+	[
+		'#type' => 'hidden',
+		'name' => 'scope',
+		'value' => elgg_extract('scope', $vars, get_input('scope')),
 	],
 ];
 

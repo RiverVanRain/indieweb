@@ -31,22 +31,15 @@ if (!empty($count)) {
 	
 	$options['count'] = false;
 	$entities = elgg_get_entities($options);
-	$item = false;
 	
 	/* @var $entity ElggEntity */
 	foreach ($entities as $entity) {
-		$item = get_entity($entity->entity_id);
 		$row = [];
 
 		$row[] = elgg_format_element('td', ['width' => '30%'], elgg_view('object/websubpub', [
 			'entity' => $entity,
 		]));
-		$row[] = elgg_format_element('td', ['width' => '20%'], $entity->entity_type_id . elgg_view('output/url', [
-			'href' => $item->getURL(),
-			'text' => elgg_echo('indieweb:websub:websubpub:view'),
-			'title' => $item->getDisplayName(),
-			'class' => 'mls',
-		]));
+		$row[] = elgg_format_element('td', ['width' => '20%'], $entity->entity_type_id);
 		$row[] = elgg_format_element('td', ['width' => '20%'], $entity->entity_id);
 
 		// published

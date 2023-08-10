@@ -48,21 +48,34 @@ class IndieAuthController {
 			self::validateAuthenticationRequestParameters($request, $reason, $valid_request, $params);
 			
 			if (!$valid_request) {
-				elgg_log('Missing or invalid parameters to authentication request: ' . $reason, 'ERROR');
+				elgg_log('IndieAuth controller: Missing or invalid parameters to authentication request: ' . $reason, 'ERROR');
 				return elgg_error_response('Missing or invalid parameters', REFERRER, 400);
 			}
 
 			// Get authorization code
 			/** @var \Elgg\IndieWeb\IndieAuth\Entity\IndieAuthAuthorizationCode $authorization_code */
-			$authorization_code = self::getCodes($params['code']);
+			$code = $params['code'];
+			$authorization_code = elgg_call(ELGG_IGNORE_ACCESS, function () use ($code) {
+				$codes = elgg_get_entities([
+					'type' => 'object',
+					'subtype' => IndieAuthAuthorizationCode::SUBTYPE,
+					'limit' => false,
+					'metadata_name_value_pairs' => [
+						'name' => 'code',
+						'value' => $code,
+					],
+				]);
+				
+				return count($codes) === 1 ? array_shift($codes) : null;
+			});
 		
 			if (!$authorization_code instanceof IndieAuthAuthorizationCode) {
-				elgg_log('No authorization code found for '. $params['code'], 'ERROR');
+				elgg_log('IndieAuth controller: No authorization code found for '. $params['code'], 'ERROR');
 				return elgg_error_response('Authorization code not found', REFERRER, 404);
 			}
 
 			if (!$authorization_code->isValid()) {
-				elgg_log('Authorization expired for '. $params['code'], 'ERROR');
+				elgg_log('IndieAuth controller: Authorization expired for '. $params['code'], 'ERROR');
 				return elgg_error_response('Authorization code expired', REFERRER, 403);
 			}
 
@@ -78,7 +91,7 @@ class IndieAuthController {
 			}
 
 			if (!$valid_request) {
-				elgg_log('Stored values do not match with request values: '. $stored_data . ' - ' . print_r($params, 1), 'ERROR');
+				elgg_log('IndieAuth controller: Stored values do not match with request values: '. $stored_data . ' - ' . print_r($params, 1), 'ERROR');
 				return elgg_error_response('Session and request values do not match', REFERRER, 400);
 			}
 
@@ -103,27 +116,9 @@ class IndieAuthController {
 			$response .= '&client_id=' . $request->getParam('client_id');
 			$response .= '&me=' . $request->getParam('me');
 			$response .= '&state=' . $request->getParam('state');
+			$response .= '&scope=' . $request->getParam('scope');
 			return elgg_redirect_response($response);
 		}
-	}
-	
-	/**
-	* {@inheritdoc}
-	*/
-	public function getCodes($code) {
-		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($code) {
-			$codes = elgg_get_entities([
-				'type' => 'object',
-				'subtype' => IndieAuthAuthorizationCode::SUBTYPE,
-				'limit' => false,
-				'metadata_name_value_pairs' => [
-					'name' => 'code',
-					'value' => $code,
-				],
-			]);
-			
-			return count($codes) === 1 ? array_shift($codes) : null;
-		});
 	}
 
 	/**

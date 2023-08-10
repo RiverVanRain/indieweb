@@ -95,8 +95,7 @@ class MicropubController {
 					'syndicate-to' => $this->getSyndicationTargets(),
 				];
 			} else {
-				elgg_log('syndicate-to: No Valid Token', 'error');
-				return elgg_error_response('No Valid Token', REFERRER, 403);
+				return elgg_error_response('syndicate-to: No Valid Token', REFERRER, 403);
 			}
 			
 			return elgg_ok_response($response_message, '', REFERRER, $response_code);
@@ -142,8 +141,7 @@ class MicropubController {
 					$response_message['media-endpoint'] = elgg_generate_url('view:micropub:media');
 				}
 			} else {
-				elgg_log('config: No Valid Token', 'error');
-				return elgg_error_response('No Valid Token', REFERRER, 403);
+				return elgg_error_response('config: No Valid Token', REFERRER, 403);
 			}
 
 			return elgg_ok_response($response_message, '', REFERRER, $response_code);
@@ -166,8 +164,7 @@ class MicropubController {
 				$response_code = 200;
 				$response_message = $this->getSourceResponse($request);
 			} else {
-				elgg_log('source: No Valid Token', 'error');
-				return elgg_error_response('No Valid Token', REFERRER, 403);
+				return elgg_error_response('source: No Valid Token', REFERRER, 403);
 			}
 
 			return elgg_ok_response($response_message, '', REFERRER, $response_code);
@@ -190,8 +187,7 @@ class MicropubController {
 				$response_code = 200;
 				$response_message = $this->getContactsResponse($request);
 			} else {
-				elgg_log('contact: No Valid Token', 'error');
-				return elgg_error_response('No Valid Token', REFERRER, 403);
+				return elgg_error_response('contact: No Valid Token', REFERRER, 403);
 			}
 
 			return elgg_ok_response($response_message, '', REFERRER, $response_code);
@@ -214,8 +210,7 @@ class MicropubController {
 				$response_code = 200;
 				$response_message = $this->getGeoResponse($request);
 			} else {
-				elgg_log('geo: No Valid Token', 'error');
-				return elgg_error_response('No Valid Token', REFERRER, 403);
+				return elgg_error_response('geo: No Valid Token', REFERRER, 403);
 			}
 
 			return elgg_ok_response($response_message, '', REFERRER, $response_code);
@@ -238,8 +233,7 @@ class MicropubController {
 				$response_code = 200;
 				$response_message = ['categories' => $this->getCategories()];
 			} else {
-				elgg_log('category: No Valid Token', 'error');
-				return elgg_error_response('No Valid Token', REFERRER, 403);
+				return elgg_error_response('category: No Valid Token', REFERRER, 403);
 			}
 
 			return elgg_ok_response($response_message, '', REFERRER, $response_code);
@@ -288,8 +282,7 @@ class MicropubController {
 			// Validate token. Return early if it's not valid.
 			$valid_token = $indieAuth->isValidToken($auth_header, 'delete');
 			if (!$valid_token) {
-				elgg_log('delete: No Valid Token', 'error');
-				return elgg_error_response('No Valid Token', REFERRER, 403);
+				return elgg_error_response('delete: No Valid Token', REFERRER, 403);
 			}
 
 			$response_message = '';
@@ -324,8 +317,7 @@ class MicropubController {
 			// Validate token. Return early if it's not valid.
 			$valid_token = $indieAuth->isValidToken($auth_header, 'update');
 			if (!$valid_token) {
-				elgg_log('update: No Valid Token', 'error');
-				return elgg_error_response('No Valid Token', REFERRER, 403);
+				return elgg_error_response('update: No Valid Token', REFERRER, 403);
 			}
 
 			$guid = (int) indieweb_get_guid($this->object_url);
@@ -407,9 +399,9 @@ class MicropubController {
 
 			// Validate token. Return early if it's not valid.
 			$valid_token = $indieAuth->isValidToken($auth_header, 'create');
+			
 			if (!$valid_token) {
-				elgg_log('create: No Valid Token', 'error');
-				return elgg_error_response('No Valid Token', REFERRER, 403);
+				return elgg_error_response('create: No Valid Token', REFERRER, 403);
 			}
 
 			// Store original input so it can be inspected by hooks.
@@ -487,7 +479,7 @@ class MicropubController {
 
 					$entityContact = elgg()->{'indieweb.contact'}->storeContact($contact);
 
-					return elgg_ok_response('', '', $entityContact->getURL());
+					return elgg_ok_response();
 				}
 			}
 
@@ -575,79 +567,105 @@ class MicropubController {
 					$reply = $this->input['in-reply-to'][0];
 					
 					$guid = (int) indieweb_get_guid($reply);
-					
+
 					try {
 						if ($guid > 0) {
-							$target = get_entity($guid);
-							
-							try {
-								// This can be a reply on a comment, or set via a webmention. 
-								// Get the post to attach the comment there and set container_guid.
-								if ($target instanceof \Elgg\IndieWeb\Webmention\Entity\Webmention && $webmention_target->getProperty() === 'in-reply-to') {
-									$container_guid = $target->guid;
-									$link_field_url = $target->getURL();
-								} else if ($target instanceof \ElggComment) {
-									if ((int) elgg_get_config('comments_max_depth') > 0) {
+								$target = get_entity($guid);
+								
+								try {
+									// This can be a reply on a comment, or set via a webmention. 
+									// Get the post to attach the comment there and set container_guid.
+									if ($target instanceof \Elgg\IndieWeb\Webmention\Entity\Webmention && $target->getProperty() === 'in-reply-to') {
 										$container_guid = $target->guid;
 										$link_field_url = $target->getURL();
+									} else if ($target instanceof \ElggObject) {
+										$container_guid = $target->guid;
+										$link_field_url = $target->getURL();
+									}
+								} catch (\Exception $ignored) {}
+								
+								elgg_call(ELGG_IGNORE_ACCESS, function () use ($target, $container_guid, $link_field_url) {
+									$indieAuth = elgg()->indieauth;
+			
+									// Get user guid.
+									if (elgg_is_active_plugin('theme')) {
+										$owner_guid = (int) elgg_get_plugin_setting('micropub_author_reply', 'indieweb');
 									} else {
-										$container_guid = $target->container_guid;
-										$link_field_url = $target->getContainerEntity()->getURL();
+										$username = elgg_get_plugin_setting('micropub_author_reply', 'indieweb');
+										$owner_guid = get_user_by_username($username)->guid;
 									}
-								}
-							} catch (\Exception $ignored) {}
-							
-							// Create comment.
-							$comment = new \ElggComment();
-							$comment->description = htmlspecialchars($this->input['content'][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-	
-							if ($target instanceof \ElggComment) {
-								$comment->level = $target->getLevel() + 1;
-								$comment->parent_guid = $target->guid;
-								$comment->thread_guid = $target->getThreadGUID();
-								
-								// make sure comment is contained in the content
-								$target = $target->getContainerEntity();
-							}
-
-							$comment->owner_guid = elgg_get_site_entity()->guid;
-							$comment->container_guid = $container_guid;
-							$comment->access_id = $target->access_id;
-								
-							if (!$comment->save()) {
-								return elgg_error_response(elgg_echo('generic_comment:failure'));
-							}
-							
-							// Check if there's an image field.
-							if (elgg_is_active_plugin('theme')) {
-								$files = $this->saveUpload('upload');
-								if ($files && $comment->hasCapability('allow_attachments')) {
-									foreach ($files as $file) {
-										apps_attach($comment, $file);
+									
+									// Override user guid.
+									if ($tokenOwnerId = $indieAuth->checkAuthor()) {
+										$owner_guid = $tokenOwnerId;
 									}
-								}
-							}
+									
+									$session = elgg_get_session();
+									$owner = get_entity($owner_guid);
+									$session->setLoggedInUser($owner);
+									
+									// Create comment.
+									$comment = new \ElggComment();
+									
+									$description = $this->input['content'][0];
+									if (is_array($description)) {
+										$description = implode(' ', $description);
+									}
+									
+									$comment->description = htmlspecialchars($description, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+			
+									if ($target instanceof \ElggComment) {
+										$comment->level = $target->getLevel() + 1;
+										$comment->parent_guid = $target->guid;
+										$comment->thread_guid = $target->getThreadGUID();
+										
+										// make sure comment is contained in the content
+										$target = $target->getContainerEntity();
+									}
 
-							// Check link field.
-							if (!empty($link_field_url) && (bool) elgg_get_plugin_setting('micropub_send_webmention_reply', 'indieweb')) {
-								// Syndicate.
-								if (isset($this->input['mp-syndicate-to'])) {
-									$this->input['mp-syndicate-to'][] = $link_field_url;
-								} else {
-									$this->input['mp-syndicate-to'] = [$link_field_url];
-								}
-							}
+									$comment->owner_guid = $owner_guid;
+									$comment->container_guid = $container_guid;
+									$comment->access_id = $target->access_id;
+										
+									if (!$comment->save()) {
+										return elgg_error_response(elgg_echo('generic_comment:failure'));
+									}
+									
+									// Check if there's an image field.
+									$this->handleUploads($comment, 'reply', $owner_guid);
+									/*
+									if (elgg_is_active_plugin('theme')) {
+										$files = $this->saveUpload('upload', 'reply');
+										$this->handleUploads($entity, $post_type, $owner_guid);
+										if ($files && $comment->hasCapability('allow_attachments')) {
+											foreach ($files as $file) {
+												apps_attach($comment, $file);
+											}
+										}
+									}
+									*/
 
-							return $this->saveComment($comment);
+									// Check link field.
+									if (!empty($link_field_url) && (bool) elgg_get_plugin_setting('micropub_send_webmention_reply', 'indieweb')) {
+										// Syndicate.
+										if (isset($this->input['mp-syndicate-to'])) {
+											$this->input['mp-syndicate-to'][] = $link_field_url;
+										} else {
+											$this->input['mp-syndicate-to'] = [$link_field_url];
+										}
+									}
+
+									return $this->saveComment($comment);
+								});
 						}
 					} catch (\Exception $e) {
 						elgg_log('Error trying to create a comment from reply: ' . $e->getMessage(), 'error');
 					}
+				} else {
+					// We got here, so it's a standard post
+					$entity = $this->createEntity(elgg_echo('indieweb:micropub:reply:title', [$this->input['in-reply-to'][0]]), 'reply', 'in-reply-to');
+					return $this->saveEntity($entity);
 				}
-
-				// We got here, so it's a standard post
-				$entity = $this->createEntity(elgg_echo('indieweb:micropub:reply:title', [$this->input['in-reply-to'][0]]), 'reply', 'in-reply-to');
-				return $this->saveEntity($entity);
 			}
 
 			// Note post type.
@@ -717,8 +735,6 @@ class MicropubController {
 				}
 			} else {
 				// Upload file.
-				$response_code = 200;
-				
 				$files = $this->saveUpload('upload');
 				
 				if (!empty($files)) {
@@ -730,20 +746,11 @@ class MicropubController {
 						});
 					}
 					
-					// Return the url in Location.
-					$response_code = 201;
-					
-					$file_url = $files[0]->getURL();
-					$response_message = [
-						'url' => $file_url
-					];
-					
-					return elgg_ok_response($response_message, '', $file_url, $response_code);
+					return elgg_ok_response();
 				}
 			}
 		} else {
-			elgg_log('upload: No Valid Token', 'error');
-			return elgg_error_response('No Valid Token', REFERRER, 403);
+			return elgg_error_response('upload: No Valid Token', REFERRER, 403);
 		}
 
 		return elgg_ok_response($response_message, '', REFERRER, $response_code);
@@ -839,108 +846,121 @@ class MicropubController {
 	*
 	*/
 	protected function createEntity($title, $post_type, $link_input_name = null) {
-		// Get user guid.
-		if (elgg_is_active_plugin('theme')) {
-			$owner_guid = (int) elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
-		} else {
-			$username = elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
-			$owner_guid = get_user_by_username($username)->guid;
-		}
-		
-		if (empty($owner_guid)) {
-			$owner_guid = 1;
-		}
-		
-		$subtype = elgg_get_plugin_setting('micropub_type_' . $post_type, 'indieweb');
+		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($title, $post_type, $link_input_name) {
+			$indieAuth = elgg()->indieauth;
+			
+			// Get user guid.
+			if (elgg_is_active_plugin('theme')) {
+				$owner_guid = (int) elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
+			} else {
+				$username = elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
+				$owner_guid = get_user_by_username($username)->guid;
+			}
+			
+			$subtype = elgg_get_plugin_setting('micropub_type_' . $post_type, 'indieweb');
 
-		$status = 'draft';
-		if ((bool) elgg_get_plugin_setting('micropub_status_' . $post_type, 'indieweb')) {
-			$status = 'published';
-		}
-		
-		// Override user guid.
-		if ($tokenOwnerId = $indieAuth->checkAuthor()) {
-			$owner_guid = $tokenOwnerId;
-		}
-		
-		$time_created = time();
-
-		// Published date.
-		if (!empty($this->input['published'][0])) {
-			$time_created = strtotime($this->input['published'][0]);
-		}
-
-		// Check post-status.
-		if (!empty($this->input['post-status'][0])) {
-			if ($this->input['post-status'][0] === 'published') {
+			$status = 'draft';
+			if ((bool) elgg_get_plugin_setting('micropub_status_' . $post_type, 'indieweb')) {
 				$status = 'published';
 			}
-			if ($this->input['post-status'][0] === 'draft') {
-				$status = 'draft';
-			}
-		}
-
-		// Add link to syndicate to.
-		if ($link_input_name && (bool) elgg_get_plugin_setting('micropub_send_webmention_' . $post_type, 'indieweb')) {
-			if (isset($this->input['mp-syndicate-to'])) {
-				$this->input['mp-syndicate-to'][] = $this->input[$link_input_name][0];
-			} else {
-				$this->input['mp-syndicate-to'] = $this->input[$link_input_name];
-			}
-		}
-
-		// Create node.
-		$entity = new \ElggObject;
-		$entity->setSubtype($subtype);
-		$entity->owner_guid = $owner_guid;
-		$entity->time_created = $time_created;
-		$entity->access_id = ACCESS_PUBLIC;
-		$entity->title = $title;
-		
-		if (elgg_is_active_plugin('theme')) {
-			$entity->published_status = $status;
-		} else {
-			$entity->status = $status;
-		}
-
-		// Content.
-		if (!empty($this->input['content'][0]) && (bool) elgg_get_plugin_setting('micropub_field_content_' . $post_type, 'indieweb')) {
-			$description = htmlspecialchars($this->input['content'][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-
-			$entity->description = $description;
-		}
-
-		// Link.
-		if ((bool) elgg_get_plugin_setting('micropub_field_link_' . $post_type, 'indieweb')) {
-			$uri = '';
 			
-			if (!empty($this->location['url'])) {
-				$uri = $this->location['url'];
-			} else if (!empty($this->input[$link_input_name][0])) {
-				$uri = $this->input[$link_input_name][0];
+			// Override user guid.
+			if ($tokenOwnerId = $indieAuth->checkAuthor()) {
+				$owner_guid = $tokenOwnerId;
+			}
+			
+			$session = elgg_get_session();
+			$owner = get_entity($owner_guid);
+			$session->setLoggedInUser($owner);
+			
+			$time_created = time();
+
+			// Published date.
+			if (!empty($this->input['published'][0])) {
+				$time_created = strtotime($this->input['published'][0]);
 			}
 
-			if ($uri) {
-				$entity->address = $uri;
+			// Check post-status.
+			if (!empty($this->input['post-status'][0])) {
+				if ($this->input['post-status'][0] === 'published') {
+					$status = 'published';
+				}
+				if ($this->input['post-status'][0] === 'draft') {
+					$status = 'draft';
+				}
 			}
-		}
 
-		// Uploads.
-		if ((bool) elgg_get_plugin_setting('micropub_field_upload_' . $post_type, 'indieweb')) {
-			$this->handleUploads($entity, $post_type, $owner_guid);
-		}
+			// Add link to syndicate to.
+			if ($link_input_name && (bool) elgg_get_plugin_setting('micropub_send_webmention_' . $post_type, 'indieweb')) {
+				if (isset($this->input['mp-syndicate-to'])) {
+					$this->input['mp-syndicate-to'][] = $this->input[$link_input_name][0];
+				} else {
+					$this->input['mp-syndicate-to'] = $this->input[$link_input_name];
+				}
+			}
 
-		// Categories.
-		if ((bool) elgg_get_plugin_setting('micropub_field_tags_' . $post_type, 'indieweb')) { 
-			$this->handleCategories($entity, $post_type);
-		}
+			// Create post
+			$entity = new \ElggObject;
+			$entity->setSubtype($subtype);
+			$entity->owner_guid = $owner_guid;
+			$entity->time_created = $time_created;
+			$entity->access_id = ACCESS_PUBLIC;
+			$entity->title = $title;
+			
+			if (elgg_is_active_plugin('theme')) {
+				$entity->published_status = $status;
+			} else {
+				$entity->status = $status;
+			}
 
-		// Geo location.
-		if ((bool) elgg_get_plugin_setting('micropub_field_location_' . $post_type, 'indieweb')) { 
-			$this->handleGeoLocation($entity, $post_type);
-		}
-		
-		return $entity;
+			// Content.
+			if (!empty($this->input['content'][0]) && (bool) elgg_get_plugin_setting('micropub_field_content_' . $post_type, 'indieweb')) {
+				$entity->description = $this->input['content'][0];
+				/*
+				if (is_array($description)) {
+					$description = implode(' ', $description);
+				}
+				$entity->description = htmlspecialchars($description, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+				*/
+			}
+
+			// Link.
+			if ((bool) elgg_get_plugin_setting('micropub_field_link_' . $post_type, 'indieweb')) {
+				$uri = '';
+				
+				if (!empty($this->location['url'])) {
+					$uri = $this->location['url'];
+				} else if (!empty($this->input[$link_input_name][0])) {
+					$uri = $this->input[$link_input_name][0];
+				}
+
+				if ($uri) {
+					$entity->address = $uri;
+				}
+			}
+			
+			if (!$entity->save()) {
+				elgg_log('Error creating entity from post', 'ERROR');
+				return elgg_error_response('Error creating entity from post', REFERRER, 403);
+			}
+
+			// Uploads.
+			if ((bool) elgg_get_plugin_setting('micropub_field_upload_' . $post_type, 'indieweb')) {
+				$this->handleUploads($entity, $post_type, $owner_guid);
+			}
+
+			// Categories.
+			if ((bool) elgg_get_plugin_setting('micropub_field_tags_' . $post_type, 'indieweb')) { 
+				$this->handleCategories($entity, $post_type);
+			}
+
+			// Geo location.
+			if ((bool) elgg_get_plugin_setting('micropub_field_location_' . $post_type, 'indieweb')) { 
+				$this->handleGeoLocation($entity, $post_type);
+			}
+			
+			return $entity;
+		});
 	}
 
 	/**
@@ -950,7 +970,7 @@ class MicropubController {
 	*
 	*/
 	protected function saveEntity(\ElggObject $entity) {
-		if ($entity->save()) {
+		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($entity) {
 			// Syndicate.
 			if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
 				$this->syndicateToPost($entity);
@@ -964,10 +984,8 @@ class MicropubController {
 			// Allow plugins to react after the post is saved.
 			elgg_trigger_plugin_hook('indieweb_micropub_post_saved', $entity->subtype, $this->input, []);
 
-			return elgg_ok_response('', '', $entity->getURL());
-		}
-		
-		return elgg_error_response(elgg_echo('error:post:save'));
+			return elgg_ok_response();
+		});
 	}
 
 	/**
@@ -977,7 +995,7 @@ class MicropubController {
 	*
 	*/
 	protected function saveComment(\ElggComment $comment) {
-		if ($comment->save()) {
+		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($comment) {
 			// only river for top level comments
 			if ($comment->getLevel() === 1) {
 				// Add to river
@@ -985,19 +1003,17 @@ class MicropubController {
 					'view' => 'river/object/comment/create',
 					'action_type' => 'comment',
 					'object_guid' => $comment->guid,
-					'target_guid' => $comment->getContainerEntity()->guid,
+					'target_guid' => $comment->container_guid,
 				]);
 			}
-			
+				
 			// Syndicate.
 			if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
 				$this->syndicateToComment($comment);
 			}
-
-			return elgg_ok_response('', '', $comment->getURL());
-		}
-		
-		return elgg_error_response(elgg_echo('generic_comment:failure'));
+				
+			return elgg_ok_response();
+		});
 	}
 
 	/**
@@ -1005,104 +1021,111 @@ class MicropubController {
 	*
 	* @param $file_key
 	*   The key in the $_FILES variable to look for in upload.
+	* @param $post_type
+	*   Micropub port type
 	* @param $limit
 	*   Limit number of uploads, 10 files maximum
 	*
 	* @return array $files
 	*
 	*/
-	protected function saveUpload($file_key, int $limit = 1) {
-		$files = [];
-		
-		$file_bag = _elgg_services()->request->files;
-		
-		$uploaded_files = $file_bag->get($file_key);
-		if (!$uploaded_files) {
-			return [];
-		}
-		if (!is_array($uploaded_files)) {
-			$uploaded_files = [$uploaded_files];
-		}
-		
-		foreach ($uploaded_files as $upload) {
-			if (!$upload->isValid()) {
-				continue;
+	protected function saveUpload($file_key, $post_type = '', int $limit = 1) {
+		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($file_key, $post_type, $limit) {
+			$files = [];
+			
+			$file_bag = _elgg_services()->request->files;
+
+			$uploaded_files = $file_bag->get($file_key);
+			if (!$uploaded_files) {
+				return [];
+			}
+			if (!is_array($uploaded_files)) {
+				$uploaded_files = [$uploaded_files];
 			}
 			
-			if ($limit && $upload >= $limit) {
-				continue;
+			$owner_guid = elgg_get_site_entity()->guid;
+			
+			$indieAuth = elgg()->indieauth;
+			
+			// Get user guid.
+			if (!empty($post_type) && elgg_is_active_plugin('theme')) {
+				$owner_guid = (int) elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
+			} else if (!empty($post_type)) {
+				$username = elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
+				$owner_guid = get_user_by_username($username)->guid;
 			}
 			
-			$file = new \ElggFile;
-			/* @var $file ElggFile */
-				
-			$originalfilename = $upload->getClientOriginalName();
-			$file->originalfilename = $originalfilename;
-			$file->title = htmlspecialchars($file->originalfilename, ENT_QUOTES, 'UTF-8');
-			$file->upload_time = time();
-			$prefix = $file->filestore_prefix ? : 'file';
-			$prefix = trim($prefix, '/');
-			$filename = elgg_strtolower("$prefix/{$file->upload_time}{$file->originalfilename}");
-			$file->setFilename($filename);
-			$file->filestore_prefix = $prefix;
-				
-			$file->owner_guid = elgg_get_site_entity()->guid;
-			$file->access_id = ACCESS_PUBLIC;
-				
-			$mime_type = elgg()->mimetype->getMimeType($file->getFilenameOnFilestore(), $upload->getClientMimeType());
-			$simpletype = elgg()->mimetype->getSimpleType($mime_type);
-				
-			if (!in_array($simpletype, ['audio', 'image', 'video'])) {
-				$file->delete();
-				continue;
+			// Override user guid.
+			if ($tokenOwnerId = $indieAuth->checkAuthor()) {
+				$owner_guid = $tokenOwnerId;
 			}
-				
-			$file->simpletype = $simpletype;
-
-			$hook_params = [
-				'file' => $file,
-				'upload' => $upload,
-			];
-
-			$uploaded = _elgg_services()->hooks->trigger('upload', 'file', $hook_params);
-			if ($uploaded !== true && $uploaded !== false) {
-				$filestorename = $file->getFilenameOnFilestore();
-				try {
-					$uploaded = $upload->move(pathinfo($filestorename, PATHINFO_DIRNAME), pathinfo($filestorename, PATHINFO_BASENAME));
-				} catch (\Symfony\Component\HttpFoundation\File\Exception\FileException $ex) {
-					elgg_log($ex->getMessage(), 'ERROR');
-					$uploaded = false;
+			
+			$session = elgg_get_session();
+			$owner = get_entity($owner_guid);
+			
+			if ($owner instanceof \ElggUser) {
+				$session->setLoggedInUser($owner);
+			}
+			
+			foreach ($uploaded_files as $upload) {
+				if (!$upload->isValid()) {
+					continue;
 				}
-			}
-
-			if (!$uploaded) {
-				continue;
-			}
-
-			$mime_type = elgg()->mimetype->getMimeType($file->getFilenameOnFilestore(), $upload->getClientMimeType());
-			if ($mime_type === 'image/vnd.djvu' || $mime_type === 'image/vnd.djvu+multipage'){
-				$file->setMimeType('application/x-ext-djvu');
-			} else {
-				$file->setMimeType($mime_type);
-			}
 				
-			_elgg_services()->events->triggerAfter('upload', 'file', $file);
-
-			if (!$file->save() || !$file->exists()) {
-				$file->delete();
-				continue;
-			}
-
-			if (($file->getMimeType() === 'image/jpeg' || $file->getMimeType() === 'image/png' || $file->getMimeType() === 'image/gif' || $file->getMimeType() === 'image/webp') && $file->saveIconFromElggFile($file)) {
-				$file->thumbnail = $file->getIcon('small')->getFilename();
-				$file->smallthumb = $file->getIcon('medium')->getFilename();
-				$file->largethumb = $file->getIcon('large')->getFilename();
-			}
+				if ($limit && $upload > $limit) {
+					continue;
+				}
 				
-			$files[] = $file;
-		}
-		
-		return $files;
+				$file = new \ElggFile;
+				/* @var $file ElggFile */
+					
+				$originalfilename = $upload->getClientOriginalName();
+				$file->originalfilename = $originalfilename;
+				$file->title = htmlspecialchars($file->originalfilename, ENT_QUOTES, 'UTF-8');
+				$file->upload_time = time();
+				$file->owner_guid = $owner_guid;
+				$file->access_id = ACCESS_PUBLIC;
+				$file->save();
+				
+				// remove old icons
+				$sizes = elgg_get_icon_sizes($file->getType(), $file->getSubtype());
+				$master_location = null;
+				foreach ($sizes as $size => $props) {
+					$icon = $file->getIcon($size);
+					if ($size === 'master') {
+						// needs to be kept in case upload fails
+						$master_location = $icon->getFilenameOnFilestore();
+						continue;
+					}
+					
+					$icon->delete();
+				}
+				
+				if (!$file->acceptUploadedFile($upload)) {
+					$file->delete();
+					continue;
+				}
+				
+				if (!$file->save() || !$file->exists()) {
+					$file->delete();
+					continue;
+				}
+				
+				if (!in_array($file->getSimpleType(), ['audio', 'image', 'video'])) {
+					$file->delete();
+					continue;
+				}
+				
+				// update icons
+				if ($file->getSimpleType() === 'image') {
+					$file->saveIconFromElggFile($file);
+				}
+					
+				$files[] = $file;
+			}
+			
+			return $files;
+		});
 	}
 
 	/**
@@ -1117,16 +1140,16 @@ class MicropubController {
 		foreach (['photo', 'audio', 'video'] as $upload_key) {
 			$limit = (int) elgg_get_plugin_setting('micropub_field_upload_limit_' . $post_type, 'indieweb', 1);
 	
-			$files = $this->saveUpload($upload_key, $limit);
+			$files = $this->saveUpload($upload_key, $post_type, $limit);
 			
 			if ($files) {
-				elgg_call(ELGG_IGNORE_ACCESS, function () use ($entity, &$files) {
+				elgg_call(ELGG_IGNORE_ACCESS, function () use ($entity, $owner_guid, &$files) {
 					foreach ($files as $file) {
 						$file->owner_guid = $owner_guid;
 						$file->container_guid = $entity->guid;
-						$file->save();
-						
-						$entity->addRelationship($file->guid, 'attached');
+						if ($file->save()) {
+							$entity->addRelationship($file->guid, 'attached');
+						}
 					}
 				});
 			}
@@ -1191,8 +1214,12 @@ class MicropubController {
 			
 			$source = $entity->getURL();
 			$guid = $entity->guid;
-		
+			
 			foreach ($this->input['mp-syndicate-to'] as $target) {
+				if (parse_url($source, PHP_URL_HOST) === parse_url($target, PHP_URL_HOST)) {
+					continue;
+				}
+				
 				$client->sendWebmention($source, $target);
 				
 				elgg_call(ELGG_IGNORE_ACCESS, function () use ($guid, $source) {

@@ -68,15 +68,13 @@ class IndieAuthClient {
 	* {@inheritdoc}
 	*/
 	public function isValidToken($auth_header, $scope_to_check = null) {
-		elgg_call(ELGG_IGNORE_ACCESS, function () use ($auth_header, $scope_to_check) {
-			$token_endpoint = elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb');
+		$token_endpoint = elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb');
 			
-			if ((bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
-				return $this->validateTokenInternal($auth_header, $scope_to_check);
-			} else {
-				return $this->validateTokenOnExternalService($auth_header, $token_endpoint, $scope_to_check);
-			}
-		});
+		if ((bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
+			return (bool) $this->validateTokenInternal($auth_header, $scope_to_check);
+		} else {
+			return (bool) $this->validateTokenOnExternalService($auth_header, $token_endpoint, $scope_to_check);
+		}
 	}
 
 	/**
@@ -103,28 +101,6 @@ class IndieAuthClient {
 	
 	/**
 	* {@inheritdoc}
-	* WIP Проверить входящие данные хидера и ИП
-	*/
-	public function getTokens($access_token) {
-		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($access_token) {
-			$indieAuthToken = elgg_get_entities([
-				'type' => 'object',
-				'subtype' => IndieAuthToken::SUBTYPE,
-				'limit' => 1,
-				'metadata_name_value_pairs' => [
-					'name' => 'access_token',
-					'value' => $access_token,
-				],
-			]);
-			
-			elgg_log('Token ' . $indieAuthToken->guid, 'error');
-
-			return $indieAuthToken;
-		});
-	}
-
-	/**
-	* {@inheritdoc}
 	*/
 	public function revokeToken($token) {
 		$signer = new Sha512();
@@ -144,7 +120,19 @@ class IndieAuthClient {
 			elgg_log('Error revoking token: ' . $e->getMessage(), 'ERROR');
 		}
 		
-		$indieAuthToken = $this->getTokens($access_token);
+		$indieAuthToken = elgg_call(ELGG_IGNORE_ACCESS, function () use ($access_token) {
+			$indieAuthTokens = elgg_get_entities([
+				'type' => 'object',
+				'subtype' => IndieAuthToken::SUBTYPE,
+				'limit' => false,
+				'metadata_name_value_pairs' => [
+					'name' => 'access_token',
+					'value' => $access_token,
+				],
+			]);
+			
+			return count($indieAuthTokens) === 1 ? array_shift($indieAuthTokens) : null;
+		});
 
 		if ($indieAuthToken instanceof IndieAuthToken) {
 			try {
@@ -269,12 +257,20 @@ class IndieAuthClient {
 			return false;
 		}
 		
-		$indieAuthToken = $this->getTokens($access_token);
-		elgg_log('access_token - ' . $access_token, 'error');
-
+		$indieAuthToken = elgg_call(ELGG_IGNORE_ACCESS, function () use ($access_token) {
+			$indieAuthTokens = elgg_get_entities([
+				'type' => 'object',
+				'subtype' => IndieAuthToken::SUBTYPE,
+				'limit' => false,
+				'metadata_name_value_pairs' => [
+					'name' => 'access_token',
+					'value' => $access_token,
+				],
+			]);
+			return count($indieAuthTokens) === 1 ? array_shift($indieAuthTokens) : null;
+		});
+		
 		if ($indieAuthToken instanceof IndieAuthToken && $indieAuthToken->isValid()) {
-			elgg_log('indieAuthToken ' . $indieAuthToken->guid, 'error');
-			
 			// The token is valid
 			$valid_token = true;
 

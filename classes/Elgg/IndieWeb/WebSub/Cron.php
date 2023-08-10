@@ -236,4 +236,44 @@ class Cron {
 		echo "Finished cleanup WebSubPub processing" . PHP_EOL;
 		elgg_log("Finished cleanup WebSubPub processing", 'NOTICE');
 	}
+	
+	public static function emptyWebSubPub(\Elgg\Hook $hook) {
+		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
+		   return;
+		}
+		
+		echo "Processes empty WebSubPub starting" . PHP_EOL;
+		elgg_log("Processes empty WebSubPub starting", 'NOTICE');
+		
+		// ignore access
+		elgg_call(ELGG_IGNORE_ACCESS, function() {
+			$websubpubs = elgg_get_entities([
+                'type' => 'object',
+                'subtype' => WebSubPub::SUBTYPE,
+                'wheres' => [
+					function (\Elgg\Database\QueryBuilder $qb) {
+						$md_alias = $qb->joinMetadataTable('e', 'guid', 'entity_id', 'left');
+						
+						return $qb->compare("$md_alias.value", 'IS NULL');
+					},
+				],
+                'limit' => false,
+                'batch' => true,
+                'batch_inc_offset' => false
+            ]);
+			
+			if (empty($websubpubs)) {
+				return true;
+			}
+			
+			foreach ($websubpubs as $websubpub) {
+				$websubpub->delete();
+			}
+
+		// restore access
+		});
+		
+		echo "Finished empty WebSubPub processing" . PHP_EOL;
+		elgg_log("Finished empty WebSubPub processing", 'NOTICE');
+	}
 }

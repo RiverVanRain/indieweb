@@ -31,31 +31,22 @@ if (!empty($count)) {
 	
 	$options['count'] = false;
 	$entities = elgg_get_entities($options);
-	$item = false;
 	
 	/* @var $entity ElggEntity */
 	foreach ($entities as $entity) {
-		$item = get_entity($entity->source_id);
 		$row = [];
 		
-		$row[] = elgg_format_element('td', ['width' => '30%'], elgg_view('object/syndication', [
+		$row[] = elgg_format_element('td', ['width' => '70%'], elgg_view('object/syndication', [
 			'entity' => $entity,
 		]));
-		$row[] = elgg_format_element('td', ['width' => '50%'], $item->getURL());
-		$row[] = elgg_format_element('td', ['width' => '20%'], $entity->source_id . elgg_view('output/url', [
-			'href' => $item->getURL(),
-			'text' => elgg_echo('indieweb:webmention:syndication:view'),
-			'title' => $item->getDisplayName(),
-			'class' => 'mls',
-		]));
+		$row[] = elgg_format_element('td', ['width' => '30%'], $entity->source_id);
 		
 		$rows[] = elgg_format_element('tr', [], implode('', $row));
 	}
 	
 	$header_row = [
-		elgg_format_element('th', ['width' => '30%'], elgg_echo('item:object:syndication')),
-		elgg_format_element('th', ['width' => '50%'], elgg_echo('indieweb:syndication:url')),
-		elgg_format_element('th', ['width' => '20%'], elgg_echo('indieweb:syndication:source_id')),
+		elgg_format_element('th', ['width' => '70%'], elgg_echo('item:object:syndication')),
+		elgg_format_element('th', ['width' => '30%'], elgg_echo('indieweb:syndication:source_id')),
 	];
 	$header = elgg_format_element('tr', [], implode('', $header_row));
 	

@@ -41,7 +41,31 @@ class AuthFormController {
 
 		// Redirect to user login if this is an anonymous user. Start a session so we don't expose the details of the request on the user login page.
 		if (!elgg_is_admin_logged_in()) {
-			self::validateAuthorizeRequestParameters($request, $reason, $valid_request, false, $params);
+			// Check request parameters for an IndieAuth authorize request
+			foreach (self::$auth_parameters as $parameter) {
+				$value = $request->getParam($parameter);
+				
+				if (empty($value) && !in_array($parameter, ['response_type', 'scope', 'code_challenge', 'code_challenge_method'])) {
+					$reason = "$parameter is empty";
+					$valid_request = false;
+					break;
+				} else if ($parameter === 'response_type') {
+					if (!empty($value) && ($value != 'code' && $value != 'id')) {
+						$valid_request = false;
+						$reason = "response type is not code or id ($value)";
+						break;
+					}
+					
+					// Set default value in case it was empty
+					// See https://indieauth.spec.indieweb.org/#authentication-request
+					$value = 'id';
+				}
+
+				// Store the params
+				if (is_array($params) && !empty($value)) {
+					$params[$parameter] = $value;
+				}
+			}
 
 			if ($valid_request) {
 				$_SESSION['indieauth'] = $params;
@@ -62,7 +86,32 @@ class AuthFormController {
 			return elgg_error_response(elgg_echo('indieweb:indieauth:auth:invalid'));
 		} else if (!isset($_SESSION['indieauth'])) {
 			// Authenticated user: Store in session in case the indieauth key does not exist yet.
-			self::validateAuthorizeRequestParameters($request, $reason, $valid_request, false, $params);
+			// Check request parameters for an IndieAuth authorize request
+			foreach (self::$auth_parameters as $parameter) {
+				$value = $request->getParam($parameter);
+				
+				if (empty($value) && !in_array($parameter, ['response_type', 'scope', 'code_challenge', 'code_challenge_method'])) {
+					$reason = "$parameter is empty";
+					$valid_request = false;
+					break;
+				} else if ($parameter === 'response_type') {
+					if (!empty($value) && ($value != 'code' && $value != 'id')) {
+						$valid_request = false;
+						$reason = "response type is not code or id ($value)";
+						break;
+					}
+					
+					// Set default value in case it was empty
+					// See https://indieauth.spec.indieweb.org/#authentication-request
+					$value = 'id';
+				}
+
+				// Store the params
+				if (is_array($params) && !empty($value)) {
+					$params[$parameter] = $value;
+				}
+			}
+			
 			$_SESSION['indieauth'] = $params;
 		}
 		
@@ -71,7 +120,31 @@ class AuthFormController {
 			return elgg_error_response(elgg_echo('indieweb:indieauth:auth:permission'));
 		}
 		
-		self::validateAuthorizeRequestParameters($request, $reason, $valid_request, true);
+		// Check request parameters for an IndieAuth authorize request
+		foreach (self::$auth_parameters as $parameter) {
+			$value = isset($_SESSION['indieauth'][$parameter]) ? $_SESSION['indieauth'][$parameter] : $request->getParam($parameter);
+			
+			if (empty($value) && !in_array($parameter, ['response_type', 'scope', 'code_challenge', 'code_challenge_method'])) {
+				$reason = "$parameter is empty";
+				$valid_request = false;
+				break;
+			} else if ($parameter === 'response_type') {
+				if (!empty($value) && ($value != 'code' && $value != 'id')) {
+					$valid_request = false;
+					$reason = "response type is not code or id ($value)";
+					break;
+				}
+				
+				// Set default value in case it was empty
+				// See https://indieauth.spec.indieweb.org/#authentication-request
+				$value = 'id';
+			}
+
+			// Store the params
+			if (is_array($params) && !empty($value)) {
+				$params[$parameter] = $value;
+			}
+		}
 		
 		if (!$valid_request) {
 			unset($_SESSION['indieauth']);

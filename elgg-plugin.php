@@ -214,10 +214,13 @@ return [
 				'Elgg\IndieWeb\WebSub\Cron::processNotifications' => [],
 			],
 			'daily' => [
+				// Webmention
+				'Elgg\IndieWeb\Webmention\Cron::emptySyndications' => [],
 				// IndieAuth
 				'Elgg\IndieWeb\IndieAuth\Cron::processCodes' => [],
 				// WebSub
 				'Elgg\IndieWeb\WebSub\Cron::cleanupWebSubPub' => [],
+				'Elgg\IndieWeb\WebSub\Cron::emptyWebSubPub' => [],
 			],
 			'weekly' => [
 				// WebSub

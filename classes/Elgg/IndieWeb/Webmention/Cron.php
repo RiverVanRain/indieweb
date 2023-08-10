@@ -336,4 +336,41 @@ class Cron {
 		echo "Finished received webmentions processing" . PHP_EOL;
 		elgg_log("Finished received webmentions processing", 'NOTICE');
 	}
+	
+	public static function emptySyndications(\Elgg\Hook $hook) {
+		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
+		   return;
+		}
+		
+		echo "Processes empty Syndications starting" . PHP_EOL;
+		elgg_log("Processes empty Syndications starting", 'NOTICE');
+		
+		// ignore access
+		elgg_call(ELGG_IGNORE_ACCESS, function() {
+			$syndications = elgg_get_entities([
+                'type' => 'object',
+                'subtype' => Syndication::SUBTYPE,
+                'limit' => false,
+                'batch' => true,
+                'batch_inc_offset' => false
+            ]);
+			
+			if (empty($syndications)) {
+				return true;
+			}
+			
+			foreach ($syndications as $syndication) {
+				$entity = get_entity($syndication->source_id);
+				
+				if (!$entity instanceof \ElggObject) {
+					$syndication->delete();
+				}
+			}
+
+		// restore access
+		});
+		
+		echo "Finished empty Syndications processing" . PHP_EOL;
+		elgg_log("Finished empty Syndications processing", 'NOTICE');
+	}
 }

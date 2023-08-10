@@ -48,7 +48,7 @@ class TokenController {
 		if ($request->getMethod() === 'GET') {
 			$auth_header = $indieAuthClient->getAuthorizationHeader($request->getHttpRequest());
 			if (!$auth_header) {
-				elgg_log('Missing Authorization Header', 'ERROR');
+				elgg_log('Token controller: Missing Authorization Header', 'ERROR');
 				return elgg_error_response('Missing Authorization Header', REFERRER, 401);
 			}
 
@@ -87,55 +87,68 @@ class TokenController {
 		self::validateTokenRequestParameters($request, $reason, $valid_request, $params);
 		
 		if (!$valid_request) {
-			elgg_log('Missing or invalid parameters to obtain code: '. $reason, 'ERROR');
+			elgg_log('Token controller: Missing or invalid parameters to obtain code: '. $reason, 'ERROR');
 			return elgg_error_response('Missing or invalid parameters', REFERRER, 400);
 		}
 
 		// Get authorization code
 		/** @var \Elgg\IndieWeb\IndieAuth\Entity\IndieAuthAuthorizationCode $authorization_code */
-		$authorization_code = self::getCodes($params['code']);
+		$code = $params['code'];
+		$authorization_code = elgg_call(ELGG_IGNORE_ACCESS, function () use ($code) {
+			$codes = elgg_get_entities([
+				'type' => 'object',
+				'subtype' => IndieAuthAuthorizationCode::SUBTYPE,
+				'limit' => false,
+				'metadata_name_value_pairs' => [
+					'name' => 'code',
+					'value' => $code,
+				],
+			]);
+				
+			return count($codes) === 1 ? array_shift($codes) : null;
+		});
 		
 		if (!$authorization_code instanceof IndieAuthAuthorizationCode) {
-			elgg_log('No Authorization code found for ' . $params['code'], 'ERROR');
+			elgg_log('Token controller: No Authorization code found for ' . $params['code'], 'ERROR');
 			return elgg_error_response('Authorization code not found', REFERRER, 404);
 		}
 
 		if (!$authorization_code->isValid()) {
-			elgg_log('Authorization expired for ' . $params['code'], 'ERROR');
+			elgg_log('Token controller: Authorization expired for ' . $params['code'], 'ERROR');
 			return elgg_error_response('Authorization code expired', REFERRER, 403);
 		}
 
 		// Validate redirect_uri, me and client_id, and scope is not empty
 		if ($authorization_code->getClientId() != $params['client_id']) {
-			elgg_log('Client ID does not match ' . $params['client_id'], 'ERROR');
+			elgg_log('Token controller: Client ID does not match ' . $params['client_id'], 'ERROR');
 			return elgg_error_response('Client ID does not match', REFERRER, 400);
 		}
 		
 		if ($authorization_code->getRedirectURI() != $params['redirect_uri']) {
-			elgg_log('Redirect URI does not match ' . $params['redirect_uri'], 'ERROR');
+			elgg_log('Token controller: Redirect URI does not match ' . $params['redirect_uri'], 'ERROR');
 			return elgg_error_response('Redirect URI does not match', REFERRER, 400);
 		}
 		
 		// Hack: For some reasons many clients don't send 'me' parameter
 		//if ($authorization_code->getMe() != $params['me']) {
 		if ($authorization_code->getMe() != elgg_get_site_url()) {	
-			//elgg_log('Me does not match ' . $params['me'], 'ERROR');
-			elgg_log('Me does not match ' . elgg_get_site_url(), 'ERROR');
+			//elgg_log('Token controller: Me does not match ' . $params['me'], 'ERROR');
+			elgg_log('Token controller: Me does not match ' . elgg_get_site_url(), 'ERROR');
 			return elgg_error_response('Me does not match', REFERRER, 400);
 		}
 		
 		if (empty($authorization_code->getScopes())) {
-			elgg_log('Scope is empty, can not issue access token', 'ERROR');
+			elgg_log('Token controller: Scope is empty, can not issue access token', 'ERROR');
 			return elgg_error_response('Scope is empty, can not issue access token', REFERRER, 400);
 		}
 
 		// Validate PKCE if available
 		if ($code_challenge = $authorization_code->getCodeChallenge()) {
 			if (empty($params['code_verifier'])) {
-				elgg_log('No code verifier found to verify the code challenge', 'ERROR');
+				elgg_log('Token controller: No code verifier found to verify the code challenge', 'ERROR');
 				return elgg_error_response('No code verifier found to verify the code challenge', REFERRER, 400);
 			} else if (!$this->verifyPKCE($code_challenge, $params['code_verifier'], $authorization_code->getCodeChallengeMethod())) {
-				elgg_log('Failed PKCE validation: verifier: ' . $params['code_verifier'] . ' - challenge: ' . $authorization_code->getCodeChallenge() . ' - method: ' . $authorization_code->getCodeChallengeMethod(), 'ERROR');
+				elgg_log('Token controller: Failed PKCE validation: verifier: ' . $params['code_verifier'] . ' - challenge: ' . $authorization_code->getCodeChallenge() . ' - method: ' . $authorization_code->getCodeChallengeMethod(), 'ERROR');
 				return elgg_error_response('PKCE validation failed', REFERRER, 400);
 			}
 		}
@@ -237,23 +250,6 @@ class TokenController {
 				$params[$parameter] = $check;
 			}
 		}
-	}
-	
-	/**
-	* {@inheritdoc}
-	*/
-	public function getCodes($code) {
-		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($code) {
-			return elgg_get_entities([
-				'type' => 'object',
-				'subtype' => IndieAuthAuthorizationCode::SUBTYPE,
-				'limit' => 1,
-				'metadata_name_value_pairs' => [
-					'name' => 'code',
-					'value' => $code,
-				],
-			]);
-		});
 	}
 	
 	/**

@@ -5,22 +5,12 @@ namespace Elgg\IndieWeb\IndieAuth\Actions;
 class AuthorizeAction {
 
 	public function __invoke(\Elgg\Request $request) {
-		unset($_SESSION['indieauth']);
-
 		$guid = (int) $request->getParam('guid');
 		$user = get_entity($guid);
 		if (!$user instanceof \ElggUser) {
 			throw new \Elgg\Exceptions\Http\EntityNotFoundException();
 		}
 		
-		$scopes = [];
-		$scope = (array) $request->getParam('scope', []);
-		foreach ($scope as $key => $value) {
-			if ($key === $value) {
-				$scopes[] = $key;
-			}
-		}
-
 		// Generate code
 		$code = _elgg_services()->crypto->getRandomString(120);
 		
@@ -30,7 +20,7 @@ class AuthorizeAction {
 			'me' => $request->getParam('me'),
 			'target_id' => $guid,
 			'client_id' => $request->getParam('client_id'),
-			'scope' => implode(' ', $scopes),
+			'scope' => $request->getParam('scope'),
 			'redirect_uri' => $request->getParam('redirect_uri'),
 			'code_challenge' => $request->getParam('code_challenge'),
 			'code_challenge_method' => $request->getParam('code_challenge_method'),
@@ -54,6 +44,8 @@ class AuthorizeAction {
 				return elgg_error_response(elgg_echo('indieweb:indieauth:authorize:fail'));
 			}
 		});
+		
+		unset($_SESSION['indieauth']);
 
 		$query = '?state=' . $request->getParam('state') . '&me=' . $request->getParam('me') . '&code=' . $code;
 		$response = $request->getParam('redirect_uri') . $query;
