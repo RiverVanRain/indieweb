@@ -9,9 +9,6 @@
 
 namespace Elgg\IndieWeb\Menus;
 
-use Elgg\Hook;
-use ElggMenuItem;
-
 class SettingsMenu {
 
 	/**
@@ -19,7 +16,7 @@ class SettingsMenu {
 	 *
 	 * @param Hook $hook Hook
 	 */
-	public function __invoke(Hook $hook) {
+	public function __invoke(\Elgg\Hook $hook) {
 
 		$menu = $hook->getValue();
 		/* @var $menu \Elgg\Menu\MenuItems */
@@ -34,6 +31,7 @@ class SettingsMenu {
 			'text' => elgg_echo('settings:indieweb'),
 			'context' => ['admin'],
 			'section' => 'configure',
+			'icon' => '<i class="openwebicons-indieweb" style="font-size: 16px;"></i>',
 		]);
 
 		//Webmention

@@ -540,16 +540,15 @@ class MicropubController {
 				
 				try {
 					if ($guid > 0) {
-						$webmention_target = get_entity($guid);
-						if ($webmention_target instanceof \Elgg\IndieWeb\Webmention\Entity\Webmention) {
-							$url = $webmention_target->getURL();
-							$this->input['like-of'][0] = $url;
+						$target = get_entity($guid);
+						
+						if (elgg_is_active_plugin('likes') && $target instanceof \ElggObject && $target->hasCapability('likable')) {
+							$this->input['like-of'][0] = $target->getURL();
 						}
+						
+						return $this->createLike($target, 'like', 'like-of');
 					}
 				} catch (\Exception $ignored) {}
-
-				$entity = $this->createEntity(elgg_echo('indieweb:micropub:bookmark:title', [$this->input['like-of'][0]]), 'like', 'like-of');
-				return $this->saveEntity($entity);
 			}
 
 			// Issue support.
@@ -578,7 +577,7 @@ class MicropubController {
 									if ($target instanceof \Elgg\IndieWeb\Webmention\Entity\Webmention && $target->getProperty() === 'in-reply-to') {
 										$container_guid = $target->guid;
 										$link_field_url = $target->getURL();
-									} else if ($target instanceof \ElggObject) {
+									} else if ($target instanceof \ElggObject && $target->hasCapability('commentable')) {
 										$container_guid = $target->guid;
 										$link_field_url = $target->getURL();
 									}
@@ -688,7 +687,7 @@ class MicropubController {
 	* Upload files through the media endpoint.
 	*
 	*/
-	public static function mediaEndpoint(\Elgg\Request $request) {
+	public function mediaEndpoint(\Elgg\Request $request) {
 		$indieAuth = elgg()->indieauth;
 		
 		// Early response when endpoint is not enabled.
@@ -1012,6 +1011,121 @@ class MicropubController {
 				$this->syndicateToComment($comment);
 			}
 				
+			return elgg_ok_response();
+		});
+	}
+	
+	/**
+	* Create a like.
+	*
+	* @param $entity
+	*   \ElggObject
+	* @param $post_type
+	*   The IndieWeb post type.
+	* @param $link_input_name
+	*   The name of the property in input for auto syndication.
+	*
+	*/
+	protected function createLike(\ElggObject $entity, $post_type, $link_input_name = null) {
+		return elgg_call(ELGG_IGNORE_ACCESS, function () use ($entity, $post_type, $link_input_name) {
+			$indieAuth = elgg()->indieauth;
+			
+			// Get user guid.
+			if (elgg_is_active_plugin('theme')) {
+				$owner_guid = (int) elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
+			} else {
+				$username = elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
+				$owner_guid = get_user_by_username($username)->guid;
+			}
+			
+			// Override user guid.
+			if ($tokenOwnerId = $indieAuth->checkAuthor()) {
+				$owner_guid = $tokenOwnerId;
+			}
+			
+			$session = elgg_get_session();
+			$owner = get_entity($owner_guid);
+			$session->setLoggedInUser($owner);
+
+			// Add link to syndicate to.
+			if ($link_input_name && (bool) elgg_get_plugin_setting('micropub_send_webmention_' . $post_type, 'indieweb')) {
+				if (isset($this->input['mp-syndicate-to'])) {
+					$this->input['mp-syndicate-to'][] = $this->input[$link_input_name][0];
+				} else {
+					$this->input['mp-syndicate-to'] = $this->input[$link_input_name];
+				}
+			}
+			
+			if (!$entity->canAnnotate($owner_guid, 'likes')) {
+				elgg_log('Error creating annotation from likes', 'ERROR');
+				return elgg_error_response('Error creating annotation from likes', REFERRER, 403);
+			}
+			
+			$annotation_id = $entity->annotate('likes', 'likes', ACCESS_PUBLIC);
+
+			// tell user annotation didn't work if that is the case
+			if (!$annotation_id) {
+				elgg_log(elgg_echo('likes:failure'), 'ERROR');
+				return elgg_error_response(elgg_echo('likes:failure'), REFERRER, 403);
+			}
+			
+			if ($entity->owner_guid === $owner_guid) {
+				return elgg_ok_response();
+			}
+			
+			$owner = $entity->getOwnerEntity();
+
+			$annotation = elgg_get_annotation_from_id($annotation_id);
+
+			$title_str = $entity->getDisplayName();
+			if (!$title_str) {
+				$title_str = elgg_get_excerpt($entity->description, 80);
+			}
+			
+			$user = get_entity($owner_guid);
+
+			$site = elgg_get_site_entity();
+
+			// summary for site_notifications
+			$summary = elgg_echo('likes:notifications:subject', [
+					$user->getDisplayName(),
+					$title_str,
+				],
+				$owner->language
+			);
+
+			// prevent long subjects in mail
+			$title_str = elgg_get_excerpt($title_str, 80);
+			$subject = elgg_echo('likes:notifications:subject', [
+					$user->getDisplayName(),
+					$title_str,
+				],
+				$owner->language
+			);
+
+			$body = elgg_echo('likes:notifications:body', [
+					$user->getDisplayName(),
+					$title_str,
+					$site->getDisplayName(),
+					$entity->getURL(),
+					$user->getURL(),
+				],
+				$owner->language
+			);
+
+			notify_user(
+				$entity->owner_guid,
+				$user->guid,
+				$subject,
+				$body,
+				[
+					'action' => 'create',
+					'object' => $annotation,
+					'summary' => $summary,
+					'url' => $entity->getURL(),
+				]
+			);
+
 			return elgg_ok_response();
 		});
 	}

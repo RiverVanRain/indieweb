@@ -7,16 +7,17 @@
  * @link https://wzm.me
 **/
 
-use Elgg\Router\Middleware\AjaxGatekeeper;
-use Elgg\Router\Middleware\Gatekeeper;
 use Elgg\Router\Middleware\AdminGatekeeper;
 
-require_once(__DIR__ . '/lib/functions.php');
-
 $webmention_commentable = false;
+$webmention_likable = false;
 
 if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting('webmention_enable_comment_create', 'indieweb')) {
 	$webmention_commentable = true;
+}
+
+if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting('webmention_enable_likes', 'indieweb')) {
+	$webmention_likable = true;
 }
 
 return [
@@ -24,6 +25,8 @@ return [
 		'name' => 'IndieWeb',
 		'version' => '1.0.0',
 	],
+	
+	'bootstrap' => \Elgg\IndieWeb\Bootstrap::class,
 	
 	//ENTITIES
 	'entities' => [
@@ -34,7 +37,7 @@ return [
 			'class' => \Elgg\IndieWeb\Webmention\Entity\Webmention::class,
 			'capabilities' => [
 				'commentable' => $webmention_commentable,
-				'likable' => true,
+				'likable' => $webmention_likable,
 				'searchable' => false,
 			],
 		],
@@ -256,6 +259,10 @@ return [
 			'menu:page' => [
 				\Elgg\IndieWeb\Menus\SettingsMenu::class => [],
 			],
+			'menu:social' => [
+				// Webmention
+				\Elgg\IndieWeb\Webmention\Menus\SocialMenu::class => [],
+			],
 		],
 		'view_vars' => [
 			'object/elements/full' => [
@@ -404,12 +411,12 @@ return [
         ],
 		'forms/login' => [
 			'indieauth/login' => [
-				'priority' => 850
+				'priority' => 1000
 			],
 		],
 		'forms/register' => [
 			'indieauth/login' => [
-				'priority' => 850
+				'priority' => 1000
 			],
 		],
 		'core/settings/account' => [
@@ -419,6 +426,12 @@ return [
 		],
 		
     ],
+	
+	'views' => [
+		'default' => [
+			'openwebicons/' => __DIR__ . '/vendor/pfefferle/openwebicons/',
+		],
+	],
 	
 	'view_options' => [
 		// Microsub
@@ -438,6 +451,7 @@ return [
 		'enable_webmention' => true,
 		'webmention_enable_debug' => false,
 		'webmention_enable_comment_create' => false,
+		'webmention_enable_likes' => false,
 		'webmention_create_contact' => false,
 		'webmention_syndication_targets_custom' => true,
 		// Micropub

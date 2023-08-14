@@ -51,4 +51,6 @@ if (empty($content)) {
 	return;
 }
 
-echo elgg_view_module('comments', elgg_echo('collection:object:webmention'), $content);
+echo elgg_format_element('div', ['id' => 'webmentions']);
+
+echo elgg_view_module('webmentions', elgg_echo('collection:object:webmention'), $content);

@@ -48,6 +48,16 @@ echo elgg_view_field([
 			'switch' => true,
 		],
 		[
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:webmention_enable_likes'),
+			'#help' => elgg_echo('settings:indieweb:webmention_enable_likes:help'),
+			'name' => 'params[webmention_enable_likes]',
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->webmention_enable_likes,
+			'switch' => true,
+		],
+		[
 			'#type' => 'plaintext',
 			'#label' => elgg_echo('settings:indieweb:webmention_blocked_domains'),
 			'#help' => elgg_echo('settings:indieweb:webmention_blocked_domains:help'),
@@ -140,7 +150,7 @@ $objects = (array) elgg_extract('object', elgg_entity_types_with_capability('sea
 
 ob_start();
 foreach ($objects as $subtype) {
-	if (in_array($subtype, ['river_object'])) {
+	if (in_array($subtype, ['river_object', 'messages', 'newsletter', 'static', 'file'])) {
 		continue;
 	}
 
@@ -160,6 +170,15 @@ echo elgg_view('elements/forms/field', [
 	'input' => $inputs,
 	'label' => elgg_echo('settings:indieweb:use_webmentions'),
 	'class' => 'fa-1x3 elgg-loud',
+]);
+
+//slugs
+echo elgg_view_field([
+	'#type' => 'text',
+	'#label' => elgg_echo('settings:indieweb:webmention_objects_slugs'),
+	'#help' => elgg_echo('settings:indieweb:webmention_objects_slugs:help'),
+	'name' => 'params[webmention_objects_slugs]',
+	'value' => $entity->webmention_objects_slugs ?: '',
 ]);
 
 echo elgg_view_field([

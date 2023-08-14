@@ -34,15 +34,14 @@ function indieweb_get_path(string $url): string {
 function indieweb_get_guid(string $url): int {
 	$target = indieweb_get_path($url);
 	
-	$objects = (array) elgg_extract('object', elgg_entity_types_with_capability('commentable'), []);
+	$types = (array) elgg_extract('object', elgg_entity_types_with_capability('searchable'), []);
+	$slugs = elgg_string_to_array(elgg_get_plugin_setting('webmention_objects_slugs', 'indieweb'));
+	
+	$objects = array_merge($types, $slugs);
 
 	$guid = [];
 	
 	foreach ($objects as $subtype) {
-		if (!(bool) elgg_get_plugin_setting("can_webmention:object:$subtype", 'indieweb')) {
-			continue;
-		}
-		
 		if (strpos($target, "{$subtype}/view/") === false) {
 			continue;
 		}

@@ -16,7 +16,7 @@ $types = [];
 $objects = (array) elgg_extract('object', elgg_entity_types_with_capability('searchable'), []);
 
 foreach ($objects as $subtype) {
-	if (in_array($subtype, ['river_object', 'messages', 'newsletter', 'static'])) {
+	if (in_array($subtype, ['river_object', 'messages', 'newsletter', 'static', 'comment', 'file'])) {
 		continue;
 	}
 	
@@ -33,7 +33,7 @@ foreach ($posts as $post) {
 	]);
 	
 	$reply_create_comment = [
-		'#html' => ''
+		'#html' => ' '
 	];
 	
 	if ($post === 'reply') {
@@ -45,6 +45,156 @@ foreach ($posts as $post) {
 			'value' => 1,
 			'default' => 0,
 			'checked' => (bool) $entity->micropub_reply_create_comment,
+			'switch' => true,
+		];
+	}
+	
+	$date_field = [
+		'#html' => ' '
+	];
+	
+	if ($post === 'event') {
+		$date_field = [
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:micropub:posts:field:date'),
+			'#help' => elgg_echo('settings:indieweb:micropub:posts:field:date:help'),
+			'name' => "params[micropub_field_date_$post]",
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->{"micropub_field_date_$post"},
+			'switch' => true,
+		];
+	}
+	
+	$status_field = [
+		'#html' => ' '
+	];
+	
+	if ($post !== 'like') {
+		$status_field = [
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:micropub:posts:status'),
+			'#help' => elgg_echo('settings:indieweb:micropub:posts:status:help'),
+			'name' => "params[micropub_status_$post]",
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->{"micropub_status_$post"},
+			'switch' => true,
+		];
+	}
+	
+	$post_field = [
+		'#html' => ' '
+	];
+	
+	if ($post !== 'like') {
+		$post_field = [
+			'#type' => 'select',
+			'#label' => elgg_echo('settings:indieweb:micropub:posts:type'),
+			'#help' => elgg_echo('settings:indieweb:micropub:posts:type:help'),
+			'name' => "params[micropub_type_$post]",
+			'value' => $entity->{"micropub_type_$post"},
+			'required' => true,
+			'options_values' => $types,
+		];
+	}
+	
+	$link_field = [
+		'#html' => ' '
+	];
+	
+	if ($post !== 'like') {
+		$link_field = [
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:micropub:posts:field:link'),
+			'#help' => elgg_echo('settings:indieweb:micropub:posts:field:link:help'),
+			'name' => "params[micropub_field_link_$post]",
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->{"micropub_field_link_$post"},
+			'switch' => true,
+		];
+	}
+	
+	$content_field = [
+		'#html' => ' '
+	];
+	
+	if (!in_array($post, ['like', 'repost'])) {
+		$content_field = [
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:micropub:posts:field:content'),
+			'#help' => elgg_echo('settings:indieweb:micropub:posts:field:content:help'),
+			'name' => "params[micropub_field_content_$post]",
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->{"micropub_field_content_$post"},
+			'switch' => true,
+		];
+	}
+	
+	$file_upload_field = [
+		'#html' => ' '
+	];
+	
+	if (!in_array($post, ['like', 'repost'])) {
+		$file_upload_field = [
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:micropub:posts:field:upload'),
+			'#help' => elgg_echo('settings:indieweb:micropub:posts:field:upload:help'),
+			'name' => "params[micropub_field_upload_$post]",
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->{"micropub_field_upload_$post"},
+			'switch' => true,
+		];
+	}
+	
+	$file_upload_limit_field = [
+		'#html' => ' '
+	];
+	
+	if (!in_array($post, ['like', 'repost'])) {
+		$file_upload_limit_field = [
+			'#type' => 'number',
+			'#label' => elgg_echo('settings:indieweb:micropub:posts:field:upload:limit'),
+			'name' => "params[micropub_field_upload_limit_$post]",
+			'min' => 1,
+			'max' => 10,
+			'value' => (bool) $entity->{"micropub_field_upload_limit_$post"} ?: 1,
+		];
+	}
+	
+	$tags_field = [
+		'#html' => ' '
+	];
+	
+	if (!in_array($post, ['like', 'repost'])) {
+		$tags_field = [
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:micropub:posts:field:tags'),
+			'#help' => elgg_echo('settings:indieweb:micropub:posts:field:tags:help'),
+			'name' => "params[micropub_field_tags_$post]",
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->{"micropub_field_tags_$post"},
+			'switch' => true,
+		];
+	}
+	
+	$location_field = [
+		'#html' => ' '
+	];
+	
+	if (!in_array($post, ['like', 'repost'])) {
+		$location_field = [
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:micropub:posts:field:location'),
+			'#help' => elgg_echo('settings:indieweb:micropub:posts:field:location:help'),
+			'name' => "params[micropub_field_location_$post]",
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->{"micropub_field_location_$post"},
 			'switch' => true,
 		];
 	}
@@ -64,16 +214,7 @@ foreach ($posts as $post) {
 				'switch' => true,
 			],
 			$reply_create_comment,
-			[
-				'#type' => 'checkbox',
-				'#label' => elgg_echo('settings:indieweb:micropub:posts:status'),
-				'#help' => elgg_echo('settings:indieweb:micropub:posts:status:help'),
-				'name' => "params[micropub_status_$post]",
-				'value' => 1,
-				'default' => 0,
-				'checked' => (bool) $entity->{"micropub_status_$post"},
-				'switch' => true,
-			],
+			$status_field,
 			[
 				'#type' => 'autocomplete',
 				'#label' => elgg_echo('settings:indieweb:micropub:posts:author'),
@@ -84,25 +225,8 @@ foreach ($posts as $post) {
 				'match_on' => 'users',
 				'limit' => 1,
 			],
-			[
-				'#type' => 'select',
-				'#label' => elgg_echo('settings:indieweb:micropub:posts:type'),
-				'#help' => elgg_echo('settings:indieweb:micropub:posts:type:help'),
-				'name' => "params[micropub_type_$post]",
-				'value' => $entity->{"micropub_type_$post"},
-				'required' => true,
-				'options_values' => $types,
-			],
-			[
-				'#type' => 'checkbox',
-				'#label' => elgg_echo('settings:indieweb:micropub:posts:field:link'),
-				'#help' => elgg_echo('settings:indieweb:micropub:posts:field:link:help'),
-				'name' => "params[micropub_field_link_$post]",
-				'value' => 1,
-				'default' => 0,
-				'checked' => (bool) $entity->{"micropub_field_link_$post"},
-				'switch' => true,
-			],
+			$post_field,
+			$link_field,
 			[
 				'#type' => 'checkbox',
 				'#label' => elgg_echo('settings:indieweb:micropub:posts:send_webmention'),
@@ -113,64 +237,12 @@ foreach ($posts as $post) {
 				'checked' => (bool) $entity->{"micropub_send_webmention_$post"},
 				'switch' => true,
 			],
-			[
-				'#type' => 'checkbox',
-				'#label' => elgg_echo('settings:indieweb:micropub:posts:field:content'),
-				'#help' => elgg_echo('settings:indieweb:micropub:posts:field:content:help'),
-				'name' => "params[micropub_field_content_$post]",
-				'value' => 1,
-				'default' => 0,
-				'checked' => (bool) $entity->{"micropub_field_content_$post"},
-				'switch' => true,
-			],
-			[
-				'#type' => 'checkbox',
-				'#label' => elgg_echo('settings:indieweb:micropub:posts:field:upload'),
-				'#help' => elgg_echo('settings:indieweb:micropub:posts:field:upload:help'),
-				'name' => "params[micropub_field_upload_$post]",
-				'value' => 1,
-				'default' => 0,
-				'checked' => (bool) $entity->{"micropub_field_upload_$post"},
-				'switch' => true,
-			],
-			[
-				'#type' => 'number',
-				'#label' => elgg_echo('settings:indieweb:micropub:posts:field:upload:limit'),
-				'name' => "params[micropub_field_upload_limit_$post]",
-				'min' => 1,
-				'max' => 10,
-				'value' => (bool) $entity->{"micropub_field_upload_limit_$post"} ?: 1,
-			],
-			[
-				'#type' => 'checkbox',
-				'#label' => elgg_echo('settings:indieweb:micropub:posts:field:tags'),
-				'#help' => elgg_echo('settings:indieweb:micropub:posts:field:tags:help'),
-				'name' => "params[micropub_field_tags_$post]",
-				'value' => 1,
-				'default' => 0,
-				'checked' => (bool) $entity->{"micropub_field_tags_$post"},
-				'switch' => true,
-			],
-			[
-				'#type' => 'checkbox',
-				'#label' => elgg_echo('settings:indieweb:micropub:posts:field:date'),
-				'#help' => elgg_echo('settings:indieweb:micropub:posts:field:date:help'),
-				'name' => "params[micropub_field_date_$post]",
-				'value' => 1,
-				'default' => 0,
-				'checked' => (bool) $entity->{"micropub_field_date_$post"},
-				'switch' => true,
-			],
-			[
-				'#type' => 'checkbox',
-				'#label' => elgg_echo('settings:indieweb:micropub:posts:field:location'),
-				'#help' => elgg_echo('settings:indieweb:micropub:posts:field:location:help'),
-				'name' => "params[micropub_field_location_$post]",
-				'value' => 1,
-				'default' => 0,
-				'checked' => (bool) $entity->{"micropub_field_location_$post"},
-				'switch' => true,
-			],
+			$content_field,
+			$file_upload_field,
+			$file_upload_limit_field,
+			$tags_field,
+			$date_field,
+			$location_field,
 		],
 	]);
 }

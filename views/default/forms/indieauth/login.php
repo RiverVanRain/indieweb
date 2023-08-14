@@ -4,6 +4,15 @@ if (!(bool) elgg_get_plugin_setting('enable_indieauth_login', 'indieweb')) {
 	throw new \Elgg\Exceptions\Http\PageNotFoundException();
 }
 
+if (elgg_is_logged_in() && (bool) elgg_get_logged_in_user_entity()->indieauth_login) {
+	$forward_url = elgg_generate_url('settings:account', [
+		'username' => elgg_get_logged_in_user_entity()->username,
+	]);
+	$exception = new \Elgg\Exceptions\HttpException();
+	$exception->setRedirectUrl($forward_url);
+	throw $exception;
+}
+
 $fields = [
 	[
 		'#type' => 'url',

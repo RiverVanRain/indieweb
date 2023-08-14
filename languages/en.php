@@ -25,6 +25,10 @@ return [
 	'settings:indieweb:webmention_enable_comment_create:help' => "When a webmention is saved and is of property 'in-reply-to', it is possible to create a comment if the target of the webmention has comments enabled.
 Every comment is available also at comment/indieweb/GUID so this URL can also be a target for a webmention. If a webmention is send to this target, a comment will be created on the entity, with the target GUID as the parent.
 Also, last but not least, don't forget to set public access level to view webmentions.",
+	'settings:indieweb:webmention_enable_likes' => 'Allow likes',
+	'settings:indieweb:webmention_enable_likes:help' => 'Webmentions can be liked',
+	'settings:indieweb:webmention_objects_slugs' => 'Add objects URLs slugs',
+	'settings:indieweb:webmention_objects_slugs:help' => 'For posting, we will check the presence of subtypes names in the links. Typically, this name is equivalent to the subtype, for example, in "domain.com/blog/view/123/title-of-the-post/", "blog" means the subtype "blog". But sometimes links can have other names, for example in "domain.com/stories/view/123/title-of-the-post/" "stories" are not equivalent to the subtype "story". In these cases, specify such URLs slugs here. Separate words with commas.',
 	
 	'settings:indieweb:webmention:receiving' => 'Receiving',
 	'settings:indieweb:webmention:receiving:help' => 'The easiest way to start receiving webmentions and pingbacks for any page is by using https://webmention.io. You have to create an account by signing in with your domain. For more information how to sign in with your domain, see the IndieAuth configuration. Webmention.io is open source so you can also host the service yourself. You can also use the built-in webmention endpoint to receive webmentions. All collected webmentions and pingbacks can be viewed on the webmention overview page at /admin/content/webmention.',

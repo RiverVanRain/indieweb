@@ -1,4 +1,19 @@
+.indieauth-login {
+	padding: 1rem 0;
+}
+
+.elgg-form-login {
+	.indieauth-login {
+		text-align: center;
+	}
+}
+
 .webmention-syndication .elgg-field-label,
 .webmention-syndication-targets .elgg-field-label {
     display: inline-block !important;
+}
+
+.elgg-module-webmentions {
+    margin-top: 1rem;
+	padding-top: 1rem;
 }
