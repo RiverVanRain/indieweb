@@ -27,7 +27,7 @@ $count = elgg_get_entities($options);
 
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
-		'base_url' => '/admin/indieweb/webmention/send',
+		'base_url' => '/admin/indieweb/webmention/sent',
 		'offset' => $offset,
 		'count' => $count,
 		'limit' => elgg_get_config('default_limit'),

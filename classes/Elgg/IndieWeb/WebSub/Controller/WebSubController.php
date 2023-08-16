@@ -15,7 +15,14 @@ use Elgg\IndieWeb\Microsub\Entity\MicrosubSource;
 class WebSubController {
 
 	public function __invoke(\Elgg\Request $request) {
+		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
+			throw new \Elgg\Exceptions\Http\PageNotFoundException();
+		}
+		
 		$websub_hash = $request->getParam('websub_hash');
+		
+		elgg_set_http_header('Link: <' . elgg_get_plugin_setting('websub_endpoint', 'indieweb') . '>; rel="hub"');
+		elgg_set_http_header('Link: <' . elgg_get_site_url() . '>; rel="self"');
 		
 		$response_code = 404;
 		$response = '';

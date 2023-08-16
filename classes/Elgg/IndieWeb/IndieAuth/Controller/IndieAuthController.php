@@ -34,6 +34,12 @@ class IndieAuthController {
 		if (!(bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
 			throw new \Elgg\Exceptions\Http\PageNotFoundException();
 		}
+		
+		if ((bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
+			elgg_set_http_header('Link: <' . elgg_generate_url('indieauth:auth') . '>; rel="authorization_endpoint"');
+		} else {
+			elgg_set_http_header('Link: <' . elgg_get_plugin_setting('indieauth_external_auth', 'indieweb', 'https://indieauth.com/auth') . '>; rel="authorization_endpoint"');
+		}
 
 		// Get the method
 		$method = $request->getMethod();

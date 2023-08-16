@@ -64,6 +64,16 @@ echo elgg_view_field([
 			'name' => 'params[webmention_blocked_domains]',
 			'value' => (!empty($entity->webmention_blocked_domains)) ? implode("\r\n", $entity->webmention_blocked_domains) : '',
 		],
+		[
+			'#type' => 'checkbox',
+			'#label' => elgg_echo('settings:indieweb:webmention_clean'),
+			'#help' => elgg_echo('settings:indieweb:webmention_clean:help'),
+			'name' => 'params[webmention_clean]',
+			'value' => 1,
+			'default' => 0,
+			'checked' => (bool) $entity->webmention_clean,
+			'switch' => true,
+		],
 	],
 ]);
 

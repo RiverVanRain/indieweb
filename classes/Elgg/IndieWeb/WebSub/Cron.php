@@ -83,7 +83,7 @@ class Cron {
 					elgg_log('Publish response for ' . $entity->guid . ' : ' . $response->getStatusCode() . ' - ' . print_r($response->getBody()->getContents(), 1), 'NOTICE');
 				}
 				
-				$websubpub->setMetadata('published', true);
+				$websubpub->setMetadata('published', 1);
 			}
 
 		// restore access

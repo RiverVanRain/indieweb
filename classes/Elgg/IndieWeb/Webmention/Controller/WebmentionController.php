@@ -9,7 +9,6 @@
 
 namespace Elgg\IndieWeb\Webmention\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
 use Elgg\Exceptions\Http\BadRequestException;
 
 class WebmentionController {
@@ -24,9 +23,11 @@ class WebmentionController {
 			throw new \Elgg\Exceptions\Http\PageNotFoundException();
 		}
 		
-		if(!empty(elgg_get_plugin_setting('webmention_server', 'indieweb'))) {
+		if (!empty(elgg_get_plugin_setting('webmention_server', 'indieweb'))) {
 			throw new BadRequestException();
 		}
+		
+		elgg_set_http_header('Link: <' . elgg_generate_url('default:view:webmention') . '>; rel="webmention"');
 		
 		$source = $request->getParam('source');
 		if (!$source) {
@@ -60,7 +61,7 @@ class WebmentionController {
 					$webmention->source = $source;
 					$webmention->target = $target;
 					$webmention->property = 'received';
-					$webmention->published = false;
+					$webmention->published = 0;
 					$webmention->status = 0;
 					$webmention->save();
 					
@@ -71,7 +72,7 @@ class WebmentionController {
 			}
 		}
 		
-		return new Response('', $response_code);
+		return elgg_ok_response([], '', REFERRER, $response_code);
 	}
 	
 	/**

@@ -74,7 +74,7 @@ if (!empty($count)) {
 	echo elgg_format_element('table', ['class' => 'elgg-table'], $table_content);
 	
 	echo elgg_view('navigation/pagination', [
-		'base_url' => '/admin/indieweb/indieauth/tokens',
+		'base_url' => elgg_normalize_url('admin/indieweb/indieauth/tokens'),
 		'offset' => $offset,
 		'count' => $count,
 		'limit' => elgg_get_config('default_limit'),

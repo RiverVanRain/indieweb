@@ -35,7 +35,12 @@ function indieweb_get_guid(string $url): int {
 	$target = indieweb_get_path($url);
 	
 	$types = (array) elgg_extract('object', elgg_entity_types_with_capability('searchable'), []);
-	$slugs = elgg_string_to_array(elgg_get_plugin_setting('webmention_objects_slugs', 'indieweb'));
+	
+	$slugs = elgg_get_plugin_setting('webmention_objects_slugs', 'indieweb') ?: [];
+	
+	if (is_string($slugs)) {
+		$slugs = elgg_string_to_array($slugs);
+	}
 	
 	$objects = array_merge($types, $slugs);
 

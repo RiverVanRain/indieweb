@@ -23,8 +23,6 @@ class SetupHead {
 				'rel' => 'webmention',
 				'href' => $webmention_server,
 			];
-			
-			elgg_set_http_header('Link: <' . $webmention_server . '>; rel="webmention"');
 		}
 		
 		//micropub
@@ -33,8 +31,6 @@ class SetupHead {
 				'rel' => 'micropub',
 				'href' => elgg_generate_url('default:view:micropub'),
 			];
-			
-			elgg_set_http_header('Link: <' . elgg_generate_url('default:view:micropub') . '>; rel="micropub"');
 		}
 		
 		//microsub
@@ -45,8 +41,6 @@ class SetupHead {
 				'rel' => 'microsub',
 				'href' => !empty(elgg_get_plugin_setting('microsub_endpoint', 'indieweb')) ? elgg_get_plugin_setting('microsub_endpoint', 'indieweb') : elgg_generate_url('default:view:microsub'),
 			];
-			
-			elgg_set_http_header('Link: <' . $microsub_endpoint . '>; rel="microsub"');
 		}
 		
 		//indieauth
@@ -64,9 +58,6 @@ class SetupHead {
 				'rel' => 'token_endpoint',
 				'href' => elgg_generate_url('indieauth:token'),
 			];
-			
-			elgg_set_http_header('Link: <' . elgg_generate_url('indieauth:auth') . '>; rel="authorization_endpoint"');
-			elgg_set_http_header('Link: <' . elgg_generate_url('indieauth:token') . '>; rel="token_endpoint"');
 		} else {
 			$return['links'][] = [
 				'rel' => 'authorization_endpoint',
@@ -76,9 +67,6 @@ class SetupHead {
 				'rel' => 'token_endpoint',
 				'href' => elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb', 'https://tokens.indieauth.com/token'),
 			];
-			
-			elgg_set_http_header('Link: <' . elgg_get_plugin_setting('indieauth_external_auth', 'indieweb', 'https://indieauth.com/auth') . '>; rel="authorization_endpoint"');
-			elgg_set_http_header('Link: <' . elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb', 'https://tokens.indieauth.com/token') . '>; rel="token_endpoint"');
 		}
 		
 		//websub
@@ -91,9 +79,6 @@ class SetupHead {
 				'rel' => 'self',
 				'href' => elgg_get_site_url(),
 			];
-			
-			elgg_set_http_header('Link: <' . elgg_get_plugin_setting('websub_endpoint', 'indieweb') . '>; rel="hub"');
-			elgg_set_http_header('Link: <' . elgg_get_site_url() . '>; rel="self"');
 		}
 		
 		//feeds

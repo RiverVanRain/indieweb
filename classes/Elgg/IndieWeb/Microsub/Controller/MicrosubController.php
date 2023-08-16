@@ -112,6 +112,8 @@ class MicrosubController {
 			throw new \Elgg\Exceptions\Http\BadRequestException();
 		}
 		
+		elgg_set_http_header('Link: <' . elgg_generate_url('default:view:microsub') . '>; rel="microsub"');
+		
 		// Default response code and message.
 		$response = [
 			'message' => 'Bad request',

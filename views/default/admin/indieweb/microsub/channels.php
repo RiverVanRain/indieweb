@@ -87,7 +87,7 @@ $count = elgg_get_entities($options);
 
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
-		'base_url' => '/admin/indieweb/microsub/channels',
+		'base_url' => elgg_normalize_url('admin/indieweb/microsub/channels'),
 		'offset' => $offset,
 		'count' => $count,
 		'limit' => elgg_get_config('default_limit'),

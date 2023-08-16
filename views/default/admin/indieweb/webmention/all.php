@@ -11,7 +11,7 @@ $offset = (int) get_input('offset');
 
 $options = [
 	'type' => 'object',
-	'subtype' => \Elgg\IndieWeb\WebSub\Entity\WebSubPub::SUBTYPE,
+	'subtype' => \Elgg\IndieWeb\Webmention\Entity\Webmention::SUBTYPE,
 	'count' => true,
 	'offset' => $offset,
 	'limit' => elgg_get_config('default_limit'),
@@ -21,7 +21,7 @@ $count = elgg_get_entities($options);
 
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
-		'base_url' => elgg_normalize_url('admin/indieweb/websub/pub'),
+		'base_url' => elgg_normalize_url('admin/indieweb/webmention/all'),
 		'offset' => $offset,
 		'count' => $count,
 		'limit' => elgg_get_config('default_limit'),
@@ -35,13 +35,23 @@ if (!empty($count)) {
 	/* @var $entity ElggEntity */
 	foreach ($entities as $entity) {
 		$row = [];
-
-		$row[] = elgg_format_element('td', ['width' => '30%'], elgg_view('object/websubpub', [
-			'entity' => $entity,
+		
+		// name
+		$row[] = elgg_format_element('td', ['width' => '35%'], elgg_view_entity($entity, [
+			'full_view' => false,
 		]));
-		$row[] = elgg_format_element('td', ['width' => '20%'], $entity->entity_type_id);
-		$row[] = elgg_format_element('td', ['width' => '20%'], $entity->entity_id);
-
+		// source
+		$row[] = elgg_format_element('td', ['width' => '20%'], elgg_view('output/url', [
+			'text' => $entity->source,
+			'href' => $entity->source,
+		]));
+		// target
+		$row[] = elgg_format_element('td', ['width' => '20%'], elgg_view('output/url', [
+			'text' => $entity->target,
+			'href' => $entity->target,
+		]));
+		// property
+		$row[] = elgg_format_element('td', ['width' => '15%'], $entity->property);
 		// published
 		$published = ((bool) $entity->published) ? elgg_echo('option:yes') : elgg_echo('option:no');
 		$row[] = elgg_format_element('td', ['width' => '10%'], $published);
@@ -50,10 +60,11 @@ if (!empty($count)) {
 	}
 	
 	$header_row = [
-		elgg_format_element('th', ['width' => '30%'], elgg_echo('item:object:websubpub')),
-		elgg_format_element('th', ['width' => '20%'], elgg_echo('indieweb:websub:entity_type_id')),
-		elgg_format_element('th', ['width' => '20%'], elgg_echo('indieweb:websub:entity_id')),
-		elgg_format_element('th', ['width' => '10%'], elgg_echo('indieweb:websub:published')),
+		elgg_format_element('th', ['width' => '35%'], elgg_echo('item:object:webmention')),
+		elgg_format_element('th', ['width' => '20%'], elgg_echo('indieweb:webmention:source')),
+		elgg_format_element('th', ['width' => '20%'], elgg_echo('indieweb:webmention:target')),
+		elgg_format_element('th', ['width' => '15%'], elgg_echo('indieweb:webmention:property')),
+		elgg_format_element('th', ['width' => '10%'], elgg_echo('indieweb:webmention:published')),
 	];
 	$header = elgg_format_element('tr', [], implode('', $header_row));
 	
@@ -62,7 +73,7 @@ if (!empty($count)) {
 	
 	echo elgg_format_element('table', ['class' => 'elgg-table'], $table_content);
 } else {
-	echo elgg_format_element('div', [], elgg_echo('indieweb:websub:none'));
+	echo elgg_format_element('div', [], elgg_echo('indieweb:webmention:none'));
 }
 
 

@@ -56,7 +56,7 @@ class Events {
 			$websubpub->access_id = ACCESS_PRIVATE;
 			$websubpub->entity_id = $entity->guid;
 			$websubpub->entity_type_id = $entity->subtype;
-			$websubpub->published = false;
+			$websubpub->published = 0;
 			$websubpub->save();
 			
 			if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {

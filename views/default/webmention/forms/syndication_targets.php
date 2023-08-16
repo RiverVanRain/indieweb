@@ -35,7 +35,7 @@ if ((bool) elgg_get_plugin_setting('webmention_syndication_targets_custom', 'ind
    $fields[] = [
 		'#type' => 'url',
 		'class' => 'webmention-syndication-targets-custom',
-		'name' => 'syndication_targets[]',
+		'name' => 'syndication_targets_custom_url[]',
 		'data-provider' => 'custom_url',
 		'#label' => elgg_echo('indieweb:webmention:syndication_targets_custom'),
 	];

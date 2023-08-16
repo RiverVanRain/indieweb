@@ -28,8 +28,17 @@ class SaveAction {
 			$blog = new \ElggBlog();
 			$new_post = true;
 			
-			$syndication_targets = (array) $request->getParam('syndication_targets');
-			$blog->syndication_targets = serialize($syndication_targets);
+			$blog_syndication_targets = $request->getParam('syndication_targets');
+			$blog_syndication_targets_custom_url = $request->getParam('syndication_targets_custom_url');
+			
+			if (!empty($blog_syndication_targets) && !empty($blog_syndication_targets_custom_url)) {
+				$syndication_targets = array_merge($blog_syndication_targets, $blog_syndication_targets_custom_url);
+				$blog->syndication_targets = serialize($syndication_targets);
+			} else if (!empty($blog_syndication_targets)) {
+				$blog->syndication_targets = serialize($blog_syndication_targets);
+			} else if (!empty($blog_syndication_targets_custom_url)) {
+				$blog->syndication_targets = serialize($blog_syndication_targets_custom_url);
+			}
 			
 			$blog->websub_hub_publication = (bool) $request->getParam('websub_hub_publication');
 		}

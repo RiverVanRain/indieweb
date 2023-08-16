@@ -41,6 +41,12 @@ class TokenController {
 			throw new \Elgg\Exceptions\Http\PageNotFoundException();
 		}
 		
+		if ((bool) elgg_get_plugin_setting('enable_indieauth_endpoint', 'indieweb')) {
+			elgg_set_http_header('Link: <' . elgg_generate_url('indieauth:token') . '>; rel="token_endpoint"');
+		} else {
+			elgg_set_http_header('Link: <' . elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb', 'https://tokens.indieauth.com/token') . '>; rel="token_endpoint"');
+		}
+		
 		/** @var \Elgg\IndieWeb\IndieAuth\Client\IndieAuthClient $indieAuthClient */
 		$indieAuthClient = elgg()->indieauth;
 

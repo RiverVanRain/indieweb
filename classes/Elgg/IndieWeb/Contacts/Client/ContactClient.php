@@ -27,7 +27,7 @@ class ContactClient {
 		return $this->$name;
 	}
 	
-	public function storeContact(array $values) {
+	public function storeContact(array $values = []) {
 		if (!empty($values['name'])) {
 			$contacts = elgg_get_entities([
                 'type' => 'object',

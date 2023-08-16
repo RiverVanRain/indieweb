@@ -13,7 +13,6 @@ use Elgg\Traits\Di\ServiceFacade;
 use Elgg\Database\QueryBuilder;
 use Elgg\Database\Clauses\OrderByClause;
 use GuzzleHttp\Client;
-use IndieWeb\MentionClient;
 use GuzzleHttp\Psr7\Request;
 use p3k\XRay\Formats\HTML;
 use Psr\Http\Message\RequestInterface;

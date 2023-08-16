@@ -38,6 +38,10 @@ class Cron {
                         'name' => 'status',
                         'value' => 0,
                     ],
+					[
+                        'name' => 'published',
+                        'value' => 0,
+                    ],
                 ],
                 'limit' => false,
                 'batch' => true,
@@ -97,7 +101,7 @@ class Cron {
 									$author_values[$key] = $author_value;
 									
 									// Cache the avatar
-									if ($key == 'photo') {
+									if ($key === 'photo') {
 										$image = elgg()->mediacacher->saveImageFromUrl($author_value);
 										/** \Elgg\IndieWeb\Cache\MediaCacher **/
 										
@@ -109,9 +113,11 @@ class Cron {
 
 						// Contacts 
 						if (!empty($author_values) && (bool) elgg_get_plugin_setting('webmention_create_contact', 'indieweb')) {
-							/** \Elgg\IndieWeb\Contacts\Entity\Contact\ContactClient **/
-							$svc_contact = elgg()->{'indieweb.contact'};
-							$svc_contact->storeContact($author_values);
+							elgg_call(ELGG_IGNORE_ACCESS, function () use (&$author_values) {
+								/** \Elgg\IndieWeb\Contacts\Entity\Contact\ContactClient **/
+								$svc_contact = elgg()->{'indieweb.contact'};
+								$svc_contact->storeContact($author_values);
+							});
 						}
 						
 						// Content
@@ -245,7 +251,7 @@ class Cron {
 									],
 									[
 										'name' => 'published',
-										'value' => true,
+										'value' => 1,
 									],
 								],
 								'limit' => false,
@@ -285,7 +291,8 @@ class Cron {
 					// Set to published and save.
 					$webmention->access_id = ACCESS_PUBLIC;
 					$webmention->status = 1;
-					$webmention->published = true;
+					$webmention->published = 1;
+					$webmention->property = 'received';
 					$webmention->save();
 					
 					// Check syndication. If it exists, no need for further actions.
@@ -372,5 +379,49 @@ class Cron {
 		
 		echo "Finished empty Syndications processing" . PHP_EOL;
 		elgg_log("Finished empty Syndications processing", 'NOTICE');
+	}
+	
+	public static function emptyFailedWebmentions(\Elgg\Hook $hook) {
+		if (!(bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
+			return;
+		}
+		
+		if (!(bool) elgg_get_plugin_setting('webmention_clean', 'indieweb')) {
+			return;
+		}
+		
+		echo "Processes empty failed Webmentions starting" . PHP_EOL;
+		elgg_log("Processes empty failed Webmentions starting", 'NOTICE');
+		
+		// ignore access
+		elgg_call(ELGG_IGNORE_ACCESS, function() {
+			$webmentions = elgg_get_entities([
+                'type' => 'object',
+                'subtype' => Webmention::SUBTYPE,
+                'limit' => false,
+                'batch' => true,
+                'batch_inc_offset' => false,
+				'metadata_name_value_pairs' => [
+					[
+						'name' => 'property',
+						'value' => ['send', 'received', 'rsvp', 'like-of', 'repost-of', 'in-reply-to', 'mention-of', 'bookmark-of', 'follow-of'],
+						'operand' => '!=',
+					],
+				],
+            ]);
+			
+			if (empty($webmentions)) {
+				return true;
+			}
+			
+			foreach ($webmentions as $webmention) {
+				$webmention->delete();
+			}
+
+		// restore access
+		});
+		
+		echo "Finished empty failed Webmentions processing" . PHP_EOL;
+		elgg_log("Finished empty failed Webmentions processing", 'NOTICE');
 	}
 }

@@ -15,7 +15,7 @@ use Elgg\Exceptions\Http\PageNotFoundException;
 use Elgg\Database\Select;
 use Symfony\Component\HttpFoundation\Response;
 use p3k\XRay;
-use IndieWeb\MentionClient;
+use Elgg\IndieWeb\Webmention\Client\MentionClient;
 
 class MicropubController {
 	
@@ -73,6 +73,8 @@ class MicropubController {
 		if (!(bool) elgg_get_plugin_setting('enable_micropub', 'indieweb')) {
 			throw new PageNotFoundException();
 		}
+		
+		elgg_set_http_header('Link: <' . elgg_generate_url('default:view:micropub') . '>; rel="micropub"');
 
 		// Default response code and message.
 		$response_code = 400;
@@ -694,7 +696,7 @@ class MicropubController {
 		if (!(bool) elgg_get_plugin_setting('enable_micropub_media', 'indieweb')) {
 			throw new PageNotFoundException();
 		}
-
+		
 		// Default message.
 		$response_message = '';
 
@@ -1354,7 +1356,7 @@ class MicropubController {
 					$webmention->source = $source;
 					$webmention->target = $target;
 					$webmention->property = 'send';
-					$webmention->published = false;
+					$webmention->published = 0;
 					$webmention->status = 0;
 					$webmention->save();
 							
@@ -1429,7 +1431,7 @@ class MicropubController {
 					$webmention->source = $source;
 					$webmention->target = $target;
 					$webmention->property = 'send';
-					$webmention->published = false;
+					$webmention->published = 0;
 					$webmention->status = 0;
 					$webmention->save();
 							

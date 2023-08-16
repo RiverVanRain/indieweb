@@ -30,6 +30,9 @@ Also, last but not least, don't forget to set public access level to view webmen
 	'settings:indieweb:webmention_objects_slugs' => 'Add objects URLs slugs',
 	'settings:indieweb:webmention_objects_slugs:help' => 'For posting, we will check the presence of subtypes names in the links. Typically, this name is equivalent to the subtype, for example, in "domain.com/blog/view/123/title-of-the-post/", "blog" means the subtype "blog". But sometimes links can have other names, for example in "domain.com/stories/view/123/title-of-the-post/" "stories" are not equivalent to the subtype "story". In these cases, specify such URLs slugs here. Separate words with commas.',
 	
+	'settings:indieweb:webmention_clean' => 'Clean the failed Webmentions',
+	'settings:indieweb:webmention_clean:help' => 'Unsent and unreceived Webmentions (Webmentions with errors) will be deleted daily',
+	
 	'settings:indieweb:webmention:receiving' => 'Receiving',
 	'settings:indieweb:webmention:receiving:help' => 'The easiest way to start receiving webmentions and pingbacks for any page is by using https://webmention.io. You have to create an account by signing in with your domain. For more information how to sign in with your domain, see the IndieAuth configuration. Webmention.io is open source so you can also host the service yourself. You can also use the built-in webmention endpoint to receive webmentions. All collected webmentions and pingbacks can be viewed on the webmention overview page at /admin/content/webmention.',
 
@@ -71,8 +74,13 @@ Consult the README file that comes with this plugin if you want to integrate wit
 	
 	'settings:indieweb:use_webmentions' => 'Select objects you want to enable Webmention for',
 	
+	'indieweb:webmention:stored' => 'Stored webmentions',
+	'admin:indieweb:webmention:all' => 'All webmentions',
+	'settings:indieweb:webmention:all' => 'All',
 	'admin:indieweb:webmention:received' => 'Received webmentions',
-	'admin:indieweb:webmention:send' => 'Send webmentions',
+	'settings:indieweb:webmention:received' => 'Received',
+	'admin:indieweb:webmention:sent' => 'Sent webmentions',
+	'settings:indieweb:webmention:sent' => 'Sent',
 	'admin:indieweb:webmention:syndications' => 'Syndications',
 
 	'item:object:webmention' => 'Webmention',
@@ -122,6 +130,12 @@ Consult the README file that comes with this plugin if you want to integrate wit
 	'settings:indieweb:pingback_blocked_domains' => 'Block domains',
 	'settings:indieweb:pingback_blocked_domains:help' => 'Block domains from sending pingbacks. Enter domains line per line.',
 	'pingback:blocked:domain' => 'Domain %s is blocked to send pingbacks',
+	
+	//CONTACTS
+	'admin:indieweb:contacts' => 'Contacts',
+	'item:object:indieweb_contact' => 'Contact',
+	'collection:object:indieweb_contact' => 'Contacts',
+	'indieweb:contacts:none' => 'No Contacts yet.',
 	
 	// MICROPUB
 	'admin:indieweb:micropub' => 'Micropub',

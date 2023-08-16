@@ -56,23 +56,43 @@ class SettingsMenu {
 		]);
 		
 		$menu[] = \ElggMenuItem::factory([
-			'name' => 'indieweb:webmention:received',
+			'name' => 'indieweb:webmention:stored',
 			'parent_name' => 'indieweb:webmention',
-			'href' => elgg_normalize_url('admin/indieweb/webmention/received'),
-			'text' => elgg_echo('admin:indieweb:webmention:received'),
+			'href' => false,
+			'text' => elgg_echo('indieweb:webmention:stored'),
 			'context' => ['admin'],
 			'section' => 'configure',
 			'priority' => 120,
 		]);
-	
+		
 		$menu[] = \ElggMenuItem::factory([
-			'name' => 'indieweb:webmention:send',
-			'parent_name' => 'indieweb:webmention',
-			'href' => elgg_normalize_url('admin/indieweb/webmention/send'),
-			'text' => elgg_echo('admin:indieweb:webmention:send'),
+			'name' => 'indieweb:webmention:all',
+			'parent_name' => 'indieweb:webmention:stored',
+			'href' => elgg_normalize_url('admin/indieweb/webmention/all'),
+			'text' => elgg_echo('settings:indieweb:webmention:all'),
 			'context' => ['admin'],
 			'section' => 'configure',
-			'priority' => 130,
+			'priority' => 121,
+		]);
+		
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:webmention:received',
+			'parent_name' => 'indieweb:webmention:stored',
+			'href' => elgg_normalize_url('admin/indieweb/webmention/received'),
+			'text' => elgg_echo('settings:indieweb:webmention:received'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 122,
+		]);
+	
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:webmention:sent',
+			'parent_name' => 'indieweb:webmention:stored',
+			'href' => elgg_normalize_url('admin/indieweb/webmention/sent'),
+			'text' => elgg_echo('settings:indieweb:webmention:sent'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 123,
 		]);
 		
 		$menu[] = \ElggMenuItem::factory([
@@ -82,7 +102,7 @@ class SettingsMenu {
 			'text' => elgg_echo('admin:indieweb:webmention:syndications'),
 			'context' => ['admin'],
 			'section' => 'configure',
-			'priority' => 130,
+			'priority' => 150,
 		]);
 		
 		//Micropub
@@ -216,6 +236,17 @@ class SettingsMenu {
 			'context' => ['admin'],
 			'section' => 'configure',
 			'priority' => 520,
+		]);
+		
+		//Contacts
+		$menu[] = \ElggMenuItem::factory([
+			'name' => 'indieweb:contacts',
+			'parent_name' => 'indieweb',
+			'href' => elgg_normalize_url('admin/indieweb/contacts'),
+			'text' => elgg_echo('admin:indieweb:contacts'),
+			'context' => ['admin'],
+			'section' => 'configure',
+			'priority' => 600,
 		]);
 		
 		return $menu;

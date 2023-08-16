@@ -23,7 +23,7 @@ if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) el
 return [
 	'plugin' => [
 		'name' => 'IndieWeb',
-		'version' => '1.0.0',
+		'version' => '0.1.0',
 	],
 	
 	'bootstrap' => \Elgg\IndieWeb\Bootstrap::class,
@@ -219,6 +219,7 @@ return [
 			'daily' => [
 				// Webmention
 				'Elgg\IndieWeb\Webmention\Cron::emptySyndications' => [],
+				'Elgg\IndieWeb\Webmention\Cron::emptyFailedWebmentions' => [],
 				// IndieAuth
 				'Elgg\IndieWeb\IndieAuth\Cron::processCodes' => [],
 				// WebSub
@@ -454,6 +455,7 @@ return [
 		'webmention_enable_likes' => false,
 		'webmention_create_contact' => false,
 		'webmention_syndication_targets_custom' => true,
+		'webmention_clean' => false,
 		// Micropub
 		'enable_micropub' => false,
 		'enable_micropub_media' => false,

@@ -9,12 +9,11 @@
 
 namespace Elgg\IndieWeb\Webmention\Events;
 
-use IndieWeb\MentionClient;
+use Elgg\IndieWeb\Webmention\Client\MentionClient;
 
 class Events {
 	// Listen to object publish events and see if we can send webmentions. Currently looks for urls in description
 	public static function createObject(\Elgg\Event $event) {
-
 		if (!(bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {
 		   return;
 		}
@@ -24,15 +23,15 @@ class Events {
 		if (!$entity instanceof \ElggObject) {
 			return;
 		}
-
-		if(!(bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb')) {
+		
+		if (!(bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb')) {
 			return;
 		}
 
 		if ($entity->access_id !== ACCESS_PUBLIC) {
 			return;
 		}
-
+		
 		if ($entity->published_status === 'draft' || $entity->status === 'draft') {
 			return;
 		}
@@ -59,7 +58,7 @@ class Events {
 		
 		$targets = unserialize($entity->syndication_targets);
 		
-		if (!empty($targets)) {
+		if (!empty($targets[0])) {
 			foreach ($targets as $target) {
 				$client->sendWebmention($entity->getURL(), $target);
 				self::objectSyndication($entity->guid, $entity->getURL());
@@ -91,7 +90,7 @@ class Events {
 			$webmention->source = $source;
 			$webmention->target = $target;
 			$webmention->property = 'send';
-			$webmention->published = false;
+			$webmention->published = 0;
 			$webmention->status = 0;
 			$webmention->save();
 					
