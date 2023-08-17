@@ -29,7 +29,7 @@ class ContactClient {
 	
 	public function storeContact(array $values = []) {
 		if (!empty($values['name'])) {
-			$contacts = elgg_get_entities([
+			$contacts = elgg_count_entities([
                 'type' => 'object',
                 'subtype' => Contact::SUBTYPE,
                 'metadata_name_value_pairs' => [
@@ -38,12 +38,9 @@ class ContactClient {
                         'value' => $values['name'],
                     ],
                 ],
-                'limit' => false,
-                'batch' => true,
-                'batch_inc_offset' => false,
             ]);
 			
-			if (empty($contacts)) {
+			if ($contacts === 0) {
 				// Get nickname if the url is from twitter.
 				if (empty($values['nickname']) && !empty($values['url']) && strpos($values['url'], 'twitter.com') !== false) {
 					$parsed = parse_url($values['url']);
@@ -73,6 +70,7 @@ class ContactClient {
 						
 						$entity->setMetadata('thumbnail_url', elgg_get_inline_url($image));
 					}
+					
 					return $entity->save();
 				}
         
