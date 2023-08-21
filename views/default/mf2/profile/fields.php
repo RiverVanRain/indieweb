@@ -19,4 +19,4 @@ $name = elgg_format_element('span', ['class' => 'p-name'], $fullname);
 
 $nickname = elgg_format_element('span', ['class' => 'p-nickname'], $user->username);
 
-echo elgg_format_element('div', ['class' => 'h-card vcard hidden'], $name . $nickname . $link . $image);
+echo elgg_format_element('div', ['class' => 'hidden'], $name . $nickname . $link . $image);

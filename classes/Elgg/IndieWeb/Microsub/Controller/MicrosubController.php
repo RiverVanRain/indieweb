@@ -16,24 +16,6 @@ use Elgg\IndieWeb\Microsub\Entity\MicrosubItem;
 use GuzzleHttp\Client;
 
 class MicrosubController {
-	
-	/**
-	 * @var \Elgg\Request
-	 */
-	protected $request;
-	
-	/**
-	 * A collection of urls for aggregated feeds.
-	 *
-	 * @var array
-	 */
-	protected $aggregated_feeds;
-
-	/**
-	 * @var \Elgg\IndieWeb\IndieAuth\Client\IndieAuthClient
-	 */
-	protected $indieAuth;
-
 	/**
 	 * Whether this is an authenticated request or not.
 	 *
@@ -88,7 +70,7 @@ class MicrosubController {
 				
 				if (!empty($feeds['feeds'])) {
 					foreach ($feeds['feeds'] as $feed) {
-						$results[] = (object) [
+						$results[] = [
 							'value' => $feed['url'],
 							'label' => $feed['url'] . ' (' . $feed['type'] . ')',
 						];
@@ -103,22 +85,20 @@ class MicrosubController {
 	/**
 	 * Routing callback: internal webmention endpoint.
 	 */
-	public static function callback(Request $request) {
+	public function __invoke(Request $request) {
 		if (!(bool) elgg_get_plugin_setting('enable_microsub', 'indieweb')) {
 			throw new \Elgg\Exceptions\Http\PageNotFoundException();
 		}
 		
-		if(!(empty) elgg_get_plugin_setting('microsub_endpoint', 'indieweb')) {
+		if (!empty(elgg_get_plugin_setting('microsub_endpoint', 'indieweb'))) {
 			throw new \Elgg\Exceptions\Http\BadRequestException();
 		}
 		
 		elgg_set_http_header('Link: <' . elgg_generate_url('default:view:microsub') . '>; rel="microsub"');
 		
 		// Default response code and message.
-		$response = [
-			'message' => 'Bad request',
-			'code' => 400,
-		];
+		$response_code = 400;
+		$response_message = 'Bad request';
 
 		// Determine scope.
 		$scope = null;
@@ -136,27 +116,23 @@ class MicrosubController {
 		// Get authorization header, response early if none found.
 		$auth_header = elgg()->indieauth->getAuthorizationHeader($request->getHttpRequest());
 		if (!$auth_header) {
-			return elgg_error_response('Missing Authorization Header', REFERRER, 401);
-		}
-		
-		// Check anonymous requests.
-		if ($this->allowAnonymousRequest() && $scope === 'read' && $request_method === 'GET' && in_array($action, ['channels', 'timeline'])) {
-			switch ($action) {
-				case 'channels':
-					$response = $this->getChannelList();
-					break;
-
-				case 'timeline':
-					$response = $this->getTimeline();
-					break;
+			// Check anonymous requests.
+			if ($this->allowAnonymousRequest() && $scope === 'read' && $request_method === 'GET' && in_array($action, ['channels', 'timeline'])) {
+				switch ($action) {
+					case 'channels':
+						$response = $this->getChannelList($request);
+						break;
+					case 'timeline':
+						$response = $this->getTimeline($request);
+						break;
+				}
+				$response_message = $response->getContent() ? : '';
+				$response_code = (int) $response->getStatusCode() ? : 200;
 			}
-
-			$response_message = isset($response['response']) ? $response['response'] : '';
-			$response_code = isset($response['code']) ? (int) $response['code'] : 200;
 			
 			return elgg_ok_response($response_message, '', REFERRER, $response_code);
 		}
-		
+
 		// Validate token.
 		if (!elgg()->indieauth->isValidToken($auth_header, $scope)) {
 			return elgg_error_response('No Valid Token', REFERRER, 403);
@@ -169,23 +145,23 @@ class MicrosubController {
 		if ($request_method === 'GET') {
 			switch ($action) {
 				case 'channels':
-					$response = $this->getChannelList();
+					$response = $this->getChannelList($request);
 					break;
 
 				case 'timeline':
-					$response = $this->getTimeline();
+					$response = $this->getTimeline($request);
 					break;
 
 				case 'follow':
-					$response = $this->getSources();
+					$response = $this->getSources($request);
 					break;
 
 				case 'search':
-					$response = $this->search();
+					$response = $this->search($request);
 					break;
 
 				case 'preview':
-					$response = $this->previewUrl();
+					$response = $this->previewUrl($request);
 					break;
 			}
 		}
@@ -204,19 +180,19 @@ class MicrosubController {
 					}
 
 					if ($method === 'create') {
-						$response = $this->createChannel();
+						$response = $this->createChannel($request);
 					}
 
 					if ($method === 'update') {
-						$response = $this->updateChannel();
+						$response = $this->updateChannel($request);
 					}
 
 					if ($method === 'order') {
-						$response = $this->orderChannels();
+						$response = $this->orderChannels($request);
 					}
 
 					if ($method === 'delete') {
-						$response = $this->deleteChannel();
+						$response = $this->deleteChannel($request);
 					}
 					break;
 
@@ -225,7 +201,7 @@ class MicrosubController {
 					$method = $request->getParam('method');
 					if (in_array($method, ['mark_read', 'mark_unread'])) {
 						$status = $method == 'mark_read' ? 1 : 0;
-						$response = $this->timelineChangeReadStatus($status);
+						$response = $this->timelineChangeReadStatus($request, $status);
 					}
 
 					if ($method === 'remove') {
@@ -235,30 +211,29 @@ class MicrosubController {
 					if ($method === 'move') {
 						$response = $this->moveItem();
 					}
-
 					break;
 
 				// Follow, Unfollow, Search and Preview
 				case 'follow':
-					$response = $this->followSource();
+					$response = $this->followSource($request);
 					break;
 
 				case 'unfollow':
-					$response = $this->deleteSource();
+					$response = $this->deleteSource($request);
 					break;
 
 				case 'search':
-					$response = $this->search();
+					$response = $this->search($request);
 					break;
 
 				case 'preview':
-					$response = $this->previewUrl();
+					$response = $this->previewUrl($request);
 					break;
 			}
 		}
 
-		$response_message = isset($response['response']) ? $response['response'] : [];
-		$response_code = isset($response['code']) ? (int) $response['code'] : 200;
+		$response_message = $response->getContent() ?: '';
+		$response_code = (int) $response->getStatusCode() ?: 200;
 
 		return elgg_ok_response($response_message, '', REFERRER, $response_code);
 	}
@@ -268,12 +243,10 @@ class MicrosubController {
 	 *
 	 * @return array $response
 	*/
-	protected function getChannelList() {
-		$this->request = new Request;
-		
+	public function getChannelList(Request $request) {
 		$channels = [];
 
-		$tree = $this->request->getParam('method') === 'tree';
+		$tree = $request->getParam('method') === 'tree';
 
 		$channels_list = elgg_get_entities([
 			'type' => 'object',
@@ -303,10 +276,6 @@ class MicrosubController {
 					[
 						'name' => 'channel_id',
 						'value' => 0,
-					],
-					[
-						'name' => 'status',
-						'value' => 1 ?? true,
 					],
 					[
 						'name' => 'is_read',
@@ -342,7 +311,7 @@ class MicrosubController {
 			}
 
 			if ($tree) {
-				$channel_sources = $this->getSources($channel->guid, true);
+				$channel_sources = $this->getSources($request, $channel->guid, true)->getContent();
 				if (!empty($channel_sources['response']->items)) {
 					$sources = ['sources' => $channel_sources['response']->items];
 				}
@@ -362,8 +331,8 @@ class MicrosubController {
 	 *
 	 * @return array $response
 	*/
-	protected function getTimeline($search = null) {
-		return elgg()->microsub->getTimeline($this->isAuthenticatedRequest(), $search);
+	public function getTimeline(Request $request, $search = null) {
+		return elgg()->microsub->getTimeline($request, $this->isAuthenticatedRequest(), $search);
 	}
 
 	/**
@@ -371,13 +340,11 @@ class MicrosubController {
 	 *
 	 * @return array
 	*/
-	protected function createChannel() {
-		$this->request = new Request;
-		
+	public function createChannel(Request $request) {
 		$return = [];
 		$response_code = 400;
 
-		$name = $this->request->getParam('name');
+		$name = $request->getParam('name');
 		if (!empty($name)) {
 			$uid = 1;
 			
@@ -416,14 +383,12 @@ class MicrosubController {
 	 *
 	 * @return array
 	*/
-	protected function updateChannel() {
-		$this->request = new Request;
-		
+	public function updateChannel(Request $request) {
 		$return = [];
 		$response_code = 400;
 
-		$guid = $this->request->getParam('channel');
-		$title = $this->request->getParam('name');
+		$guid = $request->getParam('channel');
+		$title = $request->getParam('name');
 		
 		if (!empty($title) && !empty($guid)) {
 			$channel = get_entity($guid);
@@ -445,13 +410,11 @@ class MicrosubController {
 	 *
 	 * @return array
 	*/
-	protected function deleteChannel() {
-		$this->request = new Request;
-		
+	public function deleteChannel(Request $request) {
 		$return = [];
 		$response_code = 400;
 		
-		$id = $this->request->getParam('channel');
+		$id = $request->getParam('channel');
 		
 		$entiny = get_entity($id);
 		
@@ -469,13 +432,11 @@ class MicrosubController {
 	 * @return array
 	 *
 	*/
-	protected function orderChannels() {
-		$this->request = new Request;
-		
+	public function orderChannels(Request $request) {
 		$return = [];
 		$response_code = 400;
 		
-		$ids = $this->request->getParam('channels');
+		$ids = $request->getParam('channels');
 		
 		if (!empty($ids)) {
 			$weight = -20;
@@ -505,10 +466,8 @@ class MicrosubController {
 	 *
 	 * @return array
 	*/
-	protected function timelineChangeReadStatus($status) {
-		$this->request = new Request;
-		
-		$channel_id = $this->request->getParam('channel');
+	public function timelineChangeReadStatus(Request $request, $status) {
+		$channel_id = $request->getParam('channel');
 
 		// Notifications is stored as channel 0.
 		if ($channel_id === 'notifications') {
@@ -517,9 +476,9 @@ class MicrosubController {
 
 		// Check entry or last_read_entry. If last_read_entry is passed in, we
 		// completely ignore entries, this usually just means 'Mark all as read'.
-		$entries = $this->request->getParam('entry'); //microsub_item
+		$entries = $request->getParam('entry'); //microsub_item
 		if ($channel_id !== 'global') {
-			$last_read_entry = $this->request->getParam('last_read_entry');
+			$last_read_entry = $request->getParam('last_read_entry');
 			
 			if (!empty($last_read_entry)) {
 				$entries = null;
@@ -564,15 +523,13 @@ class MicrosubController {
 	 * @return array
 	 *
 	*/
-	protected function followSource() {
-		$this->request = new Request;
-		
+	public function followSource(Request $request) {
 		$return = [];
 		$response_code = 400;
 
-		$url = $this->request->getParam('url');
-		$channel_id = $this->request->getParam('channel');
-		$method = $this->request->getParam('method');
+		$url = $request->getParam('url');
+		$channel_id = $request->getParam('channel');
+		$method = $request->getParam('method');
 
 		if (!empty($channel_id) && !empty($url)) {
 			$channel = get_entity($channel_id);
@@ -613,6 +570,7 @@ class MicrosubController {
 						$source->url = $url;
 						$source->fetch_interval = 86400;
 						$source->items_to_keep = 20;
+						$source->status = 1;
 
 						$source->save();
 					});
@@ -647,14 +605,12 @@ class MicrosubController {
 	 * @return array
 	 *
 	*/
-	protected function deleteSource() {
-		$this->request = new Request;
-		
+	public function deleteSource(Request $request) {
 		$return = [];
 		$response_code = 400;
 
-		$url = $this->request->getParam('url');
-		$channel_id = $this->request->getParam('channel');
+		$url = $request->getParam('url');
+		$channel_id = $request->getParam('channel');
 		
 		if (!empty($channel_id) && !empty($url)) {
 			$sources = elgg_get_entities([
@@ -705,16 +661,14 @@ class MicrosubController {
 	 * @return array
 	 *
 	*/
-	protected function getSources(int $channel_id = 0, bool $include_unread = false) {
-		$this->request = new Request;
-		
+	public function getSources(Request $request, int $channel_id = 0, bool $include_unread = false) {
 		$return = [];
 		$response_code = 400;
 
 		if (!isset($channel_id)) {
-			$channel_id = $this->request->getParam('channel');
+			$channel_id = $request->getParam('channel');
 		}
-
+		
 		if (!empty($channel_id)) {
 			$sources = elgg_get_entities([
 				'type' => 'object',
@@ -736,7 +690,7 @@ class MicrosubController {
 			
 			if (!empty($sources)) {
 				$source_list = [];
-				
+
 				foreach ($sources as $source) {
 					$unread = 0;
 					
@@ -751,16 +705,16 @@ class MicrosubController {
 						}
 					}
 
-					$source_list[] = (object) [
+					$source_list[] = [
 						'type' => 'feed',
-						'uid' => $source->id(),
+						'uid' => $source->id,
 						'url' => $source->url,
 						'name' => $source->title,
 						'last_update' => $source->getChanged() ? date('Y-m-d H:i:s', $source->getChanged()) : null,
 						'unread' => $unread,
 					];
 				}
-			
+
 				$return = [
 					'items' => $source_list
 				];
@@ -780,18 +734,16 @@ class MicrosubController {
 	 * @return array
 	 *
 	*/
-	protected function search() {
-		$this->request = new Request;
-		
+	public function search(Request $request) {
 		$return = [];
 		$response_code = 400;
 
 		$channel = null;
-		$query = $this->request->getParam('query');
+		$query = $request->getParam('query');
 
 		// Search for posts, but only in a POST request.
-		if ($this->request->getMethod() === 'POST') {
-			$channel = $this->request->getParam('channel');
+		if ($request->getMethod() === 'POST') {
+			$channel = $request->getParam('channel');
 			
 			// Notifications is stored as channel 0.
 			if ($channel === 'notifications') {
@@ -802,7 +754,7 @@ class MicrosubController {
 		if (!empty($query)) {
 			// Search for posts.
 			if ($channel || $channel === 0) {
-				$return = $this->getTimeline($query);
+				$return = $this->getTimeline($request, $query)->getContent();
 				$response_code = 200;
 			}
 
@@ -816,17 +768,16 @@ class MicrosubController {
 					$result_list = [];
 					
 					foreach ($feeds['feeds'] as $feed) {
-						$result_list[] = (object) [
+						$result_list[] = [
 							'type' => $feed['type'],
 							'url' => $feed['url'],
 						];
 					}
 					
-					$return = (object) ['results' => $result_list];
+					$return = ['results' => $result_list];
 					$response_code = 200;
 				}
 			}
-
 		}
 
 		return elgg_ok_response($return, '', REFERRER, $response_code);
@@ -837,13 +788,11 @@ class MicrosubController {
 	 *
 	 * @return array
 	*/
-	protected function previewUrl() {
-		$this->request = new Request;
-		
+	public function previewUrl(Request $request) {
 		$return = [];
 		$response_code = 400;
 
-		$url = $this->request->getParam('url');
+		$url = $request->getParam('url');
 		
 		if (!empty($url)) {
 			try {
@@ -856,7 +805,7 @@ class MicrosubController {
 				$parsed = $xray->parse($url, $body, ['expect' => 'feed']);
 				
 				if ($parsed && isset($parsed['data']['type']) && $parsed['data']['type'] === 'feed') {
-					$return = (object) ['items' => $parsed['data']['items']];
+					$return = ['items' => $parsed['data']['items']];
 					$response_code = 200;
 				}
 			} catch (\Exception $e) {
@@ -874,10 +823,8 @@ class MicrosubController {
 	 * @return array
 	 *
 	*/
-	protected function removeItem() {
-		$this->request = new Request;
-		
-		$entry_id = $this->request->getParam('entry');
+	public function removeItem(Request $request) {
+		$entry_id = $request->getParam('entry');
 		
 		if ($entry_id) {
 			$item = elgg_get_entities([
@@ -904,17 +851,15 @@ class MicrosubController {
 	 * @return array
 	 *
 	*/
-	protected function moveItem() {
-		$this->request = new Request;
-		
-		$channel_id = $this->request->getParam('channel');
+	public function moveItem(Request $request) {
+		$channel_id = $request->getParam('channel');
 
 		// Notifications is stored as channel 0.
 		if ($channel_id === 'notifications') {
 			$channel_id = 0;
 		}
 
-		$entries = $this->request->getParam('entry');
+		$entries = $request->getParam('entry');
 		
 		if (($channel_id || $channel_id === 0) && !empty($entries)) {
 			if (!is_array($entries)) {

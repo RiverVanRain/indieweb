@@ -116,6 +116,7 @@ echo elgg_view_field([
 		[
 			'#type' => 'checkbox',
 			'#label' => elgg_echo('indieweb:microsub:indigenous_send_push'),
+			'#help' => elgg_echo('indieweb:microsub:external:help'),
 			'name' => 'params[microsub_indigenous_send_push]',
 			'value' => 1,
 			'default' => 0,
@@ -140,6 +141,7 @@ echo elgg_view_field([
 		[
 			'#type' => 'checkbox',
 			'#label' => elgg_echo('indieweb:microsub:aperture_send_push'),
+			'#help' => elgg_echo('indieweb:microsub:external:help'),
 			'name' => 'params[microsub_aperture_send_push]',
 			'value' => 1,
 			'default' => 0,

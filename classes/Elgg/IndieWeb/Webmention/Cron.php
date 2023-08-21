@@ -73,13 +73,13 @@ class Cron {
 					// There is a possibility a feed was found, so check for that first.
 					// If there's a feed, take the first item.
 					
-					if ($parsed && isset($parsed['data']['type']) && $parsed['data']['type'] == 'feed') {
+					if ($parsed && isset($parsed['data']['type']) && $parsed['data']['type'] === 'feed') {
 						$parsed = ['data' => $parsed['data']['items'][0]];
 					}
 					
-					if ($parsed && isset($parsed['data']['type']) && $parsed['data']['type'] == 'entry') {
+					if ($parsed && isset($parsed['data']['type']) && $parsed['data']['type'] === 'entry') {
 						$data = $parsed['data'];
-						
+	
 						// Type
 						$type = 'entry';
 
@@ -309,6 +309,33 @@ class Cron {
 							$svc->createComment($webmention);
 						}
 					}
+					
+					// send notifications when webmention published
+					$container = get_entity($webmention->target_guid);
+					
+					if ($container instanceof \ElggObject) {
+						$owner = get_entity($container->owner_guid);
+						
+						$view_post = elgg_view('output/url', [
+							'text' => elgg_echo('here'),
+							'href' => $container->getURL(),
+						]);
+						
+						$description = $webmention->content_html ?: $webmention->content_text;
+						if (empty($description)) {
+							$description = $container->getDisplayName();
+						}
+						
+						// notify owner
+						notify_user($owner->guid,
+							elgg_get_site_entity()->guid,
+							elgg_echo('webmention:notification:subject', [$container->getDisplayName()], $owner->getLanguage()),
+							elgg_echo('webmention:notification:body', [
+								elgg_get_excerpt($description, 200),
+								$view_post,
+							], $owner->getLanguage())
+						);
+					}
 				}
 				
 				// Reset the type and property.
@@ -336,7 +363,7 @@ class Cron {
 					$microsub_client->sendPushNotification($valid_webmentions);
 				}
 			}
-			
+
 		// restore access
 		});
 		

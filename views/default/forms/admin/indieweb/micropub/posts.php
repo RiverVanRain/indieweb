@@ -16,7 +16,7 @@ $types = [];
 $objects = (array) elgg_extract('object', elgg_entity_types_with_capability('searchable'), []);
 
 foreach ($objects as $subtype) {
-	if (in_array($subtype, ['river_object', 'messages', 'newsletter', 'static', 'comment', 'file'])) {
+	if (in_array($subtype, ['river_object', 'messages', 'newsletter', 'static', 'file', 'comment'])) {
 		continue;
 	}
 	

@@ -64,7 +64,7 @@ class TokenController {
 				if ($target_id = $indieAuthClient->checkAuthor()) {
 					$response_code = 200;
 					$token = $indieAuthClient->getToken();
-					$response = (object) [
+					$response = [
 						'me' => $token->getMe(),
 						'client_id' => $token->getClientId(),
 						'scope' => $token->getScopesAsString(),
@@ -282,7 +282,7 @@ class TokenController {
 			]);
 		}
 
-		return (object) $profile;
+		return $profile;
 	}
 	
 	/**

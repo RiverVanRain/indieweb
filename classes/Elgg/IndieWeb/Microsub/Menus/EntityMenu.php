@@ -29,6 +29,34 @@ class EntityMenu {
 			return $menu;
 		}
 		
+		// Change status
+		$enabled = (bool) $entity->getStatus();
+
+		$menu->add(ElggMenuItem::factory([
+			'name' => 'enable',
+			'text' => elgg_echo('indieweb:microsub:microsub_channel:enable'),
+			'icon' => 'check',
+			'href' => elgg_generate_action_url('microsub/channel/toggle_status', [
+				'guid' => $entity->guid,
+			]),
+			'item_class' => $enabled ? 'hidden' : '',
+			'priority' => 177,
+			'data-toggle' => 'disable',
+		]));
+		
+		$menu->add(ElggMenuItem::factory([
+			'name' => 'disable',
+			'text' => elgg_echo('indieweb:microsub:microsub_channel:disable'),
+			'icon' => 'ban',
+			'href' => elgg_generate_action_url('microsub/channel/toggle_status', [
+				'guid' => $entity->guid,
+			]),
+			'item_class' => $enabled ? '' : 'hidden',
+			'priority' => 178,
+			'data-toggle' => 'enable',
+		]));
+		
+		// Edit
 		$menu->add(ElggMenuItem::factory([
 			'name' => 'edit',
 			'text' => elgg_echo('edit'),
@@ -61,6 +89,34 @@ class EntityMenu {
 		
 		$menu = $hook->getValue();
 		
+		// Change status
+		$enabled = (bool) $entity->getStatus();
+
+		$menu->add(ElggMenuItem::factory([
+			'name' => 'enable',
+			'text' => elgg_echo('indieweb:microsub:microsub_source:enable'),
+			'icon' => 'check',
+			'href' => elgg_generate_action_url('microsub/source/toggle_status', [
+				'guid' => $entity->guid,
+			]),
+			'item_class' => $enabled ? 'hidden' : '',
+			'priority' => 177,
+			'data-toggle' => 'disable',
+		]));
+		
+		$menu->add(ElggMenuItem::factory([
+			'name' => 'disable',
+			'text' => elgg_echo('indieweb:microsub:microsub_source:disable'),
+			'icon' => 'ban',
+			'href' => elgg_generate_action_url('microsub/source/toggle_status', [
+				'guid' => $entity->guid,
+			]),
+			'item_class' => $enabled ? '' : 'hidden',
+			'priority' => 178,
+			'data-toggle' => 'enable',
+		]));
+		
+		// Edit
 		$menu->add(ElggMenuItem::factory([
 			'name' => 'edit',
 			'text' => elgg_echo('edit'),

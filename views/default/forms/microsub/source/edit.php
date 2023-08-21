@@ -84,7 +84,7 @@ echo elgg_view_field([
 	'name' => 'fetch_interval',
 	'value' => elgg_extract('fetch_interval', $vars),
 	'options_values' => [
-		'none' => elgg_echo('indieweb:microsub:microsub_source:fetch_interval:none'),
+		0 => elgg_echo('indieweb:microsub:microsub_source:fetch_interval:none'),
 		900 => elgg_echo('indieweb:microsub:microsub_source:fetch_interval:900'),
 		1800 => elgg_echo('indieweb:microsub:microsub_source:fetch_interval:1800'),
 		3600 => elgg_echo('indieweb:microsub:microsub_source:fetch_interval:3600'),

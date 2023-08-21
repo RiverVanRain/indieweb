@@ -18,7 +18,6 @@ use p3k\XRay\Formats\HTML;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
-use Symfony\Component\HttpFoundation\Request as HttpRequest;
 use function mf2\Parse;
 use p3k\XRay;
 use Elgg\IndieWeb\Webmention\Entity\Webmention;
@@ -56,27 +55,6 @@ class MicrosubClient {
 		$set_next_fetch = true;
 		$parse_options = ['expect' => 'feed'];
 
-		// Purge deleted items
-		elgg_call(ELGG_IGNORE_ACCESS, function () {
-			$batch = elgg_get_entities([
-				'type' => 'object',
-				'subtype' => MicrosubItem::SUBTYPE,
-				'wheres' => function (QueryBuilder $qb, $from_alias = 'e') use ($entity) {
-					$md_alias = $qb->joinMetadataTable($from_alias, 'guid', ['status']);
-					return $qb->compare("$md_alias.value", '=', 0, ELGG_VALUE_INTEGER);
-				},
-				'limit' => false,
-				'batch' => true,
-				'batch_inc_offset' => false,
-			]);
-
-			if (!empty($batch)) {
-				foreach ($batch as $item) {
-					$item->delete();
-				}
-			}
-		});
-	
 		// Cleanup old items
 		$cleanup_old_items = (bool) elgg_get_plugin_setting('microsub_cleanup_feeds', 'indieweb');
 
@@ -100,18 +78,18 @@ class MicrosubClient {
 		if ($url) {
 			$set_next_fetch = false;
 			
-			$options['metadata_name_value_pairs'][] = [
+			$options['metadata_name_value_pairs'] = [
 				[
 					'name' => 'url',
 					'value' => $url,
 				],
 			];
 			
-			$sources = elgg_call(ELGG_IGNORE_ACCESS | ELGG_SHOW_DISABLED_ENTITIES, function () use (&$options) {
+			$sources = elgg_call(ELGG_IGNORE_ACCESS, function () use (&$options) {
 				return elgg_get_entities($options);
 			});
 		} else {
-			$options['metadata_name_value_pairs'][] = [
+			$options['metadata_name_value_pairs'] = [
 				[
 					'name' => 'status',
 					'value' => 1,
@@ -128,7 +106,7 @@ class MicrosubClient {
 				],
 			];
 			
-			$sources = elgg_call(ELGG_IGNORE_ACCESS | ELGG_SHOW_DISABLED_ENTITIES, function () use (&$options) {
+			$sources = elgg_call(ELGG_IGNORE_ACCESS, function () use (&$options) {
 				return elgg_get_entities($options);
 			});
 		}
@@ -190,7 +168,7 @@ class MicrosubClient {
 
 					// In case of a 304 Not Modified, there is no new content, so return
 					// false.
-					if ($response->getStatusCode() == 304) {
+					if ($response->getStatusCode() === 304) {
 						$parse = false;
 					}
 				}
@@ -245,8 +223,7 @@ class MicrosubClient {
 							$source->setMetadata('items_in_feed', $total_items);
 						}
 
-						// Cleanup old items if we can. We do this here because it doesn't
-						// make much sense to check this if the hash hasn't changed.
+						// Cleanup old items if we can
 						if (!$empty && $cleanup_old_items && $items_in_feed && $items_to_keep && $item_count >= $items_to_keep) {
 							// Add five more items to keep so we don't hit exceptions like:
 							//   - feeds with pinned items (e.g. mastodon).
@@ -255,56 +232,41 @@ class MicrosubClient {
 							// they are not deleted.
 							$items_to_keep += 5;
 							
-							// We use two queries as not all mysql servers understand limits
-							// in sub queries when the main query is a delete.
-							$timestamp = elgg_get_entities([
-								'type' => 'object',
-								'subtype' => MicrosubItem::SUBTYPE,
-								'container_guid' => $source_id,
-								'metadata_name_value_pairs' => [
-									[
-										'name' => 'channel_id',
-										'value' => $channel_id,
-									],
-								],
-								'limit' => $items_to_keep,
-								'order_by' => new OrderByClause('e.timestamp', 'DESC'),
-								
-							]);
-							
-							if ($timestamp) {
-								elgg_call(ELGG_IGNORE_ACCESS | ELGG_SHOW_DISABLED_ENTITIES, function () use ($timestamp, $channel_id, $source_id, &$ids) {
-									$batch = elgg_get_entities([
-										'type' => 'object',
-										'subtype' => MicrosubItem::SUBTYPE,
-										'container_guid' => $source_id,
-										'metadata_name_value_pairs' => [
-											[
-												'name' => 'timestamp',
-												'value' => $timestamp,
-												'operand' => '<',
-											],
-											[
-												'name' => 'channel_id',
-												'value' => $channel_id,
-											],
-											[
-												'name' => 'is_read',
-												'value' => 1,
-											],
+							elgg_call(ELGG_IGNORE_ACCESS, function () use ($items_to_keep, $channel_id, $source_id, &$ids) {
+								$batch = elgg_get_entities([
+									'type' => 'object',
+									'subtype' => MicrosubItem::SUBTYPE,
+									'metadata_name_value_pairs' => [
+										[
+											'name' => 'timestamp',
+											'value' => time(),
+											'operand' => '<',
 										],
-										'wheres' => function (QueryBuilder $qb, $from_alias = 'e') use ($ids) {
-											$md_alias = $qb->joinMetadataTable($from_alias, 'guid', ['id']);
-											return $qb->compare("$md_alias.value", 'NOT IN', $ids, ELGG_VALUE_INTEGER);
-										},
-										'limit' => 0,
-									]);
+										[
+											'name' => 'channel_id',
+											'value' => $channel_id,
+										],
+										[
+											'name' => 'source_id',
+											'value' => $source_id,
+										],
+										[
+											'name' => 'is_read',
+											'value' => 1,
+										],
+									],
+									'wheres' => function (QueryBuilder $qb, $from_alias = 'e') use (&$ids) {
+										$md_alias = $qb->joinMetadataTable($from_alias, 'guid', 'id');
+										return $qb->compare("$md_alias.value", 'NOT IN', $ids, ELGG_VALUE_INTEGER);
+									},
+									'limit' => $items_to_keep,
+									'order_by' => new OrderByClause('e.time_created', 'ASC'),
+								]);
 									
-									foreach ($batch as $item) {
-										$item->delete();
-									}
-								});
-							}
+								foreach ($batch as $item) {
+									$item->delete();
+								}
+							});
 						}
 					}
 
@@ -341,7 +303,7 @@ class MicrosubClient {
 	 *
 	 * @return string
 	 */
-	protected function saveItem($data, &$tries = 0, $source_id = 0, $channel_id = 0, $empty = false, $context = []) {
+	protected function saveItem(&$data, $tries = 0, $source_id = 0, $channel_id = 0, $empty = false, $context = []) {
 		// Prefer uid, then url, then hash the content
 		if (isset($data['uid'])) {
 		  $id = '@' . $data['uid'];
@@ -350,17 +312,20 @@ class MicrosubClient {
 		} else {
 		  $id = '#' . md5(json_encode($data));
 		}
-
+		
 		// Check if this MicrosubItem exists
-		$exists = elgg_call(ELGG_IGNORE_ACCESS | ELGG_SHOW_DISABLED_ENTITIES, function () use ($source_id, $id) {
+		$exists = elgg_call(ELGG_IGNORE_ACCESS, function () use ($source_id, $id) {
 			return elgg_get_entities([
 				'type' => 'object',
 				'subtype' => MicrosubItem::SUBTYPE,
-				'container_guid' => $source_id,
 				'metadata_name_value_pairs' => [
 					[
 						'name' => 'id',
 						'value' => $id,
+					],
+					[
+						'name' => 'source_id',
+						'value' => $source_id,
 					],
 				],
 				'limit' => 1,
@@ -370,7 +335,7 @@ class MicrosubClient {
 			]);
 		});
 		
-		if ($exists > 0) {
+		if ($exists[0] > 0) {
 			return $id;
 		}
 
@@ -384,6 +349,7 @@ class MicrosubClient {
 			$entity->container_guid = $source_id;
 			$entity->access_id = ACCESS_PUBLIC;
 			$entity->channel_id = $channel_id;
+			$entity->source_id = $source_id;
 			$entity->data = json_encode($data);
 			$entity->id = $id;
 			$entity->is_read = $empty ? 1 : 0;
@@ -391,19 +357,21 @@ class MicrosubClient {
 			$entity->post_type = isset($data['post-type']) ? $data['post-type'] : 'unknown';
 			
 			if (isset($data['published'])) {
-				$entity->timestamp = strtotime($data['published']);
-				if (empty($entity->timestamp) || !$entity->timestamp || (is_numeric($entity->timestamp) && $entity->timestamp < 0)) {
-					$entity->timestamp = time();
+				$timestamp = strtotime($data['published']);
+				if (empty($timestamp) || !$timestamp || (is_numeric($timestamp) && $timestamp < 0)) {
+					$timestamp = time();
 				}
+				
+				$entity->timestamp = $timestamp;
 			} else {
 				$entity->timestamp = time();
 			}
 
 			$entity->time_created = $empty ? $entity->timestamp : time();
 
-			$entity->save();
+			return $entity->save();
 		});
-
+		
 		// Save post context in queue
 		if (!empty($context) && in_array($entity->post_type, $context)) {
 			foreach ($context as $post_type) {
@@ -611,11 +579,11 @@ class MicrosubClient {
 			if ($author_photo = $webmention->author_photo) {
 				$properties['photo'] = [$author_photo];
 			}
-			$author['properties'] = (object) $properties;
+			$author['properties'] = $properties;
 		}
 
 		if (!empty($author)) {
-			$post['author'] = [(object) $author];
+			$post['author'] = [$author];
 		}
 	}
 
@@ -737,12 +705,10 @@ class MicrosubClient {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getTimeline($is_authenticated, $search = null) {
-		$this->request = new HttpRequest();
-
+	public function getTimeline(\Elgg\Request $request, $is_authenticated, $search = null) {
 		$response = ['items' => []];
 		
-		$aggregated_feeds = $this->aggregated_feeds();
+		$aggregated_feeds = $this->aggregatedFeeds(); // WIP
 
 		$items = [];
 
@@ -751,22 +717,22 @@ class MicrosubClient {
 
 		// WIP -- offset ?
 		// Set pager
-		$page = $this->request->get('after', 0);
+		$page = $request->getParam('after', 0);
 		if ($page > 0) {
-			$this->request->query->set('page', $page);
+			$request->getHttpRequest()->query->set('page', $page);
 		}
 
 		// Is read
-		$is_read = $this->request->get('is_read');
+		$is_read = $request->getParam('is_read');
 
 		// Get source and channel variables
-		$source = $this->request->get('source');
-		$channel = $this->request->get('channel');
-
+		$source = $request->getParam('source');
+		$channel = $request->getParam('channel');
+		
 		// Get items from a channel
 
 		// Notifications is stored as channel 0
-		if ($channel == 'notifications' && $is_authenticated) {
+		if ($channel === 'notifications' && $is_authenticated) {
 			$channel = 0;
 		}
 
@@ -776,10 +742,6 @@ class MicrosubClient {
 					'type' => 'object',
 					'subtype' => MicrosubItem::SUBTYPE,
 					'metadata_name_value_pairs' => [
-						[
-							'name' => 'status',
-							'value' => 1,
-						],
 						[
 							'name' => 'channel_id',
 							'value' => $channel,
@@ -814,10 +776,6 @@ class MicrosubClient {
 					'subtype' => MicrosubItem::SUBTYPE,
 					'metadata_name_value_pairs' => [
 						[
-							'name' => 'status',
-							'value' => 1,
-						],
-						[
 							'name' => 'channel_id',
 							'value' => $filter_by_channel,
 						],
@@ -846,11 +804,10 @@ class MicrosubClient {
 				return elgg_get_entities([
 					'type' => 'object',
 					'subtype' => MicrosubItem::SUBTYPE,
-					'container_guid' => $source,
 					'metadata_name_value_pairs' => [
 						[
-							'name' => 'status',
-							'value' => 1,
+							'name' => 'source_id',
+							'value' => $source,
 						],
 						[
 							'name' => 'is_read',
@@ -896,9 +853,9 @@ class MicrosubClient {
 				$this->applyCache($data);
 				
 				$entry = $data;
-				$entry->_id = $item->id();
+				$entry->_id = $item->id;
 				$entry->_is_read = $is_authenticated ? $item->isRead() : true;
-				$entry->_source = $item->getSourceIdForTimeline($author_name, $this->aggregated_feeds);
+				$entry->_source = $item->getSourceIdForTimeline($author_name, $this->aggregatedFeeds());
 
 				// Channel information
 				if ($channel_id > 0 && $item->container_guid > 0) {
@@ -921,7 +878,7 @@ class MicrosubClient {
 			// WIP -- offset ?
 			$page++;
 			
-			$response = ['paging' => (object) ['after' => $page], 'items' => $items];
+			$response = ['paging' => ['after' => $page], 'items' => $items];
 			
 			if ($source || $is_source_search) {
 				$microsub_source = get_entity($source);
@@ -933,12 +890,12 @@ class MicrosubClient {
 					} else if (!empty($author_name)) {
 						$source_name = $author_name;
 					}
-					$response['source'] = (object) ['name' => $source_name];
+					$response['source'] = ['name' => $source_name];
 				}
 			}
 		}
-
-		return $response;
+		
+		return elgg_ok_response($response);
 	}
 
 	/**

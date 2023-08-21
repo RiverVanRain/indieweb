@@ -46,7 +46,7 @@ class Cron {
                 'metadata_name_value_pairs' => [
                     [
                         'name' => 'published',
-                        'value' => 0 ?? false,
+                        'value' => 0,
                     ],
                 ],
                 'limit' => false,
@@ -113,11 +113,11 @@ class Cron {
                 'metadata_name_value_pairs' => [
                     [
                         'name' => 'status',
-                        'value' => 1 ?? true,
+                        'value' => 1,
                     ],
 					[
                         'name' => 'websub',
-                        'value' => 1 ?? true,
+                        'value' => 1,
                     ],
                 ],
                 'limit' => false,
@@ -214,7 +214,7 @@ class Cron {
                 'metadata_name_value_pairs' => [
                     [
                         'name' => 'published',
-                        'value' => 1 ?? true,
+                        'value' => 1,
                     ],
                 ],
                 'limit' => false,

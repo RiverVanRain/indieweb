@@ -160,7 +160,7 @@ $objects = (array) elgg_extract('object', elgg_entity_types_with_capability('sea
 
 ob_start();
 foreach ($objects as $subtype) {
-	if (in_array($subtype, ['river_object', 'messages', 'newsletter', 'static', 'file'])) {
+	if (in_array($subtype, ['river_object', 'messages', 'newsletter', 'static', 'file', 'comment'])) {
 		continue;
 	}
 

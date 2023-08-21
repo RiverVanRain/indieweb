@@ -96,10 +96,6 @@ class MicrosubChannel extends \ElggObject {
 					'value' => $this->guid,
 				],
 				[
-					'name' => 'status',
-					'value' => 1,
-				],
-				[
 					'name' => 'is_read',
 					'value' => 0,
 				],

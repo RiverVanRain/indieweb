@@ -59,8 +59,8 @@ If comments are enabled, put those fields only on the microformat view mode. The
 <div>- selected is optional. Set to 1 so the target is default selected on the entity form.</div>
 <div>- extra class is optional. Add a custom class to the link.</div>
 <div>Example</div>
-<div>Twitter (bridgy)|https://brid.gy/publish/twitter</div>
 <div>Fediverse|https://fed.brid.gy/</div>
+<div>Granary|https://granary.io/</div>
 <div>IndieNews|https://news.indieweb.org/en|0|u-category</div>
 <div>
 When you add or remove targets, extra fields will be enabled on the manage display screens of every entity type (you will have to clear cache to see them showing up).
@@ -131,6 +131,16 @@ Consult the README file that comes with this plugin if you want to integrate wit
 	'settings:indieweb:pingback_blocked_domains:help' => 'Block domains from sending pingbacks. Enter domains line per line.',
 	'pingback:blocked:domain' => 'Domain %s is blocked to send pingbacks',
 	
+	// notifications
+	'notification:object:webmention:create' => 'Send a notification when a webmention is created',
+	'webmention:notification:subject' => 'New webmention on %s',
+	'webmention:notification:body' => "You have a new webmention:
+
+%s
+
+To view the original item, click %s
+",
+
 	//CONTACTS
 	'admin:indieweb:contacts' => 'Contacts',
 	'item:object:indieweb_contact' => 'Contact',
@@ -270,6 +280,8 @@ This feature only works if you use the built-in webmention and microsub endpoint
 The canonical example is to label that channel name as "Notifications" so you can view incoming webmentions on readers like Monocle or Indigenous.
 Following webmentions are send: likes, reposts, bookmarks, mentions and replies.',
 
+	'indieweb:microsub:external:help' => "Don't forget to fill in the 'External microsub endpoint option'",
+
 	'item:object:microsub_channel' => 'Microsub channel',
 	'collection:object:microsub_channel' => 'Microsub channels',
 	'admin:indieweb:microsub:channels' => 'Channels',
@@ -304,6 +316,9 @@ Following webmentions are send: likes, reposts, bookmarks, mentions and replies.
 	'indieweb:microsub:microsub_channel:sources:view' => 'View sources list',
 	'indieweb:microsub:microsub_channel:sources:list' => 'Sources in channel: %s',
 	'indieweb:microsub_channel:notifications' => 'Notifications',
+	'indieweb:microsub:microsub_channel:enable:success' => 'Microsub channel has been enabled',
+	'indieweb:microsub:microsub_channel:disable:success' => 'Microsub channel has been disabled',
+	'indieweb:microsub:microsub_channel:status:fail' => 'Failed to change a status',
 	
 	'item:object:microsub_source' => 'Microsub source',
 	'collection:object:microsub_source' => 'Microsub sources',
@@ -334,15 +349,27 @@ A subscribe request will be send after submit.',
 	'indieweb:microsub:microsub_source:fetch_interval:86400' => '1 day',
 	'indieweb:microsub:microsub_source:fetch_interval:604800' => '1 week',
 	'indieweb:microsub:microsub_source:fetch_interval:2419200' => '4 weeks',
-	'indieweb:microsub:microsub_sources:none' => 'No Microsub sources added yet.',
+	'indieweb:microsub:microsub_source:none' => 'No Microsub sources added yet.',
 	'indieweb:microsub:microsub_source:next_update:imminently' => 'Imminently',
 	'indieweb:microsub:microsub_source:fetch_interval:websub:ended' => 'WebSub subscription ended',
 	'indieweb:microsub:microsub_source:next_update:left' => '%s left',
 	'indieweb:microsub:microsub_source:websub:left' => 'WebSub subscription ends in %s',
+	'indieweb:microsub:microsub_source:enable:success' => 'Microsub source has been enabled',
+	'indieweb:microsub:microsub_source:disable:success' => 'Microsub source has been disabled',
+	'indieweb:microsub:microsub_source:status:fail' => 'Failed to change a status',
 	
 	'item:object:microsub_item' => 'Microsub source item',
 	'collection:object:microsub_item' => 'Microsub source items',
+	'admin:indieweb:microsub:items' => 'Microsub source items',
 	'indieweb:microsub:microsub_item:saved' => 'Saved Microsub source item: GUID %s',
+	'indieweb:microsub:microsub_source:items:list' => 'Items in source: %s',
+	'indieweb:microsub:microsub_source:items:view' => 'View items',
+	'indieweb:microsub:microsub_item:none' => 'No Microsub items added yet.',
+	'indieweb:microsub:microsub_item:is_read' => 'Is read?',
+	'indieweb:microsub:microsub_item:read' => 'Yes',
+	'indieweb:microsub:microsub_item:no_read' => 'No',
+	'indieweb:microsub:microsub_item:data' => 'Data',
+	'indieweb:microsub:microsub_item:data_view' => 'View data',
 	
 	'indieweb:microsub:notification:new' => 'You have one new notification',
 	'indieweb:microsub:notification:count' => 'You have %s new notifications',
@@ -485,16 +512,3 @@ Source: %s
 	'indieweb:websub:none' => 'No WebSupPubs yet.',
 	'indieweb:websub:websubpub:view' => '(View)',
 ];
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -28,7 +28,12 @@ elgg_register_menu_item('title', [
 	'deps' => ['elgg/lightbox'],
 ]);
 
-echo elgg_format_element('div', ['class' => 'mbm'], elgg_echo('indieweb:microsub:microsub_channel:sources:list', [$entity->getDisplayName()]));
+echo elgg_format_element('div', ['class' => 'mbm'], elgg_echo('indieweb:microsub:microsub_channel:sources:list', [
+	elgg_view('output/url', [
+		'text' => $entity->getDisplayName(),
+		'href' => elgg_normalize_url('admin/indieweb/microsub/channels'),
+	])
+]));
 
 $offset = (int) get_input('offset');
 
@@ -45,7 +50,7 @@ $count = elgg_get_entities($options);
 
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
-		'base_url' => '/admin/indieweb/microsub/sources',
+		'base_url' => elgg_normalize_url('admin/indieweb/microsub/sources'),
 		'offset' => $offset,
 		'count' => $count,
 		'limit' => elgg_get_config('default_limit'),
@@ -72,7 +77,18 @@ if (!empty($count)) {
 		$status = ((bool) $entity->status) ? elgg_echo('indieweb:microsub:microsub_source:enable') : elgg_echo('indieweb:microsub:microsub_source:disable');
 		$row[] = elgg_format_element('td', ['width' => '10%'], $status);
 		// total items
-		$row[] = elgg_format_element('td', ['width' => '10%'], $entity->getItemCount());
+		$view_items = false;
+		
+		if ($entity->getItemCount() > 0) {
+			$view_items = elgg_view('output/url', [
+				'href' => elgg_http_add_url_query_elements(elgg_normalize_url('admin/indieweb/microsub/items'), [
+					'guid' => $entity->guid,
+				]),
+				'text' => elgg_echo('indieweb:microsub:microsub_source:items:view'),
+			]);
+		}
+		
+		$row[] = elgg_format_element('td', ['width' => '10%'], $entity->getItemCount() . ' ' . $view_items);
 		// next update
 		$next = $entity->getNextFetch();
 		$fetch_next = '/';
@@ -121,6 +137,6 @@ if (!empty($count)) {
 	
 	echo elgg_format_element('table', ['class' => 'elgg-table'], $table_content);
 } else {
-	echo elgg_format_element('div', [], elgg_echo('indieweb:microsub:microsub_sources:none'));
+	echo elgg_format_element('div', [], elgg_echo('indieweb:microsub:microsub_source:none'));
 }
 

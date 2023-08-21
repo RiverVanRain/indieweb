@@ -58,7 +58,7 @@ class LoginController {
 			// We have a valid token
 			if ($valid_code && !empty($domain)) {
 				// Create authname. Strip schemes.
-				$authname = str_replace(['https://', 'http://', '/'], '', $domain);
+				$authname = str_replace(['https://', 'http://', '/', '.', '-'], '', $domain);
 				
 				try {
 					// Map with existing account

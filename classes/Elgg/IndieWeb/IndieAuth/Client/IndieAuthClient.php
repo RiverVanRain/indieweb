@@ -233,7 +233,7 @@ class IndieAuthClient {
 		if (isset($matches[1])) {
 			$bearer_token = $matches[1];
 		}
-
+		
 		$signer = new Sha512();
 		$public_key = elgg_get_plugin_setting('indieauth_public_key', 'indieweb');
 
@@ -250,7 +250,7 @@ class IndieAuthClient {
 		} catch (\Exception $e) {
 			elgg_log('Error verifying token: ' . $e->getMessage(), 'ERROR');
 		}
-
+		
 		// Return early already, no need to verify further.
 		if (!$access_token) {
 			elgg_log('No access_token', 'error');

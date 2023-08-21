@@ -14,6 +14,12 @@ class Views {
 	public static function fullBody(\Elgg\Hook $hook) {
 		$return = $hook->getValue();
 		
+		$entity = elgg_extract('entity', $hook->getParam('vars'));
+		
+		if ($entity instanceof \ElggComment) {
+			return $return;
+		}
+		
 		$class = (array) elgg_extract('class', $return, []);
 		
 		$return['class'] = elgg_extract_class($class, ['h-entry']);
