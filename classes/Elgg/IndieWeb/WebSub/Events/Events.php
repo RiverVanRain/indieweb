@@ -28,6 +28,10 @@ class Events {
 		if (!$entity instanceof \ElggObject) {
 			return;
 		}
+		
+		if ($entity instanceof \ElggComment) {
+			return;
+		}
 
 		if(!(bool) elgg_get_plugin_setting("can_websub:object:$entity->subtype", 'indieweb')) {
 			return;
