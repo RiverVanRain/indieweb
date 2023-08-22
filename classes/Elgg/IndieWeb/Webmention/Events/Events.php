@@ -60,6 +60,10 @@ class Events {
 		
 		if (!empty($targets[0])) {
 			foreach ($targets as $target) {
+				if (empty($target)) {
+					continue;
+				}
+				
 				$client->sendWebmention($entity->getURL(), $target);
 				self::objectSyndication($entity->guid, $entity->getURL());
 				self::objectWebmention($entity->getURL(), $target);
