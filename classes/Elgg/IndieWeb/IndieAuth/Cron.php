@@ -13,7 +13,7 @@ use Elgg\IndieWeb\IndieAuth\Entity\IndieAuthAuthorizationCode;
 
 class Cron {
 	
-	public static function processCodes(\Elgg\Hook $hook) {
+	public static function processCodes(\Elgg\Event $event) {
 		
 		echo "Processes expired authorization codes starting" . PHP_EOL;
 		elgg_log("Processes expired authorization codes starting", 'NOTICE');

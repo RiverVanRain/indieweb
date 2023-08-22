@@ -9,16 +9,18 @@
 
 namespace Elgg\IndieWeb\Menus;
 
+use Elgg\Menu\MenuItems;
+
 class SettingsMenu {
 
 	/**
 	 * Setup page menu
 	 *
-	 * @param Hook $hook Hook
+	 * @param Event $event Event
 	 */
-	public function __invoke(\Elgg\Hook $hook) {
+	public function __invoke(\Elgg\Event $event): ?MenuItems {
 
-		$menu = $hook->getValue();
+		$menu = $event->getValue();
 		/* @var $menu \Elgg\Menu\MenuItems */
 		
 		if (!elgg_in_context('admin')) {
@@ -29,8 +31,6 @@ class SettingsMenu {
 			'name' => 'indieweb',
 			'href' => false,
 			'text' => elgg_echo('settings:indieweb'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'icon' => '<i class="openwebicons-indieweb" style="font-size: 16px;"></i>',
 		]);
 
@@ -40,8 +40,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb',
 			'href' => false,
 			'text' => elgg_echo('admin:indieweb:webmention'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 100,
 		]);
 		
@@ -50,8 +48,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:webmention',
 			'href' => elgg_normalize_url('admin/indieweb/webmention'),
 			'text' => elgg_echo('settings:indieweb:webmention'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 110,
 		]);
 		
@@ -60,8 +56,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:webmention',
 			'href' => false,
 			'text' => elgg_echo('indieweb:webmention:stored'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 120,
 		]);
 		
@@ -70,8 +64,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:webmention:stored',
 			'href' => elgg_normalize_url('admin/indieweb/webmention/all'),
 			'text' => elgg_echo('settings:indieweb:webmention:all'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 121,
 		]);
 		
@@ -80,8 +72,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:webmention:stored',
 			'href' => elgg_normalize_url('admin/indieweb/webmention/received'),
 			'text' => elgg_echo('settings:indieweb:webmention:received'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 122,
 		]);
 	
@@ -90,8 +80,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:webmention:stored',
 			'href' => elgg_normalize_url('admin/indieweb/webmention/sent'),
 			'text' => elgg_echo('settings:indieweb:webmention:sent'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 123,
 		]);
 		
@@ -100,8 +88,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:webmention',
 			'href' => elgg_normalize_url('admin/indieweb/webmention/syndications'),
 			'text' => elgg_echo('admin:indieweb:webmention:syndications'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 150,
 		]);
 		
@@ -111,8 +97,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb',
 			'href' => false,
 			'text' => elgg_echo('admin:indieweb:micropub'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 200,
 		]);
 		
@@ -121,8 +105,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:micropub',
 			'href' => elgg_normalize_url('admin/indieweb/micropub'),
 			'text' => elgg_echo('settings:indieweb:micropub'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 210,
 		]);
 		
@@ -131,8 +113,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:micropub',
 			'href' => elgg_normalize_url('admin/indieweb/micropub/posts'),
 			'text' => elgg_echo('settings:indieweb:micropub:posts'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 220,
 		]);
 		
@@ -142,8 +122,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb',
 			'href' => false,
 			'text' => elgg_echo('admin:indieweb:microsub'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 300,
 		]);
 		$menu[] = \ElggMenuItem::factory([
@@ -151,8 +129,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:microsub',
 			'href' => elgg_normalize_url('admin/indieweb/microsub'),
 			'text' => elgg_echo('settings:indieweb:microsub'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 310,
 		]);
 		
@@ -161,8 +137,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:microsub',
 			'href' => elgg_normalize_url('admin/indieweb/microsub/channels'),
 			'text' => elgg_echo('admin:indieweb:microsub:channels'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 320,
 		]);
 		
@@ -172,8 +146,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb',
 			'href' => false,
 			'text' => elgg_echo('admin:indieweb:indieauth'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 400,
 		]);
 		
@@ -182,8 +154,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:indieauth',
 			'href' => elgg_normalize_url('admin/indieweb/indieauth'),
 			'text' => elgg_echo('settings:indieweb:indieauth'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 410,
 		]);
 		
@@ -192,8 +162,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:indieauth',
 			'href' => elgg_normalize_url('admin/indieweb/indieauth/tokens'),
 			'text' => elgg_echo('settings:indieweb:indieauth:tokens'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 420,
 		]);
 		
@@ -202,8 +170,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:indieauth',
 			'href' => elgg_normalize_url('admin/indieweb/indieauth/codes'),
 			'text' => elgg_echo('settings:indieweb:indieauth:codes'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 430,
 		]);
 		
@@ -213,8 +179,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb',
 			'href' => false,
 			'text' => elgg_echo('admin:indieweb:websub'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 500,
 		]);
 		
@@ -223,8 +187,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:websub',
 			'href' => elgg_normalize_url('admin/indieweb/websub'),
 			'text' => elgg_echo('settings:indieweb:websub'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 510,
 		]);
 		
@@ -233,8 +195,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb:websub',
 			'href' => elgg_normalize_url('admin/indieweb/websub/pub'),
 			'text' => elgg_echo('admin:indieweb:websub:pub'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 520,
 		]);
 		
@@ -244,8 +204,6 @@ class SettingsMenu {
 			'parent_name' => 'indieweb',
 			'href' => elgg_normalize_url('admin/indieweb/contacts'),
 			'text' => elgg_echo('admin:indieweb:contacts'),
-			'context' => ['admin'],
-			'section' => 'configure',
 			'priority' => 600,
 		]);
 		

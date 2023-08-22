@@ -61,7 +61,7 @@ if (!elgg_is_logged_in()) {
 //Submit
 $submit = elgg_view_field([
 	'#type' => 'submit',
-	'value' => elgg_echo('indieweb:indieauth:authorize:submit'),
+	'text' => elgg_echo('indieweb:indieauth:authorize:submit'),
 ]);
 
 elgg_set_form_footer($submit);

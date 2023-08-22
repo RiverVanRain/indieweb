@@ -55,6 +55,10 @@ class Bootstrap extends DefaultPluginBootstrap {
 	public function init() {
 		elgg_register_external_file('css', 'openwebicons', elgg_get_simplecache_url('openwebicons/css/openwebicons.min.css'));
 		elgg_load_external_file('css', 'openwebicons');
+		
+		if (elgg_is_active_plugin('elgg_hybridauth')) {
+			elgg_extend_view('hybridauth/extend_connections', 'indieauth/authorize');
+		}
 	}
 	
 	/**

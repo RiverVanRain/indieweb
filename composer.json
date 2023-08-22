@@ -44,7 +44,7 @@
         }
     ],
 	"conflict": {
-		"elgg/elgg": "<4.3"
+		"elgg/elgg": "<5.0"
 	},
 	"support": {
 		"source": "https://wzm.me"

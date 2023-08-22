@@ -176,7 +176,7 @@ class IndieAuthController {
 			]);
 		}
 
-		return (object) $profile;
+		return $profile;
 	}
 
 	/**

@@ -2,7 +2,7 @@
 
 namespace Elgg\IndieWeb\IndieAuth\Permissions;
 
-use Elgg\Hook;
+use Elgg\Event;
 use Elgg\IndieWeb\IndieAuth\Entity\IndieAuthToken;
 
 class Token {
@@ -10,15 +10,15 @@ class Token {
 	/**
 	 * Set Token editing permissions
 	 *
-	 * @param string $hook   "permissions_check"
+	 * @param string $event   "permissions_check"
 	 * @param string $type   "object"
 	 * @param bool   $return Permission
-	 * @param array  $params Hook params
+	 * @param array  $params Event params
 	 * @return bool
 	 */
-	public static function canEdit(Hook $hook) {
+	public static function canEdit(Event $event) {
 
-		$entity = $hook->getEntityParam();
+		$entity = $event->getEntityParam();
 		if (!$entity instanceof IndieAuthToken) {
 			return;
 		}
@@ -33,15 +33,15 @@ class Token {
 	/**
 	 * Set Token delete permissions
 	 *
-	 * @param string $hook   "permissions_check:delete"
+	 * @param string $event   "permissions_check:delete"
 	 * @param string $type   "object"
 	 * @param bool   $return Permission
-	 * @param array  $params Hook params
+	 * @param array  $params Event params
 	 * @return bool
 	 */
-	public static function canDelete(Hook $hook) {
+	public static function canDelete(Event $event) {
 
-		$entity = $hook->getEntityParam();
+		$entity = $event->getEntityParam();
 
 		if (!$entity instanceof IndieAuthToken) {
 			return;

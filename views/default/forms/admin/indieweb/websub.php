@@ -108,7 +108,7 @@ $objects = (array) elgg_extract('object', elgg_entity_types_with_capability('sea
 
 ob_start();
 foreach ($objects as $subtype) {
-	if (in_array($subtype, ['river_object'])) {
+	if (in_array($subtype, ['river_object', 'messages', 'newsletter', 'static', 'file', 'comment'])) {
 		continue;
 	}
 
@@ -138,7 +138,7 @@ echo elgg_view_field([
 
 $footer = elgg_view_field([
 	'#type' => 'submit',
-	'value' => elgg_echo('save'),
+	'text' => elgg_echo('save'),
 ]);
 
 elgg_set_form_footer($footer);

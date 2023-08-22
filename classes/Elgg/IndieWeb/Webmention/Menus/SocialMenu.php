@@ -9,25 +9,27 @@
 
 namespace Elgg\IndieWeb\Webmention\Menus;
 
+use Elgg\Menu\MenuItems;
+
 class SocialMenu {
 
 	/**
 	 * Setup page menu
 	 *
-	 * @param Hook $hook Hook
+	 * @param Event $event Event
 	 */
-	public function __invoke(\Elgg\Hook $hook) {
-		$entity = $hook->getEntityParam();
+	public function __invoke(\Elgg\Event $event): ?MenuItems {
+		$entity = $event->getEntityParam();
 		
 		if (!$entity instanceof \ElggEntity || $entity instanceof \Elgg\IndieWeb\Webmention\Entity\Webmention) {
-			return;
+			return null;
 		}
 		
 		if(!(bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb')) {
-			return;
+			return null;
 		}
 
-		$menu = $hook->getValue();
+		$menu = $event->getValue();
 		/* @var $menu \Elgg\Menu\MenuItems */
 		
 		$count = elgg_count_entities([

@@ -2,16 +2,17 @@
 
 namespace Elgg\IndieWeb\IndieAuth\Menus;
 
-use Elgg\Hook;
+use Elgg\Event;
 use ElggMenuItem;
+use Elgg\Menu\MenuItems;
 
 /**
  * @access private
  */
 class EntityMenu {
 	
-	public static function tokenEntityMenu(Hook $hook) {
-		$entity = $hook->getEntityParam();
+	public static function tokenEntityMenu(Event $event): ?MenuItems {
+		$entity = $event->getEntityParam();
 		if (!$entity instanceof \Elgg\IndieWeb\IndieAuth\Entity\IndieAuthToken) {
 			return null;
 		}
@@ -20,7 +21,7 @@ class EntityMenu {
 			return null;
 		}
 		
-		$menu = $hook->getValue();
+		$menu = $event->getValue();
 		
 		// Change status
 		$enabled = (bool) $entity->getStatus();
@@ -88,10 +89,10 @@ class EntityMenu {
 		return $menu;
 	}
 	
-	public static function codeEntityMenu(Hook $hook) {
-		$menu = $hook->getValue();
+	public static function codeEntityMenu(Event $event): ?MenuItems {
+		$menu = $event->getValue();
 		
-		$entity = $hook->getEntityParam();
+		$entity = $event->getEntityParam();
 		if (!$entity instanceof \Elgg\IndieWeb\IndieAuth\Entity\IndieAuthAuthorizationCode) {
 			return null;
 		}

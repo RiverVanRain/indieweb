@@ -28,6 +28,10 @@ class Events {
 		if (!$entity instanceof \ElggObject) {
 			return;
 		}
+		
+		if ($entity instanceof \ElggComment) {
+			return;
+		}
 
 		if(!(bool) elgg_get_plugin_setting("can_websub:object:$entity->subtype", 'indieweb')) {
 			return;
@@ -60,7 +64,7 @@ class Events {
 			$websubpub->save();
 			
 			if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
-				elgg_log(elgg_echo('websub:send:success', [$websub->guid]), 'NOTICE');
+				elgg_log(elgg_echo('websub:send:success', [$websubpub->guid]), 'NOTICE');
 			}
 		});
 	}

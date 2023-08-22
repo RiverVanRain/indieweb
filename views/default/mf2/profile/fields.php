@@ -11,7 +11,7 @@ if (!$user instanceof \ElggUser) {
 
 $fullname = htmlspecialchars($user->getDisplayName() ?? '', ENT_QUOTES, 'UTF-8', false);
 
-$link = elgg_format_element('a', ['class' => 'u-url', 'href' => $user->getURL()], $fullname);
+$link = elgg_format_element('a', ['class' => 'u-url u-uid', 'href' => $user->getURL()], $fullname);
 
 $image = elgg_format_element('span', ['class' => 'u-photo'], $user->getIconURL('large'));
 
@@ -19,4 +19,4 @@ $name = elgg_format_element('span', ['class' => 'p-name'], $fullname);
 
 $nickname = elgg_format_element('span', ['class' => 'p-nickname'], $user->username);
 
-echo elgg_format_element('div', ['class' => 'h-card vcard hidden'], $name . $nickname . $link . $image);
+echo elgg_format_element('div', ['class' => 'hidden'], $name . $nickname . $link . $image);

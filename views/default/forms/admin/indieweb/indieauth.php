@@ -28,7 +28,8 @@ echo elgg_view_field([
 			'default' => 0,
 			'checked' => (bool) $entity->enable_indieauth_endpoint,
 			'switch' => true,
-			'onchange' => 'elgg.settings.indieauth_endpoint(this);',
+			'onchange' => 'indieauthEndpoint();',
+			'id' => 'enable_indieauth_endpoint',
 		],
 	],
 ]);
@@ -103,7 +104,7 @@ echo elgg_view_field([
 
 $footer = elgg_view_field([
 	'#type' => 'submit',
-	'value' => elgg_echo('save'),
+	'text' => elgg_echo('save'),
 ]);
 
 elgg_set_form_footer($footer);

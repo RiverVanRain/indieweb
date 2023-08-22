@@ -11,9 +11,9 @@ namespace Elgg\IndieWeb\Views;
 
 class SetupHead {
 
-	public function __invoke(\Elgg\Hook $hook) {
+	public function __invoke(\Elgg\Event $event) {
 
-		$return = $hook->getValue();
+		$return = $event->getValue();
 
 		//webmention
 		if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb')) {

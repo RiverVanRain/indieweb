@@ -86,47 +86,46 @@ class WebmentionClient {
 	}
 	
 	public function createComment(Webmention $webmention) {
-		if ($webmention->hasCapability('commentable')) {
-			if ($webmention->getProperty() === 'in-reply-to' && !empty($webmention->getPlainContent())) {
-				$container_guid = 0;
+		if ($webmention->getProperty() === 'in-reply-to' && !empty($webmention->getPlainContent())) {
+			$container_guid = 0;
 				
-				$target_guid = $webmention->getTargetGuid();
+			$target_guid = $webmention->getTargetGuid();
 
-				try {
-					$entity = get_entity($target_guid);
+			try {
+				$entity = get_entity($target_guid);
 				
-					//We support only commentable entities
-					if ($entity instanceof \ElggObject && $entity->hasCapability('commentable')) {
-						$container_guid = (int) $entity->guid;
+				//We support only commentable entities
+				if ($entity instanceof \ElggObject && $entity->hasCapability('commentable')) {
+					$container_guid = (int) $entity->guid;
 						
-						// This can be a reply on a comment
-						if ($entity instanceof \ElggComment) {
-							$container_guid = (int) $entity->container_guid;
-						}
+					// This can be a reply on a comment
+					if ($entity instanceof \ElggComment) {
+						$container_guid = (int) $entity->container_guid;
+					}
 						
-						if ($container_guid !=0) {
-							$comment = new \ElggComment();
-							$comment->owner_guid = elgg_get_site_entity()->guid;
-							$comment->container_guid = $container_guid;
-							$comment->access_id = ACCESS_PUBLIC;
-							$comment->time_created = $webmention->getCreatedTime();
-							$comment->save();
-						}
+					if ($container_guid !=0) {
+						$comment = new \ElggComment();
+						$comment->owner_guid = elgg_get_site_entity()->guid;
+						$comment->container_guid = $container_guid;
+						$comment->access_id = ACCESS_PUBLIC;
+						$comment->time_created = $webmention->getCreatedTime();
+						$comment->save();
 					}
 				}
+			}
 				
-				catch (Exception $e) {
-					elgg_log(elgg_echo('webmention:create_comment:error', [$e->getMessage()]), 'error');
-					return false;
-				}
+			catch (Exception $e) {
+				elgg_log(elgg_echo('webmention:create_comment:error', [$e->getMessage()]), 'error');
+				return false;
 			}
 		}
+		
 		
 		return true;
 	}
 	
 	public static function getSyndicationTargets(): array {
-		$syndication_targets = elgg_get_plugin_setting('webmention_syndication_targets', 'indieweb', 'Twitter (bridgy)|https://brid.gy/publish/twitter');
+		$syndication_targets = elgg_get_plugin_setting('webmention_syndication_targets', 'indieweb', 'Fediverse|https://fed.brid.gy');
 		$syndication_targets = preg_split('/\\r\\n?|\\n/', $syndication_targets);
 		$syndication_targets = array_filter($syndication_targets);
 

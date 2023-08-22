@@ -64,7 +64,7 @@ foreach ($fields as $field) {
 //Submit
 $submit_button = elgg_format_element('div', [], elgg_view_field([
 	'#type' => 'submit',
-	'value' => elgg_echo('indieweb:indieauth:authorize:submit'),
+	'text' => elgg_echo('indieweb:indieauth:authorize:submit'),
 	'class' => 'elgg-button elgg-button-submit',
 ]));
 

@@ -23,7 +23,7 @@ if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) el
 return [
 	'plugin' => [
 		'name' => 'IndieWeb',
-		'version' => '0.1.0',
+		'version' => '1.0.0',
 	],
 	
 	'bootstrap' => \Elgg\IndieWeb\Bootstrap::class,
@@ -168,12 +168,20 @@ return [
 			'controller' => \Elgg\IndieWeb\Microsub\Actions\EditMicrosubChannelAction::class,
 			'access' => 'admin',
 		],
-		'microsub/source/edit' => [
-			'controller' => \Elgg\IndieWeb\Microsub\Actions\EditMicrosubSourceAction::class,
+		'microsub/channel/toggle_status' => [
+			'controller' => \Elgg\IndieWeb\Microsub\Actions\MicrosubChannel\ToggleStatusAction::class,
 			'access' => 'admin',
 		],
 		'microsub/channel/notifications' => [
 			'controller' => \Elgg\IndieWeb\Microsub\Actions\NotificationsMicrosubChannelAction::class,
+			'access' => 'admin',
+		],
+		'microsub/source/edit' => [
+			'controller' => \Elgg\IndieWeb\Microsub\Actions\EditMicrosubSourceAction::class,
+			'access' => 'admin',
+		],
+		'microsub/source/toggle_status' => [
+			'controller' => \Elgg\IndieWeb\Microsub\Actions\MicrosubSource\ToggleStatusAction::class,
 			'access' => 'admin',
 		],
 		//indieauth
@@ -205,16 +213,49 @@ return [
 			'controller' => \Elgg\IndieWeb\Actions\Blog\SaveAction::class,
 		],
 	],
-	
-	//HOOKS
-	'hooks' => [
-        'cron' => [
+
+	//EVENTS
+	'events' => [
+		'create:after' => [
+			'object' => [
+				//webmention
+				'Elgg\IndieWeb\Webmention\Events\Events::createObject' => [],
+				//websub
+				'Elgg\IndieWeb\WebSub\Events\Events::createObject' => [],
+			],
+		],
+		'delete' => [
+			'object' => [
+				// microsub
+				'Elgg\IndieWeb\Microsub\Events\Events::deleteChannel' => [],
+				'Elgg\IndieWeb\Microsub\Events\Events::deleteSource' => [],
+			],
+		],
+		'update:after' => [
+			'object' => [
+				// microsub
+				'Elgg\IndieWeb\Microsub\Events\Events::updateSource' => [],
+			],
+		],
+		'cron' => [
 			'fiveminute' => [
 				// Webmention
 				'Elgg\IndieWeb\Webmention\Cron::processWebmentions' => [],
 				// WebSub
 				'Elgg\IndieWeb\WebSub\Cron::processWebSubPub' => [],
 				'Elgg\IndieWeb\WebSub\Cron::processNotifications' => [],
+			],
+			'fifteenmin' => [
+				// Microsub
+				'Elgg\IndieWeb\Microsub\Cron::fifteenminFeedUpdate' => [],
+			],
+			'halfhour' => [
+				// Microsub
+				'Elgg\IndieWeb\Microsub\Cron::halfhourFeedUpdate' => [],
+			],
+			'hourly' => [
+				// Microsub
+				'Elgg\IndieWeb\Microsub\Cron::hourlyFeedUpdate' => [],
 			],
 			'daily' => [
 				// Webmention
@@ -225,10 +266,18 @@ return [
 				// WebSub
 				'Elgg\IndieWeb\WebSub\Cron::cleanupWebSubPub' => [],
 				'Elgg\IndieWeb\WebSub\Cron::emptyWebSubPub' => [],
+				// Microsub
+				'Elgg\IndieWeb\Microsub\Cron::dailyFeedUpdate' => [],
 			],
 			'weekly' => [
 				// WebSub
 				'Elgg\IndieWeb\WebSub\Cron::processSubscribe' => [],
+				// Microsub
+				'Elgg\IndieWeb\Microsub\Cron::weeklyFeedUpdate' => [],
+			],
+			'monthly' => [
+				// Microsub
+				'Elgg\IndieWeb\Microsub\Cron::monthlyFeedUpdate' => [],
 			],
 		],
 		'head' => [
@@ -249,6 +298,9 @@ return [
 			],
 		],
 		'register' => [
+			'menu:admin_header' => [
+				\Elgg\IndieWeb\Menus\SettingsMenu::class => [],
+			],
 			'menu:entity' => [
 				// Microsub
 				'Elgg\IndieWeb\Microsub\Menus\EntityMenu::microsubChannelEntityMenu' => [],
@@ -258,7 +310,8 @@ return [
 				'Elgg\IndieWeb\IndieAuth\Menus\EntityMenu::tokenEntityMenu' => [],
 			],
 			'menu:page' => [
-				\Elgg\IndieWeb\Menus\SettingsMenu::class => [],
+				// IndieAuth
+				\Elgg\IndieWeb\IndieAuth\Menus\UserPageMenu::class => [],
 			],
 			'menu:social' => [
 				// Webmention
@@ -275,31 +328,6 @@ return [
 			'object/elements/imprint/contents' => [
 				// Webmention
 				\Elgg\IndieWeb\Webmention\Views::class => ['priority' => 600],
-			],
-		],
-    ],
-	
-	//EVENTS
-	'events' => [
-		'publish' => [
-			'object' => [
-				//webmention
-				'Elgg\IndieWeb\Webmention\Events\Events::createObject' => [],
-				//websub
-				'Elgg\IndieWeb\WebSub\Events\Events::createObject' => [],
-			],
-		],
-		'delete' => [
-			'object' => [
-				// microsub
-				'Elgg\IndieWeb\Microsub\Events\Events::deleteChannel' => [],
-				'Elgg\IndieWeb\Microsub\Events\Events::deleteSource' => [],
-			],
-		],
-		'update:after' => [
-			'object' => [
-				// microsub
-				'Elgg\IndieWeb\Microsub\Events\Events::updateSource' => [],
 			],
 		],
 	],
@@ -326,7 +354,7 @@ return [
 		//microsub
 		'default:view:microsub' => [
 			'path' => '/microsub',
-			'controller' => [\Elgg\IndieWeb\Microsub\Controller\MicrosubController::class, 'callback'],
+			'controller' => \Elgg\IndieWeb\Microsub\Controller\MicrosubController::class,
 			'walled' => false,
 		],
 		'add:object:microsub_channel' => [
@@ -385,6 +413,14 @@ return [
 			'controller' => \Elgg\IndieWeb\IndieAuth\Controller\TokenController::class,
 			'walled' => false,
 		],
+		'indieauth:accounts' => [
+            'path' => '/indieauth/accounts/{username?}',
+            'resource' => 'indieauth/connections',
+			'detect_page_owner' => true,
+			'middleware' => [
+				\Elgg\Router\Middleware\Gatekeeper::class,
+			],
+        ],
 		//websub
 		'default:view:websub' => [
 			'path' => '/websub/{websub_hash}',
@@ -420,12 +456,6 @@ return [
 				'priority' => 1000
 			],
 		],
-		'core/settings/account' => [
-			'indieauth/authorize' => [
-				'priority' => 900
-			],
-		],
-		
     ],
 	
 	'views' => [
@@ -440,6 +470,7 @@ return [
 		'resources/microsub/channel/edit' => ['ajax' => true],
 		'resources/microsub/source/add' => ['ajax' => true],
 		'resources/microsub/source/edit' => ['ajax' => true],
+		'resources/microsub/source/item' => ['ajax' => true],
 		'resources/microsub/channel/add_notifications' => ['ajax' => true],
 		// IndieAuth
 		'indieauth/token/jwt' => ['ajax' => true],

@@ -117,17 +117,10 @@ class MicrosubSource extends \ElggObject {
 		$return = elgg_count_entities([
 			'type' => 'object',
 			'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubItem::SUBTYPE,
-			'limit' => false,
-			'batch' => true,
-			'batch_inc_offset' => false,
 			'metadata_name_value_pairs' => [
 				[
 					'name' => 'source_id',
 					'value' => $this->guid,
-				],
-				[
-					'name' => 'status',
-					'value' => 1,
 				],
 				[
 					'name' => 'is_read',
@@ -153,9 +146,6 @@ class MicrosubSource extends \ElggObject {
 		return elgg_count_entities([
 			'type' => 'object',
 			'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubItem::SUBTYPE,
-			'limit' => false,
-			'batch' => true,
-			'batch_inc_offset' => false,
 			'metadata_name_value_pairs' => [
 				[
 					'name' => 'source_id',

@@ -12,6 +12,7 @@ class SaveAction {
 
 		// edit or create a new entity
 		$guid = (int) $request->getParam('guid');
+		$new_post = true;
 
 		if ($guid) {
 			$entity = get_entity($guid);
@@ -23,10 +24,9 @@ class SaveAction {
 
 			// save some data for revisions once we save the new edit
 			$revision_text = $blog->description;
-			$new_post = (bool) $blog->new_post;
+			$new_post = false;
 		} else {
 			$blog = new \ElggBlog();
-			$new_post = true;
 			
 			$blog_syndication_targets = $request->getParam('syndication_targets');
 			$blog_syndication_targets_custom_url = $request->getParam('syndication_targets_custom_url');
@@ -121,12 +121,6 @@ class SaveAction {
 		// remove sticky form entries
 		elgg_clear_sticky_form('blog');
 
-		// remove autosave draft if exists
-		$blog->deleteAnnotations('blog_auto_save');
-
-		// no longer a brand new post.
-		$blog->deleteMetadata('new_post');
-
 		// if this was an edit, create a revision annotation
 		if (!$new_post && $revision_text) {
 			$blog->annotate('blog_revision', $revision_text);
@@ -136,7 +130,7 @@ class SaveAction {
 
 		// add to river if changing status or published, regardless of new post
 		// because we remove it for drafts.
-		if (($new_post || $old_status == 'draft') && $status == 'published') {
+		if (($new_post || $old_status === 'draft') && $status === 'published') {
 			elgg_create_river_item([
 				'view' => 'river/object/blog/create',
 				'action_type' => 'create',
@@ -151,7 +145,7 @@ class SaveAction {
 				$blog->time_created = time();
 				$blog->save();
 			}
-		} elseif ($old_status == 'published' && $status == 'draft') {
+		} elseif ($old_status === 'published' && $status === 'draft') {
 			elgg_delete_river([
 				'object_guid' => $blog->guid,
 				'action_type' => 'create',
@@ -165,6 +159,12 @@ class SaveAction {
 			$forward_url = elgg_generate_url('edit:object:blog', [
 				'guid' => $blog->guid,
 			]);
+		}
+		
+		if (get_input('header_remove')) {
+			$blog->deleteIcon('header');
+		} else {
+			$blog->saveIconFromUploadedFile('header', 'header');
 		}
 
 		return elgg_ok_response([

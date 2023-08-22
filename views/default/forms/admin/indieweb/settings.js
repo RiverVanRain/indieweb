@@ -1,11 +1,8 @@
 define(function(require) {
 	var $ = require('jquery');
-	var elgg = require('elgg');
 	
-	elgg.provide('elgg.settings');
-	
-	elgg.settings.indieauth_endpoint = function(elem) {
-		if ($(elem).is(':checked')) {
+	indieauthEndpoint = function() {
+		if ($('#enable_indieauth_endpoint').is(':checked')) {
 			$('#settings-indieauth-keys').show();
 			$('#settings-indieauth-external').hide();
 		} else {
@@ -13,4 +10,6 @@ define(function(require) {
 			$('#settings-indieauth-external').show();
 		}
 	};
+	
+	indieauthEndpoint();
 });

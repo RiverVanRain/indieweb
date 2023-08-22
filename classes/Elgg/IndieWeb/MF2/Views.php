@@ -11,8 +11,14 @@ namespace Elgg\IndieWeb\MF2;
 
 class Views {
 	
-	public static function fullBody(\Elgg\Hook $hook) {
-		$return = $hook->getValue();
+	public static function fullBody(\Elgg\Event $event) {
+		$return = $event->getValue();
+		
+		$entity = elgg_extract('entity', $event->getParam('vars'));
+		
+		if ($entity instanceof \ElggComment) {
+			return $return;
+		}
 		
 		$class = (array) elgg_extract('class', $return, []);
 		
@@ -21,8 +27,8 @@ class Views {
 		return $return;
 	}
 	
-	public static function contentBody(\Elgg\Hook $hook) {
-		$return = $hook->getValue();
+	public static function contentBody(\Elgg\Event $event) {
+		$return = $event->getValue();
 		
 		$classes = ['e-content'];
 		

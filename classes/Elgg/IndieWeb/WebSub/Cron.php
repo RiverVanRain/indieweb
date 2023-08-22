@@ -16,7 +16,7 @@ use GuzzleHttp\Client;
 
 class Cron {
 	
-	public static function processWebSubPub(\Elgg\Hook $hook) {
+	public static function processWebSubPub(\Elgg\Event $event) {
 		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
 		   return;
 		}
@@ -46,7 +46,7 @@ class Cron {
                 'metadata_name_value_pairs' => [
                     [
                         'name' => 'published',
-                        'value' => 0 ?? false,
+                        'value' => 0,
                     ],
                 ],
                 'limit' => false,
@@ -93,7 +93,7 @@ class Cron {
 		elgg_log("Finished published websub processing", 'NOTICE');
 	}
 	
-	public static function processSubscribe(\Elgg\Hook $hook) {
+	public static function processSubscribe(\Elgg\Event $event) {
 		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
 		   return;
 		}
@@ -113,11 +113,11 @@ class Cron {
                 'metadata_name_value_pairs' => [
                     [
                         'name' => 'status',
-                        'value' => 1 ?? true,
+                        'value' => 1,
                     ],
 					[
                         'name' => 'websub',
-                        'value' => 1 ?? true,
+                        'value' => 1,
                     ],
                 ],
                 'limit' => false,
@@ -147,7 +147,7 @@ class Cron {
 		elgg_log("Finished websub resubscribe to subscriptions processing", 'NOTICE');
 	}
 	
-	public static function processNotifications(\Elgg\Hook $hook) {
+	public static function processNotifications(\Elgg\Event $event) {
 		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
 		   return;
 		}
@@ -194,7 +194,7 @@ class Cron {
 		elgg_log("Finished websub incoming notifications from hubs processing", 'NOTICE');
 	}
 	
-	public static function cleanupWebSubPub(\Elgg\Hook $hook) {
+	public static function cleanupWebSubPub(\Elgg\Event $event) {
 		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
 		   return;
 		}
@@ -214,7 +214,7 @@ class Cron {
                 'metadata_name_value_pairs' => [
                     [
                         'name' => 'published',
-                        'value' => 1 ?? true,
+                        'value' => 1,
                     ],
                 ],
                 'limit' => false,
@@ -237,7 +237,7 @@ class Cron {
 		elgg_log("Finished cleanup WebSubPub processing", 'NOTICE');
 	}
 	
-	public static function emptyWebSubPub(\Elgg\Hook $hook) {
+	public static function emptyWebSubPub(\Elgg\Event $event) {
 		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
 		   return;
 		}

@@ -7,13 +7,13 @@ class Views {
 	/**
 	 * Adds menu items to the social menu
 	 *
-	 * @param \Elgg\Hook $hook 'view_vars', 'object/elements/imprint/contents'
+	 * @param \Elgg\Event $event 'view_vars', 'object/elements/imprint/contents'
 	 *
 	 * @return array
 	 */
-	public function __invoke(\Elgg\Hook $hook) {
+	public function __invoke(\Elgg\Event $event) {
 		
-		$vars = $hook->getValue();
+		$vars = $event->getValue();
 		
 		$entity = elgg_extract('entity', $vars);
 		if (!$entity instanceof \Elgg\IndieWeb\Webmention\Entity\Webmention) {

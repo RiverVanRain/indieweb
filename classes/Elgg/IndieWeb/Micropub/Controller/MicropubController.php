@@ -593,7 +593,7 @@ class MicropubController {
 										$owner_guid = (int) elgg_get_plugin_setting('micropub_author_reply', 'indieweb');
 									} else {
 										$username = elgg_get_plugin_setting('micropub_author_reply', 'indieweb');
-										$owner_guid = get_user_by_username($username)->guid;
+										$owner_guid = elgg_get_user_by_username($username)->guid;
 									}
 									
 									// Override user guid.
@@ -601,7 +601,7 @@ class MicropubController {
 										$owner_guid = $tokenOwnerId;
 									}
 									
-									$session = elgg_get_session();
+									$session = _elgg_services()->session_manager;
 									$owner = get_entity($owner_guid);
 									$session->setLoggedInUser($owner);
 									
@@ -855,7 +855,7 @@ class MicropubController {
 				$owner_guid = (int) elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
 			} else {
 				$username = elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
-				$owner_guid = get_user_by_username($username)->guid;
+				$owner_guid = elgg_get_user_by_username($username)->guid;
 			}
 			
 			$subtype = elgg_get_plugin_setting('micropub_type_' . $post_type, 'indieweb');
@@ -870,7 +870,7 @@ class MicropubController {
 				$owner_guid = $tokenOwnerId;
 			}
 			
-			$session = elgg_get_session();
+			$session = _elgg_services()->session_manager;
 			$owner = get_entity($owner_guid);
 			$session->setLoggedInUser($owner);
 			
@@ -906,7 +906,13 @@ class MicropubController {
 			$entity->owner_guid = $owner_guid;
 			$entity->time_created = $time_created;
 			$entity->access_id = ACCESS_PUBLIC;
-			$entity->title = $title;
+			
+			if ($post_type === 'repost' && (bool) elgg_get_plugin_setting('micropub_field_content_repost', 'indieweb')) {
+				$entity->title = elgg_echo('indieweb:micropub:view:repost');
+				$entity->description = $title;
+			} else {
+				$entity->title = $title;
+			}
 			
 			if (elgg_is_active_plugin('theme')) {
 				$entity->published_status = $status;
@@ -936,7 +942,7 @@ class MicropubController {
 				}
 
 				if ($uri) {
-					$entity->address = $uri;
+					$entity->website = $uri;
 				}
 			}
 			
@@ -983,7 +989,7 @@ class MicropubController {
 			}
 
 			// Allow plugins to react after the post is saved.
-			elgg_trigger_plugin_hook('indieweb_micropub_post_saved', $entity->subtype, $this->input, []);
+			elgg_trigger_event_result('indieweb_micropub_post_saved', $entity->subtype, $this->input, []);
 
 			return elgg_ok_response();
 		});
@@ -1037,7 +1043,7 @@ class MicropubController {
 				$owner_guid = (int) elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
 			} else {
 				$username = elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
-				$owner_guid = get_user_by_username($username)->guid;
+				$owner_guid = elgg_get_user_by_username($username)->guid;
 			}
 			
 			// Override user guid.
@@ -1045,7 +1051,7 @@ class MicropubController {
 				$owner_guid = $tokenOwnerId;
 			}
 			
-			$session = elgg_get_session();
+			$session = _elgg_services()->session_manager;
 			$owner = get_entity($owner_guid);
 			$session->setLoggedInUser($owner);
 
@@ -1168,7 +1174,7 @@ class MicropubController {
 				$owner_guid = (int) elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
 			} else if (!empty($post_type)) {
 				$username = elgg_get_plugin_setting('micropub_author_' . $post_type, 'indieweb');
-				$owner_guid = get_user_by_username($username)->guid;
+				$owner_guid = elgg_get_user_by_username($username)->guid;
 			}
 			
 			// Override user guid.
@@ -1176,7 +1182,7 @@ class MicropubController {
 				$owner_guid = $tokenOwnerId;
 			}
 			
-			$session = elgg_get_session();
+			$session = _elgg_services()->session_manager;
 			$owner = get_entity($owner_guid);
 			
 			if ($owner instanceof \ElggUser) {
@@ -1382,7 +1388,7 @@ class MicropubController {
 				$websubpub->save();
 				
 				if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
-					elgg_log(elgg_echo('websub:send:success', [$websub->guid]), 'NOTICE');
+					elgg_log(elgg_echo('websub:send:success', [$websubpub->guid]), 'NOTICE');
 				}
 			});
 		}
@@ -1449,7 +1455,7 @@ class MicropubController {
 
 		foreach (['article', 'note', 'like', 'reply', 'repost', 'bookmark', 'event', 'rsvp', 'issue', 'checkin'] as $type) {
 			if ((bool) elgg_get_plugin_setting('enable_micropub_' . $type, 'indieweb')) {
-				$post_types[] = (object) [
+				$post_types[] = [
 					'type' => $type,
 					'name' => ucfirst($type),
 				];
@@ -1457,13 +1463,13 @@ class MicropubController {
 		}
 
 		if ((bool) elgg_get_plugin_setting('micropub_enable_contact', 'indieweb')) {
-			$post_types[] = (object) [
+			$post_types[] = [
 				'type' => 'venue',
 				'name' => 'Venue',
 			];
 		}
 
-		$post_types[] = (object) [
+		$post_types[] = [
 			'type' => 'comment',
 			'name' => 'Commment',
 		];
@@ -1580,7 +1586,7 @@ class MicropubController {
 							elgg_log('Error parsing node for source: ' . $e->getMessage(), 'NOTICE');
 						}
 						
-						$return = ['properties' => (object) $properties];
+						$return = ['properties' => $properties];
 					}
 				}
 			} catch (\Exception $e) {
@@ -1654,7 +1660,7 @@ class MicropubController {
 				foreach ($entities as $entity) {
 					$item = new \stdClass();
 					$item->type = ['h-entry'];
-					$item->properties = (object) $this->getEntityProperties($entity);
+					$item->properties = $this->getEntityProperties($entity);
 					$items[$entity->time_created . '.' . $entity->guid] = $item;
 				}
 			}
@@ -1667,7 +1673,7 @@ class MicropubController {
 			$return['items'] = $items_sorted;
 
 			if (!empty($items_sorted)) {
-				$return['paging'] = (object) ['after' => $after];
+				$return['paging'] = ['after' => $after];
 			}
 		}
 
@@ -1763,7 +1769,7 @@ class MicropubController {
 			/* @var $svc \wZm\Maps\MapsService */
 			$location = $svc->reverse($request->getParam('lat'), $request->getParam('lon'));
 			
-			$return->geo = (object) ['label' => $location, 'latitude' => $request->getParam('lat'), 'longitude' => $request->getParam('lon')];
+			$return->geo = ['label' => $location, 'latitude' => $request->getParam('lat'), 'longitude' => $request->getParam('lon')];
 		}
 
 		return $return;

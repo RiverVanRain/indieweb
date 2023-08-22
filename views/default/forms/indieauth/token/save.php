@@ -38,7 +38,7 @@ foreach ($fields as $field) {
 }
 
 $footer = elgg_view('input/submit', [
-	'value' => elgg_echo('save'),
+	'text' => elgg_echo('save'),
 	'name' => 'save',
 ]);
 

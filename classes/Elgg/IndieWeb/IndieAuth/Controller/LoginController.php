@@ -58,7 +58,7 @@ class LoginController {
 			// We have a valid token
 			if ($valid_code && !empty($domain)) {
 				// Create authname. Strip schemes.
-				$authname = str_replace(['https://', 'http://', '/'], '', $domain);
+				$authname = str_replace(['https://', 'http://', '/', '.', '-'], '', $domain);
 				
 				try {
 					// Map with existing account
@@ -120,7 +120,7 @@ class LoginController {
 							$account->setValidationStatus(true, 'indieauth');
 								
 							$account->setPluginSetting('indieweb', 'indieauth', $authname);
-							elgg_trigger_plugin_hook('indieauth:authenticate', 'indieauth', ['entity' => $account]);
+							elgg_trigger_event_result('indieauth:authenticate', 'indieauth', ['entity' => $account]);
 								
 							$account->indieauth_login = 1;
 							

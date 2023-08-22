@@ -3,15 +3,15 @@
  * Edit blog form
  */
 
-elgg_require_js('elgg/blog/save_draft');
+elgg_require_js('forms/blog/save');
 
-$blog = get_entity($vars['guid']);
-$vars['entity'] = $blog;
+$blog = elgg_extract('entity', $vars);
 
-$draft_warning = elgg_extract('draft_warning', $vars);
-if ($draft_warning) {
-	echo '<span class="mbm elgg-text-help">' . $draft_warning . '</span>';
-}
+echo elgg_view('entity/edit/header', [
+	'entity' => $blog,
+	'entity_type' => 'object',
+	'entity_subtype' => 'blog',
+]);
 
 $categories_vars = $vars;
 $categories_vars['#type'] = 'categories';
@@ -30,7 +30,7 @@ $fields = [
 		'#type' => 'text',
 		'name' => 'excerpt',
 		'id' => 'blog_excerpt',
-		'value' => elgg_html_decode(elgg_extract('excerpt', $vars)),
+		'value' => elgg_extract('excerpt', $vars),
 	],
 	[
 		'#label' => elgg_echo('blog:body'),
@@ -50,14 +50,13 @@ $fields = [
 	$categories_vars,
 	[
 		'#label' => elgg_echo('comments'),
-		'#type' => 'select',
+		'#type' => 'checkbox',
 		'name' => 'comments_on',
 		'id' => 'blog_comments_on',
-		'value' => elgg_extract('comments_on', $vars),
-		'options_values' => [
-			'On' => elgg_echo('on'),
-			'Off' => elgg_echo('off'),
-		],
+		'default' => 'Off',
+		'value' => 'On',
+		'switch' => true,
+		'checked' => elgg_extract('comments_on', $vars) === 'On',
 	],
 	[
 		'#label' => elgg_echo('access'),
@@ -96,14 +95,14 @@ foreach ($fields as $field) {
 	echo elgg_view_field($field);
 }
 
-if (elgg_is_active_plugin('indieweb') && (bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting('can_webmention:object:blog', 'indieweb') && !$blog) {
-	echo elgg_view('webmention/forms/syndication_targets', $vars);
+if (elgg_is_active_plugin('indieweb') && (bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting('can_webmention:object:blog', 'indieweb') && !$blog instanceof \ElggBlog) {
+	echo elgg_view('input/webmention/syndication_targets', $vars);
 }
 
-if (elgg_is_active_plugin('indieweb') && (bool) elgg_get_plugin_setting('enable_websub', 'indieweb') && (bool) elgg_get_plugin_setting('can_websub:object:blog', 'indieweb') && !$blog) {
+if (elgg_is_active_plugin('indieweb') && (bool) elgg_get_plugin_setting('enable_websub', 'indieweb') && (bool) elgg_get_plugin_setting('can_websub:object:blog', 'indieweb') && !$blog instanceof \ElggBlog) {
 	echo elgg_view_field([
 		'#type' => 'fieldset',
-		'#class' => 'websub-hub',
+		'#class' => 'elgg-field elgg-col elgg-col-1of1',
 		'#label' => elgg_echo('indieweb:websub:hub_publication'),
 		'fields' => [
 			[
@@ -118,42 +117,24 @@ if (elgg_is_active_plugin('indieweb') && (bool) elgg_get_plugin_setting('enable_
 	]);
 }
 
-$save_status = elgg_echo('blog:save_status');
-if ($blog) {
-	$saved = date('F j, Y @ H:i', $blog->time_updated);
-} else {
-	$saved = elgg_echo('never');
-}
+$saved = $blog instanceof \ElggBlog ? elgg_view('output/friendlytime', ['time' => $blog->time_updated]) : elgg_echo('never');
+$saved = elgg_format_element('span', ['class' => 'blog-save-status-time'], $saved);
 
-$footer = <<<___HTML
-<div class="elgg-subtext mbm">
-	$save_status <span class="blog-save-status-time">$saved</span>
-</div>
-___HTML;
+$footer = elgg_format_element('div', ['class' => ['elgg-subtext', 'mbm']], elgg_echo('blog:save_status') . ' ' . $saved);
 
 $footer .= elgg_view('input/submit', [
-	'value' => elgg_echo('save'),
 	'name' => 'save',
+	'value' => 1,
+	'text' => elgg_echo('save'),
 ]);
 
 // published blogs do not get the preview button
-if (!$blog || $blog->status != 'published') {
+if (!$blog instanceof \ElggBlog || $blog->status != 'published') {
 	$footer .= elgg_view('input/button', [
-		'value' => elgg_echo('preview'),
 		'name' => 'preview',
+		'value' => 1,
+		'text' => elgg_echo('preview'),
 		'class' => 'elgg-button-action mls',
-	]);
-}
-
-if ($blog) {
-	// add a delete button if editing
-	$footer .= elgg_view('output/url', [
-		'href' => elgg_generate_action_url('entity/delete', [
-			'guid' => $blog->guid,
-		]),
-		'text' => elgg_echo('delete'),
-		'class' => 'elgg-button elgg-button-delete float-alt',
-		'confirm' => true,
 	]);
 }
 
