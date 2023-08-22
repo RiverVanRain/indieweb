@@ -1,9 +1,5 @@
 <?php
 
-if (!elgg_is_logged_in()) {
-	return;
-}
-
 $svc = elgg()->webmention;
 $syndication_targets = $svc->getSyndicationTargets();
 
@@ -44,8 +40,7 @@ if ((bool) elgg_get_plugin_setting('webmention_syndication_targets_custom', 'ind
 if (!empty($fields)) {
 	echo elgg_view_field([
 		'#type' => 'fieldset',
-		'class' => 'webmention-syndication-targets',
-		'#class' => 'webmention-syndication',
+		'#class' => 'elgg-field elgg-col elgg-col-1of1',
 		'#label' => elgg_echo('indieweb:webmention:publish'),
 		'fields' => $fields,
 	]);

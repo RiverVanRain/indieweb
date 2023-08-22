@@ -85,7 +85,7 @@ function indieweb_get_syndication_targets($return_all_config = false): array {
 	}
 	
 	$syndication_targets = [];
-	$config = elgg_get_plugin_setting('webmention_syndication_targets', 'indieweb', 'Twitter (bridgy)|https://brid.gy/publish/twitter');
+	$config = elgg_get_plugin_setting('webmention_syndication_targets', 'indieweb', 'Fediverse|https://fed.brid.gy/');
 		
 	if (!empty($config)) {
 		$lines = explode("\n", $config);

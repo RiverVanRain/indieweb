@@ -468,6 +468,11 @@ A subscribe request will be send after submit.',
 	'indieauth:token:scope:help' => 'Separate scopes by space',
 	'indieauth:token:client_id' => 'Client',
 	
+	'indieauth:provider' => 'IndieAuth',
+	'indieauth:account:authorise' => 'Connect now',
+	'indieauth:account:deauthorise' => 'Disconnect now',
+	'indieauth:accounts' => 'IndieAuth account',
+	
 	//WEBSUB
 	'admin:indieweb:websub' => 'WebSub',
 	'settings:indieweb:websub' => 'Basic Config',

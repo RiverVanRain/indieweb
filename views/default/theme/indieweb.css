@@ -8,6 +8,10 @@
 	}
 }
 
+.webmention-syndication-targets {
+	padding: 0;
+}
+
 .webmention-syndication .elgg-field-label,
 .webmention-syndication-targets .elgg-field-label {
     display: inline-block !important;

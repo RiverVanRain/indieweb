@@ -287,6 +287,8 @@ return [
 			],
 			'menu:page' => [
 				\Elgg\IndieWeb\Menus\SettingsMenu::class => [],
+				// IndieAuth
+				\Elgg\IndieWeb\IndieAuth\Menus\UserPageMenu::class => [],
 			],
 			'menu:social' => [
 				// Webmention
@@ -413,6 +415,14 @@ return [
 			'controller' => \Elgg\IndieWeb\IndieAuth\Controller\TokenController::class,
 			'walled' => false,
 		],
+		'indieauth:accounts' => [
+            'path' => '/indieauth/accounts/{username?}',
+            'resource' => 'indieauth/connections',
+			'detect_page_owner' => true,
+			'middleware' => [
+				\Elgg\Router\Middleware\Gatekeeper::class,
+			],
+        ],
 		//websub
 		'default:view:websub' => [
 			'path' => '/websub/{websub_hash}',
@@ -448,12 +458,6 @@ return [
 				'priority' => 1000
 			],
 		],
-		'core/settings/account' => [
-			'indieauth/authorize' => [
-				'priority' => 900
-			],
-		],
-		
     ],
 	
 	'views' => [

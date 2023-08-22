@@ -26,6 +26,23 @@ $date_updated = Values::normalizeTime($entity->time_updated);
 $created = elgg_format_element('time', ['class' => 'dt-published', 'datetime' => $date_created->format('c')]);
 $updated = elgg_format_element('time', ['class' => 'dt-updated', 'datetime' => $date_updated->format('c')]);
 
+//syndications
+$syndications = '';
+$targets = unserialize($entity->syndication_targets);
+if (!empty($targets[0])) {
+	foreach ($targets as $target) {
+		if (empty($target)) {
+			continue;
+		}
+		
+		$syndications .= elgg_format_element('a', ['rel' => 'syndication', 'class' => 'u-syndication', 'href' => $target]);
+		
+		if (strpos($target, 'fed.brid.gy') !== false) {
+			$syndications .= elgg_format_element('a', ['class' => 'u-bridgy-fed', 'href' => 'https://fed.brid.gy/']);
+		}
+	}
+}
+
 //author
 $author = false;
 $user = $entity->getOwnerEntity();
@@ -37,4 +54,4 @@ if ($user instanceof \ElggUser) {
 	$author = elgg_format_element('div', ['class' => 'p-author h-card hidden'], $author_link);
 }
 
-echo elgg_format_element('div', ['class' => 'hidden'], $author . $link . $title . $repost . $created . $updated);
+echo elgg_format_element('div', ['class' => 'hidden'], $syndications . $author . $link . $title . $repost . $created . $updated);
