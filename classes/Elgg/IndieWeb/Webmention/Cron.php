@@ -61,6 +61,10 @@ class Cron {
 					$source = $webmention->getSource();
 					$target = $webmention->getTarget();
 					
+					if (!$target || empty($target) || is_null($target)) {
+						return true;
+					}
+					
 					/** Elgg\IndieWeb\Webmention\Client\WebmentionClient **/
 					$svc = elgg()->webmention;
 					$response = $svc->get($source);
