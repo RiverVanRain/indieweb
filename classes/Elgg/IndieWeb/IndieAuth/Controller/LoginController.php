@@ -120,7 +120,7 @@ class LoginController {
 							$account->setValidationStatus(true, 'indieauth');
 								
 							$account->setPluginSetting('indieweb', 'indieauth', $authname);
-							elgg_trigger_event_result('indieauth:authenticate', 'indieauth', ['entity' => $account]);
+							elgg_trigger_event_results('indieauth:authenticate', 'indieauth', ['entity' => $account]);
 								
 							$account->indieauth_login = 1;
 							

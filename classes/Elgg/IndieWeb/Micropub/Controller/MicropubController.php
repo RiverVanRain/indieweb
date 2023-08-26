@@ -989,7 +989,7 @@ class MicropubController {
 			}
 
 			// Allow plugins to react after the post is saved.
-			elgg_trigger_event_result('indieweb_micropub_post_saved', $entity->subtype, $this->input, []);
+			elgg_trigger_event_results('indieweb_micropub_post_saved', $entity->subtype, $this->input, []);
 
 			return elgg_ok_response();
 		});
