@@ -38,8 +38,6 @@ class WebSubClient {
 	 * {@inheritdoc}
 	 */
 	public function subscribe($url, $hub, $mode) {
-		$status = 400;
-
 		$options = [
 			'form_params' => [
 				'hub.mode' => $mode,
@@ -54,8 +52,6 @@ class WebSubClient {
 			$client = new Client();
 			$response = $client->post($hub, $options);
 			
-			$status = $response->getStatusCode();
-			
 			if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
 				elgg_log('Subscribe response for ' . $url . ', ' . $hub . ', ' . $mode . ' - code: ' . $response->getStatusCode() . ' - ' . print_r($response->getBody()->getContents(), 1), 'NOTICE');
 			}
@@ -63,7 +59,7 @@ class WebSubClient {
 			elgg_log('Error sending subscribe request: ' . $e->getMessage(), 'ERROR');
 		}
 
-		return $status;
+		return true;
 	}
 
 	/**

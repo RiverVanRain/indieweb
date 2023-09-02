@@ -84,13 +84,6 @@ class MicrosubSource extends \ElggObject {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getTries() {
-		return $this->fetch_tries;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function getPostContext(): array {
 		$return = [];
 		

@@ -35,6 +35,10 @@ class Cron {
                 'batch_inc_offset' => false
             ]);
 			
+			if (empty($auth_codes)) {
+				return true;
+			}
+			
 			foreach ($auth_codes as $code) {
                 $code->delete();
             }
