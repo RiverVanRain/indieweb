@@ -66,6 +66,9 @@ class MicrosubClient {
 			$parse_options['allowIframeVideo'] = true;
 		}
 		
+		// Post context
+		$post_context_enabled = (bool) elgg_get_plugin_setting('microsub_post_context', 'indieweb');
+		
 		$options = [
 			'type' => 'object',
 			'subtype' => MicrosubSource::SUBTYPE,
@@ -118,7 +121,6 @@ class MicrosubClient {
 			}
 			
 			$url = $source->url;
-			$tries = $source->getTries();
 			$item_count = $source->getItemCount();
 			$empty = $item_count == 0;
 			if ($mark_unread_on_first_import && $empty) {
@@ -127,8 +129,6 @@ class MicrosubClient {
 			$source_id = $source->guid;
 			$channel_id = $source->container_guid;
 			$exclude = $source->getContainerEntity()->getPostTypesToExclude();
-
-			$tries++;
 
 			try {
 				$parse = true;
@@ -208,7 +208,7 @@ class MicrosubClient {
 							}
 							
 							//Save MicrosubItem
-							$ids[] = $this->saveItem($item, $tries, $source_id, $channel_id, $empty, $context);
+							$ids[] = $this->saveItem($item, $source_id, $channel_id, $empty, $context);
 							
 							// If we have number of items to keep and we hit the amount, break
 							// the loop so we don't keep importing everything over and over.
@@ -280,9 +280,7 @@ class MicrosubClient {
 				if ($set_next_fetch) {
 					$source->setNextFetch();
 				}
-			
-				$source->setMetadata('fetch_tries', $tries);
-			
+
 				$source->save();
 		    } catch (\Exception $e) {
 				elgg_log('Error fetching new items for ' . $url  . ' : ' . $e->getMessage(), 'ERROR');
@@ -295,7 +293,6 @@ class MicrosubClient {
 	 * Saves an item
 	 *
      * @param $data
-     * @param int $tries
      * @param int $source_id
      * @param int $channel_id
 	 * @param bool $empty
@@ -303,7 +300,7 @@ class MicrosubClient {
 	 *
 	 * @return string
 	 */
-	protected function saveItem(&$data, $tries = 0, $source_id = 0, $channel_id = 0, $empty = false, $context = []) {
+	protected function saveItem(&$data, $source_id = 0, $channel_id = 0, $empty = false, $context = []) {
 		// Prefer uid, then url, then hash the content
 		if (isset($data['uid'])) {
 		  $id = '@' . $data['uid'];
@@ -335,15 +332,12 @@ class MicrosubClient {
 			]);
 		});
 		
-		if ($exists[0] > 0) {
+		if (!empty($exists) && $exists[0] > 0) {
 			return $id;
 		}
 
-		// Reset tries
-		$tries = 0;
-		
 		// Save MicrosubItem
-		elgg_call(ELGG_IGNORE_ACCESS, function () use ($id, &$data, $source_id, $channel_id, $empty) {
+		elgg_call(ELGG_IGNORE_ACCESS, function () use ($id, &$data, $source_id, $channel_id, $empty, &$context) {
 			$entity = new MicrosubItem();
 			$entity->owner_guid = elgg_get_site_entity()->guid;
 			$entity->container_guid = $source_id;
@@ -369,34 +363,34 @@ class MicrosubClient {
 
 			$entity->time_created = $empty ? $entity->timestamp : time();
 
-			return $entity->save();
-		});
-		
-		// Save post context in queue
-		if (!empty($context) && in_array($entity->post_type, $context)) {
-			foreach ($context as $post_type) {
-				$key = '';
-				switch ($post_type) {
-					case 'reply':
-						$key = 'in-reply-to';
-						break;
-					case 'like':
-						$key = 'like-of';
-						break;
-					case 'bookmark':
-						$key = 'bookmark-of';
-						break;
-					case 'repost':
-						$key = 'repost-of';
-						break;
-				}
+			$entity->save();
+			
+			// Save post context in queue
+			if (!empty($context) && in_array($entity->post_type, $context)) {
+				foreach ($context as $post_type) {
+					$key = '';
+					switch ($post_type) {
+						case 'reply':
+							$key = 'in-reply-to';
+							break;
+						case 'like':
+							$key = 'like-of';
+							break;
+						case 'bookmark':
+							$key = 'bookmark-of';
+							break;
+						case 'repost':
+							$key = 'repost-of';
+							break;
+					}
 
-				if ($key && !empty($data[$key][0])) {
-					elgg()->postcontext->createMicrosubItem($entity, $data[$key][0]);
+					if ($key && !empty($data[$key][0])) {
+						elgg()->postcontext->createMicrosubItem($entity, $data[$key][0]);
+					}
 				}
 			}
-		}
-
+		});
+		
 		return $id;
 	}
 	
@@ -455,8 +449,7 @@ class MicrosubClient {
 						$data['url'] = $target;
 					}
 
-					$tries = 0;
-					$this->saveItem($data, $tries, 1, $channel_id);
+					$this->saveItem($data, 1, $channel_id);
 				}
 			}
 			catch (\Exception $e) {
