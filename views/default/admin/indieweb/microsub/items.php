@@ -37,7 +37,9 @@ $count = elgg_get_entities($options);
 
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
-		'base_url' => elgg_normalize_url('admin/indieweb/microsub/items'),
+		'base_url' => elgg_http_add_url_query_elements(elgg_normalize_url('admin/indieweb/microsub/items'), [
+			'guid' => $entity->guid,
+		]),
 		'offset' => $offset,
 		'count' => $count,
 		'limit' => elgg_get_config('default_limit'),
