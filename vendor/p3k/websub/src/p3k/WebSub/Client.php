@@ -112,8 +112,9 @@ class Client {
             $type = $body['type'] = 'rdf';
           }
 
+
           // Find all link elements in the feed.
-          $links = $dom->getElementsByTagName('link');
+		  $links = $dom->getElementsByTagName('link');
           foreach ($links as $link) {
             $rel = $link->getAttribute('rel');
             $url = $link->getAttribute('href');
@@ -217,3 +218,4 @@ class Client {
   }
 
 }
+

@@ -14,10 +14,7 @@
 	"config": {
         "fxp-asset": {
             "enabled": false
-        },
-		"allow-plugins": {
-			"composer/installers": true
-		}
+        }
     },
 	"require": {
 		"php": "^8.2",
@@ -44,7 +41,7 @@
         }
     ],
 	"conflict": {
-		"elgg/elgg": "<5.0"
+		"elgg/elgg": "<5.1"
 	},
 	"support": {
 		"source": "https://wzm.me"

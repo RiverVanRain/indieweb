@@ -5,10 +5,8 @@ namespace Elgg\IndieWeb\Actions\Blog;
 class SaveAction {
 
 	public function __invoke(\Elgg\Request $request) {
-		elgg_make_sticky_form('blog');
-
 		// save or preview
-		$save = (bool) $request->getParam('save');
+		$preview = (bool) get_input('preview');
 
 		// edit or create a new entity
 		$guid = (int) $request->getParam('guid');
@@ -98,8 +96,8 @@ class SaveAction {
 			}
 		}
 
-		// if preview, force status to be draft
-		if (!$save) {
+		// if this is a preview, force status to be draft
+		if ($preview) {
 			$values['status'] = 'draft';
 		}
 
@@ -117,9 +115,6 @@ class SaveAction {
 		if (!$blog->save()) {
 			return elgg_error_response(elgg_echo('blog:error:cannot_save'));
 		}
-
-		// remove sticky form entries
-		elgg_clear_sticky_form('blog');
 
 		// if this was an edit, create a revision annotation
 		if (!$new_post && $revision_text) {
@@ -153,7 +148,7 @@ class SaveAction {
 			]);
 		}
 
-		if ($blog->status === 'published' || !$save) {
+		if ($blog->status === 'published' || $preview) {
 			$forward_url = $blog->getURL();
 		} else {
 			$forward_url = elgg_generate_url('edit:object:blog', [

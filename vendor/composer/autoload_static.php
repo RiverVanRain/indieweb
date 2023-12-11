@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit8fd2210af8ed89cedbeb522525663771
+class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
 {
     public static $files = array (
         '757772e28a0943a9afe83def8db95bdf' => __DIR__ . '/..' . '/mf2/mf2/Mf2/Parser.php',
@@ -110,8 +110,8 @@ class ComposerStaticInit8fd2210af8ed89cedbeb522525663771
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -215,11 +215,11 @@ class ComposerStaticInit8fd2210af8ed89cedbeb522525663771
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit8fd2210af8ed89cedbeb522525663771::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit8fd2210af8ed89cedbeb522525663771::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit8fd2210af8ed89cedbeb522525663771::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit8fd2210af8ed89cedbeb522525663771::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit8fd2210af8ed89cedbeb522525663771::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$classMap;
 
         }, null, ClassLoader::class);
     }
