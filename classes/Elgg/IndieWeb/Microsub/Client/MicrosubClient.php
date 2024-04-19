@@ -30,6 +30,13 @@ class MicrosubClient {
 	use ServiceFacade;
 	
 	/**
+	 * Aggregated feeds.
+	 *
+	 * @var array
+	 */
+	protected $aggregated_feeds = [];
+	
+	/**
 	 * {@inheritdoc}
 	 */
 	public static function name() {
@@ -701,7 +708,16 @@ class MicrosubClient {
 	public function getTimeline(\Elgg\Request $request, $is_authenticated, $search = null) {
 		$response = ['items' => []];
 		
-		$aggregated_feeds = $this->aggregatedFeeds(); // WIP
+		$aggregated_feeds = $this->aggregatedFeeds();
+		
+		if (!empty($aggregated_feeds)) {
+			foreach (explode('\n', $aggregated_feeds) as $u) {
+				$u = trim($u);
+				if (!empty($u)) {
+					$this->aggregated_feeds[] = $u;
+				}
+			}
+		}
 
 		$items = [];
 
