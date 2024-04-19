@@ -23,7 +23,7 @@
 		"indieweb/mention-client": "^1.2.1",
 		"p3k/xray": "^1.12.0",
 		"p3k/micropub": "^0.0.3",
-		"p3k/websub": "^0.0.1",
+		"rivervanrain/websub": "dev-elgg",
 		"indieauth/client": "^1.1",
 		"lcobucci/jwt": "4.0.*",
 		"symfony/dom-crawler": "^5.4",

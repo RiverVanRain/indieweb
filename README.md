@@ -249,9 +249,6 @@ More configuration is at configuration at `/admin/indieweb/websub`.
 
 For more information see [How to publish and consume WebSub](https://indieweb.org/How_to_publish_and_consume_WebSub) and [WebSub](https://www.w3.org/TR/websub/).
 
-You need [this commit](https://github.com/swentel/p3k-websub/commit/4310388f712082e4ee310eb7de462d140023a388) as a patch on the
-p3k-websub package so all self and hub links are found (already included to this release).
-
 ## Feeds
 
 Generate feeds in JF2.
