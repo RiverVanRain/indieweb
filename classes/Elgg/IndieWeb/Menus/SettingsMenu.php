@@ -19,14 +19,13 @@ class SettingsMenu {
 	 * @param Event $event Event
 	 */
 	public function __invoke(\Elgg\Event $event): ?MenuItems {
-
+		if (!elgg_is_admin_logged_in() || !elgg_in_context('admin')) {
+			return null;
+		}
+		
 		$menu = $event->getValue();
 		/* @var $menu \Elgg\Menu\MenuItems */
 		
-		if (!elgg_in_context('admin')) {
-			return null;
-		}
-
 		$menu[] = \ElggMenuItem::factory([
 			'name' => 'indieweb',
 			'href' => false,
@@ -206,7 +205,7 @@ class SettingsMenu {
 			'text' => elgg_echo('admin:indieweb:contacts'),
 			'priority' => 600,
 		]);
-		
+
 		return $menu;
 	}
 }

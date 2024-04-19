@@ -185,7 +185,7 @@ class LoginController {
 		$users = elgg_get_entities([
 			'type' => 'user',
 			'guid' => (int) $account->guid,
-			'private_setting_name_value_pairs' => [
+			'metadata_name_value_pairs' => [
 				'name' => "plugin:user_setting:indieweb:{$provider}",
 				'value' => $authname
 			],
@@ -207,7 +207,7 @@ class LoginController {
 	public function loginUser(string $authname, string $provider) {
 		$users = elgg_get_entities([
 			'type' => 'user',
-			'private_setting_name_value_pairs' => [
+			'metadata_name_value_pairs' => [
 				'name' => "plugin:user_setting:indieweb:{$provider}",
 				'value' => $authname
 			],
