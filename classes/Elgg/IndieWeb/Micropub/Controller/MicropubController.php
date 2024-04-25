@@ -689,7 +689,7 @@ class MicropubController {
 	* Upload files through the media endpoint.
 	*
 	*/
-	public function mediaEndpoint(\Elgg\Request $request) {
+	public static function mediaEndpoint(\Elgg\Request $request) {
 		$indieAuth = elgg()->indieauth;
 		
 		// Early response when endpoint is not enabled.
