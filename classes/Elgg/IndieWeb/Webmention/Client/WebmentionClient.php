@@ -120,7 +120,6 @@ class WebmentionClient {
 			}
 		}
 		
-		
 		return true;
 	}
 	
