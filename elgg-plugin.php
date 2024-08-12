@@ -23,7 +23,7 @@ if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) el
 return [
 	'plugin' => [
 		'name' => 'IndieWeb',
-		'version' => '1.1.4',
+		'version' => '1.1.5',
 	],
 	
 	'bootstrap' => \Elgg\IndieWeb\Bootstrap::class,
@@ -325,6 +325,12 @@ return [
 			'object/elements/full/body' => [
 				'Elgg\IndieWeb\MF2\Views::contentBody' => ['priority' => 800],
 			],
+			'object/river/card' => [
+				'Elgg\IndieWeb\MF2\Views::fullBody' => ['priority' => 800],
+			],
+			'object/river/body' => [
+				'Elgg\IndieWeb\MF2\Views::contentBody' => ['priority' => 800],
+			],
 			'object/elements/imprint/contents' => [
 				// Webmention
 				\Elgg\IndieWeb\Webmention\Views::class => ['priority' => 600],
@@ -437,6 +443,9 @@ return [
 		'object/elements/full/body' => [
             'mf2/object/elements/full/body' => [],
         ],
+		'object/river/body' => [
+			'mf2/object/elements/full/body' => [],
+		],
 		'object/elements/full/responses' => [
             'webmention/responses/webmentions' => ['priority' => 600],
         ],
