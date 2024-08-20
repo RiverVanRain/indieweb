@@ -17,7 +17,7 @@ class EntityMenu {
 			return null;
 		}
 		
-		if(!$entity->canEdit()) {
+		if (!$entity->canEdit()) {
 			return null;
 		}
 		
@@ -84,7 +84,7 @@ class EntityMenu {
 			return null;
 		}
 		
-		if(!$entity->canEdit()) {
+		if (!$entity->canEdit()) {
 			return null;
 		}
 		

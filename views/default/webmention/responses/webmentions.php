@@ -9,7 +9,7 @@ if (!$entity instanceof \ElggObject) {
 	return;
 }
 
-if(!(bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb')) {
+if (!(bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb')) {
 	return;
 }
 

@@ -28,7 +28,7 @@ class NotificationsMicrosubChannel {
 			'uid' =>'notifications',
 		];
 		
-		if(!empty($this->container_guid)) {
+		if (!empty($this->container_guid)) {
 			$result['container_guid'] = $this->container_guid;
 		}
 		

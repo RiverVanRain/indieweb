@@ -619,7 +619,7 @@ class MicrosubClient {
 				];
 			} else if (strpos($contentType, 'application/json') !== false && substr($body, 0, 1) == '{') {
 				$feeddata = json_decode($body, true);
-				if($feeddata && isset($feeddata['version']) && $feeddata['version'] == 'https://jsonfeed.org/version/1') {
+				if ($feeddata && isset($feeddata['version']) && $feeddata['version'] == 'https://jsonfeed.org/version/1') {
 					$feeds[] = [
 						'url' => $url,
 						'type' => 'jsonfeed'

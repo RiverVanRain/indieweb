@@ -253,7 +253,7 @@ class MentionClient {
 							$endpoint = $rels['webmention'][0];
 							$this->c('webmentionServer', $target, $endpoint);
 							$this->c('supportsWebmention', $target, true);
-						} else if(array_key_exists('http://webmention.org/', $rels) || array_key_exists('http://webmention.org', $rels)) {
+						} else if (array_key_exists('http://webmention.org/', $rels) || array_key_exists('http://webmention.org', $rels)) {
 							$endpoint = $rels[array_key_exists('http://webmention.org/', $rels) ? 'http://webmention.org/' : 'http://webmention.org'][0];
 							$this->c('webmentionServer', $target, $endpoint);
 							$this->c('supportsWebmention', $target, true);
@@ -437,7 +437,7 @@ class MentionClient {
 				self::_debug("sendFirstSupportedMention: accepted webmention");
 			}
 			// Only look for a pingback server if we didn't find a webmention server
-		} else if($this->discoverPingbackEndpoint($target)) {
+		} else if ($this->discoverPingbackEndpoint($target)) {
 			$result = $this->sendPingback($source, $target);
 			if ($result) {
 				$accepted = 'pingback';

@@ -26,8 +26,8 @@ class SaveAction {
 		} else {
 			$blog = new \ElggBlog();
 			
-			$blog_syndication_targets = $request->getParam('syndication_targets');
-			$blog_syndication_targets_custom_url = $request->getParam('syndication_targets_custom_url');
+			$blog_syndication_targets = (array) $request->getParam('syndication_targets', []);
+			$blog_syndication_targets_custom_url = $request->getParam('syndication_targets_custom_url', []);
 			
 			if (!empty($blog_syndication_targets) && !empty($blog_syndication_targets_custom_url)) {
 				$syndication_targets = array_merge($blog_syndication_targets, $blog_syndication_targets_custom_url);

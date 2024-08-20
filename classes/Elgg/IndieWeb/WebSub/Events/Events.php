@@ -33,7 +33,7 @@ class Events {
 			return;
 		}
 
-		if(!(bool) elgg_get_plugin_setting("can_websub:object:$entity->subtype", 'indieweb')) {
+		if (!(bool) elgg_get_plugin_setting("can_websub:object:$entity->subtype", 'indieweb')) {
 			return;
 		}
 
