@@ -14,7 +14,10 @@
 	"config": {
         "fxp-asset": {
             "enabled": false
-        }
+        },
+		"allow-plugins": {
+			"composer/installers": false
+		}
     },
 	"require": {
 		"php": "^8.2",
@@ -41,9 +44,9 @@
         }
     ],
 	"conflict": {
-		"elgg/elgg": "<5.1"
+		"elgg/elgg": "<6.0"
 	},
 	"support": {
-		"source": "https://wzm.me"
+		"source": "https://github.com/RiverVanRain/indieweb"
 	}
 }

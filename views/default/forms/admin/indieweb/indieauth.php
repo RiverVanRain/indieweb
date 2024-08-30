@@ -1,6 +1,6 @@
 <?php
 
-elgg_require_js('forms/admin/indieweb/settings');
+elgg_import_esm('forms/admin/indieweb/settings');
 
 $entity = elgg_get_plugin_from_id('indieweb');
 
@@ -28,7 +28,6 @@ echo elgg_view_field([
 			'default' => 0,
 			'checked' => (bool) $entity->enable_indieauth_endpoint,
 			'switch' => true,
-			'onchange' => 'indieauthEndpoint();',
 			'id' => 'enable_indieauth_endpoint',
 		],
 	],

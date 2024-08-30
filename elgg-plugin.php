@@ -23,7 +23,7 @@ if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) el
 return [
 	'plugin' => [
 		'name' => 'IndieWeb',
-		'version' => '1.2.0',
+		'version' => '2.0.0',
 	],
 	
 	'bootstrap' => \Elgg\IndieWeb\Bootstrap::class,
@@ -208,12 +208,6 @@ return [
 			'controller' => \Elgg\IndieWeb\IndieAuth\Actions\Token\SaveAction::class,
 			'access' => 'admin',
 		],
-		//core
-		/*
-		'blog/save' => [
-			'controller' => \Elgg\IndieWeb\Actions\Blog\SaveAction::class,
-		],
-		*/
 	],
 
 	//EVENTS
