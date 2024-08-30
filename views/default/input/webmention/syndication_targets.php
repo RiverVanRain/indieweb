@@ -1,5 +1,11 @@
 <?php
 
+$entity = elgg_extract('entity', $vars);
+
+if ($entity instanceof \ElggObject) {
+	return;
+}
+
 $svc = elgg()->webmention;
 $syndication_targets = $svc->getSyndicationTargets();
 

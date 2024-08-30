@@ -23,7 +23,7 @@ if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) el
 return [
 	'plugin' => [
 		'name' => 'IndieWeb',
-		'version' => '1.1.5',
+		'version' => '1.2.0',
 	],
 	
 	'bootstrap' => \Elgg\IndieWeb\Bootstrap::class,
@@ -209,15 +209,19 @@ return [
 			'access' => 'admin',
 		],
 		//core
+		/*
 		'blog/save' => [
 			'controller' => \Elgg\IndieWeb\Actions\Blog\SaveAction::class,
 		],
+		*/
 	],
 
 	//EVENTS
 	'events' => [
 		'create:after' => [
 			'object' => [
+				//entity 
+				'Elgg\IndieWeb\Entity\Events\Events::createObject' => [],
 				//webmention
 				'Elgg\IndieWeb\Webmention\Events\Events::createObject' => [],
 				//websub

@@ -1275,16 +1275,16 @@
         },
         {
             "name": "p3k/xray",
-            "version": "v1.14.1",
+            "version": "v1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aaronpk/XRay.git",
-                "reference": "7b9adcc4e72c10f4749f937d6709c6a9c6d89e0d"
+                "reference": "c530011b2cd7c37c929beaf9fdaf3890c9650f4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aaronpk/XRay/zipball/7b9adcc4e72c10f4749f937d6709c6a9c6d89e0d",
-                "reference": "7b9adcc4e72c10f4749f937d6709c6a9c6d89e0d",
+                "url": "https://api.github.com/repos/aaronpk/XRay/zipball/c530011b2cd7c37c929beaf9fdaf3890c9650f4a",
+                "reference": "c530011b2cd7c37c929beaf9fdaf3890c9650f4a",
                 "shasum": ""
             },
             "require": {
@@ -1321,9 +1321,9 @@
             "homepage": "https://github.com/aaronpk/XRay",
             "support": {
                 "issues": "https://github.com/aaronpk/XRay/issues",
-                "source": "https://github.com/aaronpk/XRay/tree/v1.14.1"
+                "source": "https://github.com/aaronpk/XRay/tree/v1.15.0"
             },
-            "time": "2024-03-10T21:39:30+00:00"
+            "time": "2024-08-30T14:29:22+00:00"
         },
         {
             "name": "pfefferle/openwebicons",

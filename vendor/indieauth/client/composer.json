@@ -1,0 +1,31 @@
+{
+  "name": "indieauth/client",
+  "description": "IndieAuth Client Library",
+  "require": {
+    "php": ">5.6.0",
+    "mf2/mf2": "^0.5",
+    "p3k/http": "^0.1",
+    "indieweb/representative-h-card": "^0.1.2"
+  },
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Aaron Parecki",
+      "homepage": "https://aaronparecki.com"
+    }
+  ],
+  "funding": [
+    {
+      "type": "opencollective",
+      "url": "https://opencollective.com/indieweb"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "IndieAuth\\": "src/IndieAuth/"
+    }
+  },
+  "require-dev": {
+    "yoast/phpunit-polyfills": "^1.0"
+  }
+}

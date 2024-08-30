@@ -59,6 +59,25 @@ class Bootstrap extends DefaultPluginBootstrap {
 		if (elgg_is_active_plugin('elgg_hybridauth')) {
 			elgg_extend_view('hybridauth/extend_connections', 'indieauth/authorize');
 		}
+		
+		if (!elgg_is_active_plugin('theme')) {
+			$objects = (array) elgg_extract('object', elgg_entity_types_with_capability('searchable'), []);
+			foreach ($objects as $subtype) {
+				if (in_array($subtype, ['river_object', 'messages', 'newsletter', 'static', 'file', 'event', 'poll', 'comment'])) {
+					continue;
+				}
+				
+				$form_view = elgg_view_exists("forms/$subtype/save") ? "forms/$subtype/save" : (elgg_view_exists("forms/$subtype/add") ? "forms/$subtype/add" : false);
+				
+				if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting("can_webmention:object:$subtype", 'indieweb') && $form_view) {
+					elgg_extend_view($form_view, 'input/webmention/syndication_targets');
+				}
+
+				if ((bool) elgg_get_plugin_setting('enable_websub', 'indieweb') && (bool) elgg_get_plugin_setting("can_websub:object:$subtype", 'indieweb') && $form_view) {
+					elgg_extend_view($form_view, 'input/websub/hub_publication');
+				}
+			}
+		}
 	}
 	
 	/**
