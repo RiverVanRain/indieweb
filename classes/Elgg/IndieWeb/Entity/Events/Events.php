@@ -11,6 +11,10 @@ namespace Elgg\IndieWeb\Entity\Events;
 
 class Events {
 	public static function createObject(\Elgg\Event $event) {
+		if (elgg_is_active_plugin('theme')) {
+			return;
+		}
+		
 		$entity = $event->getObject();
 		
 		if (!$entity instanceof \ElggObject) {
