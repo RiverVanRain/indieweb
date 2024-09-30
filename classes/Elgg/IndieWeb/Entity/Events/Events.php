@@ -11,6 +11,10 @@ namespace Elgg\IndieWeb\Entity\Events;
 
 class Events {
 	public static function createObject(\Elgg\Event $event) {
+		if (elgg_is_active_plugin('theme')) {
+			return;
+		}
+		
 		$entity = $event->getObject();
 		
 		if (!$entity instanceof \ElggObject) {
@@ -29,9 +33,7 @@ class Events {
 			$entity->syndication_targets = serialize($entity_syndication_targets_custom_url);
 		}
 			
-		if ((bool) elgg_get_plugin_setting("can_websub:object:$entity->subtype", 'indieweb')) {
-			$entity->websub_hub_publication = (bool) get_input('websub_hub_publication');
-		}
+		$entity->websub_hub_publication = (bool) get_input('websub_hub_publication');
 			
 		$entity->save();
 	}
