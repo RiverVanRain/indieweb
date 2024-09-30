@@ -259,6 +259,7 @@ class MicrosubController {
 			],
 			'limit' => 0,
 			'batch' => true,
+			'batch_size' => 50,
 			'batch_inc_offset' => false,
 		]);
 		
@@ -271,6 +272,7 @@ class MicrosubController {
 				'subtype' => MicrosubItem::SUBTYPE,
 				'limit' => false,
 				'batch' => true,
+				'batch_size' => 50,
 				'batch_inc_offset' => false,
 				'metadata_name_value_pairs' => [
 					[
@@ -495,6 +497,7 @@ class MicrosubController {
 				'subtype' => MicrosubItem::SUBTYPE,
 				'limit' => false,
 				'batch' => true,
+				'batch_size' => 50,
 				'batch_inc_offset' => false,
 				'metadata_name_value_pairs' => [
 					[
@@ -685,6 +688,7 @@ class MicrosubController {
 					],
 				],
 				'batch' => true,
+				'batch_size' => 50,
 				'batch_inc_offset' => false,
 			]);
 			
@@ -872,6 +876,7 @@ class MicrosubController {
 					'subtype' => MicrosubItem::SUBTYPE,
 					'limit' => false,
 					'batch' => true,
+					'batch_size' => 50,
 					'batch_inc_offset' => false,
 					'metadata_name_value_pairs' => [
 						[

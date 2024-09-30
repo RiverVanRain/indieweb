@@ -24,10 +24,7 @@ class Cron {
 		if (!(bool) elgg_get_plugin_setting('websub_send', 'indieweb')) {
 		   return;
 		}
-		
-		echo "Processes published websub starting" . PHP_EOL;
-		elgg_log("Processes published websub starting", 'NOTICE');
-		
+
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$pages = [];
@@ -51,6 +48,7 @@ class Cron {
                 ],
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false
             ]);
 			
@@ -88,9 +86,6 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished published websub processing" . PHP_EOL;
-		elgg_log("Finished published websub processing", 'NOTICE');
 	}
 	
 	public static function processSubscribe(\Elgg\Event $event) {
@@ -101,9 +96,6 @@ class Cron {
 		if (!(bool) elgg_get_plugin_setting('websub_resubscribe', 'indieweb')) {
 		   return;
 		}
-		
-		echo "Processes websub resubscribe to subscriptions starting" . PHP_EOL;
-		elgg_log("Processes websub resubscribe to subscriptions starting", 'NOTICE');
 		
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
@@ -122,6 +114,7 @@ class Cron {
                 ],
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false
             ]);
 			
@@ -142,9 +135,6 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished websub resubscribe to subscriptions processing" . PHP_EOL;
-		elgg_log("Finished websub resubscribe to subscriptions processing", 'NOTICE');
 	}
 	
 	public static function processNotifications(\Elgg\Event $event) {
@@ -156,9 +146,6 @@ class Cron {
 		   return;
 		}
 		
-		echo "Processes websub incoming notifications from hubs starting" . PHP_EOL;
-		elgg_log("Processes websub incoming notifications from hubs starting", 'NOTICE');
-		
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$notifications = elgg_get_entities([
@@ -166,6 +153,7 @@ class Cron {
                 'subtype' => WebSubNotification::SUBTYPE,
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false
             ]);
 			
@@ -190,8 +178,6 @@ class Cron {
 		// restore access
 		});
 		
-		echo "Finished websub incoming notifications from hubs processing" . PHP_EOL;
-		elgg_log("Finished websub incoming notifications from hubs processing", 'NOTICE');
 	}
 	
 	public static function cleanupWebSubPub(\Elgg\Event $event) {
@@ -202,9 +188,6 @@ class Cron {
 		if (!(bool) elgg_get_plugin_setting('websubpub_clean', 'indieweb')) {
 		   return;
 		}
-		
-		echo "Processes cleanup WebSubPub starting" . PHP_EOL;
-		elgg_log("Processes cleanup WebSubPub starting", 'NOTICE');
 		
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
@@ -219,6 +202,7 @@ class Cron {
                 ],
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false
             ]);
 			
@@ -232,19 +216,13 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished cleanup WebSubPub processing" . PHP_EOL;
-		elgg_log("Finished cleanup WebSubPub processing", 'NOTICE');
 	}
 	
 	public static function emptyWebSubPub(\Elgg\Event $event) {
 		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
 		   return;
 		}
-		
-		echo "Processes empty WebSubPub starting" . PHP_EOL;
-		elgg_log("Processes empty WebSubPub starting", 'NOTICE');
-		
+
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$websubpubs = elgg_get_entities([
@@ -259,6 +237,7 @@ class Cron {
 				],
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false
             ]);
 			
@@ -272,8 +251,5 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished empty WebSubPub processing" . PHP_EOL;
-		elgg_log("Finished empty WebSubPub processing", 'NOTICE');
 	}
 }

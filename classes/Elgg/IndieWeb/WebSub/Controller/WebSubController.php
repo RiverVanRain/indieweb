@@ -83,6 +83,7 @@ class WebSubController {
 							],
 							'limit' => false,
 							'batch' => true,
+							'batch_size' => 50,
 							'batch_inc_offset' => false
 						]);
 						
@@ -117,6 +118,7 @@ class WebSubController {
 							],
 							'limit' => false,
 							'batch' => true,
+							'batch_size' => 50,
 							'batch_inc_offset' => false
 						]);
 						

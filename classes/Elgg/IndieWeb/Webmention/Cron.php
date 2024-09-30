@@ -20,9 +20,6 @@ class Cron {
 			return;
 		}
 		
-		echo "Processes received webmentions starting" . PHP_EOL;
-		elgg_log("Processes received webmentions starting", 'NOTICE');
-		
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$xray = new XRay();
@@ -45,6 +42,7 @@ class Cron {
                 ],
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false
             ]);
 			
@@ -208,6 +206,7 @@ class Cron {
 										],
 										'limit' => false,
 										'batch' => true,
+										'batch_size' => 50,
 										'batch_inc_offset' => false
 									]);
 									
@@ -370,19 +369,13 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished received webmentions processing" . PHP_EOL;
-		elgg_log("Finished received webmentions processing", 'NOTICE');
 	}
 	
 	public static function emptySyndications(\Elgg\Event $event) {
 		if (!(bool) elgg_get_plugin_setting('enable_websub', 'indieweb')) {
 		   return;
 		}
-		
-		echo "Processes empty Syndications starting" . PHP_EOL;
-		elgg_log("Processes empty Syndications starting", 'NOTICE');
-		
+
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$syndications = elgg_get_entities([
@@ -390,6 +383,7 @@ class Cron {
                 'subtype' => Syndication::SUBTYPE,
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false
             ]);
 			
@@ -407,9 +401,6 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished empty Syndications processing" . PHP_EOL;
-		elgg_log("Finished empty Syndications processing", 'NOTICE');
 	}
 	
 	public static function emptyFailedWebmentions(\Elgg\Event $event) {
@@ -421,9 +412,6 @@ class Cron {
 			return;
 		}
 		
-		echo "Processes empty failed Webmentions starting" . PHP_EOL;
-		elgg_log("Processes empty failed Webmentions starting", 'NOTICE');
-		
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$webmentions = elgg_get_entities([
@@ -431,6 +419,7 @@ class Cron {
                 'subtype' => Webmention::SUBTYPE,
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false,
 				'metadata_name_value_pairs' => [
 					[
@@ -451,8 +440,5 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished empty failed Webmentions processing" . PHP_EOL;
-		elgg_log("Finished empty failed Webmentions processing", 'NOTICE');
 	}
 }

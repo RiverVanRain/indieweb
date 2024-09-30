@@ -6,9 +6,9 @@ class SettingsAction {
 
 	public function __invoke(\Elgg\Request $request) {
 
-		$params = $request->getParam('params');
-		$flush_cache = $request->getParam('flush_cache');
-		$plugin_id = $request->getParam('plugin_id');
+		$params = (array) $request->getParam('params');
+		$flush_cache = (bool) $request->getParam('flush_cache', false);
+		$plugin_id = (string) $request->getParam('plugin_id');
 		$plugin = elgg_get_plugin_from_id($plugin_id);
 		
 		if (!$plugin) {
