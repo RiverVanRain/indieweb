@@ -1087,7 +1087,7 @@ class MicropubController {
 
 			$title_str = $entity->getDisplayName();
 			if (!$title_str) {
-				$title_str = elgg_get_excerpt($entity->description, 80);
+				$title_str = elgg_get_excerpt((string) $entity->description, 80);
 			}
 			
 			$user = get_entity($owner_guid);
@@ -1103,7 +1103,7 @@ class MicropubController {
 			);
 
 			// prevent long subjects in mail
-			$title_str = elgg_get_excerpt($title_str, 80);
+			$title_str = elgg_get_excerpt((string) $title_str, 80);
 			$subject = elgg_echo('likes:notifications:subject', [
 					$user->getDisplayName(),
 					$title_str,
