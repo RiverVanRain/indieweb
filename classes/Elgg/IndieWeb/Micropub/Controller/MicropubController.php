@@ -1099,7 +1099,7 @@ class MicropubController {
 					$user->getDisplayName(),
 					$title_str,
 				],
-				$owner->language
+				$owner->getLanguage()
 			);
 
 			// prevent long subjects in mail
@@ -1108,7 +1108,7 @@ class MicropubController {
 					$user->getDisplayName(),
 					$title_str,
 				],
-				$owner->language
+				$owner->getLanguage()
 			);
 
 			$body = elgg_echo('likes:notifications:body', [
@@ -1118,7 +1118,7 @@ class MicropubController {
 					$entity->getURL(),
 					$user->getURL(),
 				],
-				$owner->language
+				$owner->getLanguage()
 			);
 
 			notify_user(
