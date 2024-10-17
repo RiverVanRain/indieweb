@@ -335,7 +335,7 @@ class Cron {
 							elgg_get_site_entity()->guid,
 							elgg_echo('webmention:notification:subject', [$container->getDisplayName()], $owner->getLanguage()),
 							elgg_echo('webmention:notification:body', [
-								elgg_get_excerpt($description, 200),
+								elgg_get_excerpt((string) $description, 200),
 								$view_post,
 							], $owner->getLanguage())
 						);

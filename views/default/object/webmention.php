@@ -30,7 +30,7 @@ $excerpt = (int) elgg_get_plugin_setting('webmention_excerpt', 'indieweb');
 
 if (!empty($description)) {
 	$body .= elgg_view('output/longtext', [
-		'value' => ($excerpt > 0) ? elgg_get_excerpt($description, $excerpt) : $description,
+		'value' => ($excerpt > 0) ? elgg_get_excerpt((string) $description, $excerpt) : $description,
 	]);
 }
 
