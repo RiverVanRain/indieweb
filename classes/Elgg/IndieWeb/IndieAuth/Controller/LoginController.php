@@ -9,8 +9,6 @@
 
 namespace Elgg\IndieWeb\IndieAuth\Controller;
 
-use GuzzleHttp\Client;
-
 class LoginController {
 	
 	public function __invoke(\Elgg\Request $request) {
@@ -28,7 +26,7 @@ class LoginController {
 			$domain = '';
 			
 			try {
-				$client = $this->http_client();
+				$client = elgg()->httpClient->setup();
 				$body = [
 					'code' => $request->getParam('code'),
 					'client_id' => elgg_get_site_url(),
@@ -216,18 +214,4 @@ class LoginController {
 		
 		return count($users) === 1 ? array_shift($users) : null;
 	}
-	
-	/**
-	* {@inheritdoc}
-	*/
-	public function http_client($options = []) {
-		$config = [
-			'verify' => true,
-			'timeout' => 30,
-		];
-		$config = $config + $options;
-		
-		return new Client($config);
-	}
-
 }

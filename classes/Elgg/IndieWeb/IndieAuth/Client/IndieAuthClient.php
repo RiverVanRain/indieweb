@@ -2,7 +2,6 @@
 
 namespace Elgg\IndieWeb\IndieAuth\Client;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer;
@@ -312,7 +311,7 @@ class IndieAuthClient {
 				'Accept' => 'application/json',
 				'Authorization' => $auth_header,
 			];
-			$response = $this->http_client()->get($token_endpoint, ['headers' => $headers]);
+			$response = elgg()->httpClient->setup()->get($token_endpoint, ['headers' => $headers]);
 			$json = json_decode($response->getBody());
 
 			// Compare me with current domain. We don't support multi-user authentication yet.
@@ -335,15 +334,5 @@ class IndieAuthClient {
 		}
 
 		return $valid_token;
-	}
-	
-	public function http_client($options = []) {
-		$config = [
-			'verify' => true,
-			'timeout' => 30,
-		];
-		$config = $config + $options;
-		
-		return new Client($config);
 	}
 }

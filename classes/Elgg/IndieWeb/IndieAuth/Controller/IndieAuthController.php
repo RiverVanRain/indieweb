@@ -9,7 +9,6 @@
 
 namespace Elgg\IndieWeb\IndieAuth\Controller;
 
-use GuzzleHttp\Client;
 use Elgg\IndieWeb\IndieAuth\Entity\IndieAuthAuthorizationCode;
 
 class IndieAuthController {
@@ -197,18 +196,4 @@ class IndieAuthController {
 		
 		return (0 === strcmp($code_challenge, $code_verifier));
 	}
-	
-	/**
-	* {@inheritdoc}
-	*/
-	public function http_client($options = []) {
-		$config = [
-			'verify' => true,
-			'timeout' => 30,
-		];
-		$config = $config + $options;
-		
-		return new Client($config);
-	}
-
 }

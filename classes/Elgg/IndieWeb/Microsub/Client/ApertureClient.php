@@ -47,7 +47,7 @@ class ApertureClient {
     public function sendMicropubRequest($api_key, $post) {
 		$auth = 'Bearer ' . $api_key;
 		
-		$client = elgg()->microsub->http_client();
+		$client = elgg()->httpClient->setup();
 		
 		$headers = [
 			'Accept' => 'application/json',

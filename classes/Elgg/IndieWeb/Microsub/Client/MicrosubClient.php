@@ -12,7 +12,6 @@ namespace Elgg\IndieWeb\Microsub\Client;
 use Elgg\Traits\Di\ServiceFacade;
 use Elgg\Database\QueryBuilder;
 use Elgg\Database\Clauses\OrderByClause;
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use p3k\XRay\Formats\HTML;
 use Psr\Http\Message\RequestInterface;
@@ -162,7 +161,7 @@ class MicrosubClient {
 							},
 						],
 					];
-					$response = $this->http_client($config)->send($request);
+					$response = elgg()->httpClient->setup($config)->send($request);
 					
 					if ($response->hasHeader('ETag')) {
 						$source->setMetadata('etag', $response->getHeaderLine('ETag'));
@@ -431,7 +430,7 @@ class MicrosubClient {
 				// Get content if parsed is not set
 				if (!isset($parsed)) {
 					$options = ['headers' => ['User-Agent' => indieweb_microsub_http_client_user_agent()]];
-					$response = $this->http_client()->get($url, $options);
+					$response = elgg()->httpClient->setup()->get($url, $options);
 					
 					$body = $response->getBody()->getContents();
 					$parsed = $xray->parse($url, $body);
@@ -503,7 +502,7 @@ class MicrosubClient {
 			];
 
 			try {
-				$this->http_client($config)->post('https://indigenous.realize.be/send-notification', ['form_params' => $post]);
+				elgg()->httpClient->setup($config)->post('https://indigenous.realize.be/send-notification', ['form_params' => $post]);
 			} catch (\Exception $e) {
 				elgg_log('Error sending push notification: ' . $e->getMessage(), 'ERROR');
 				return false;
@@ -598,7 +597,7 @@ class MicrosubClient {
 			$contentType = '';
 			if (!isset($body)) {
 				$options = ['headers' => ['User-Agent' => indieweb_microsub_http_client_user_agent()]];
-				$response = $this->http_client($options)->get($url, $options);
+				$response = elgg()->httpClient->setup($options)->get($url, $options);
 				
 				$body = $response->getBody()->getContents();
 				$contentType = $response->getHeader('Content-Type');
@@ -986,15 +985,4 @@ class MicrosubClient {
 
 		return array_map($normalize, $feeds);
 	}
-	
-	public function http_client($options = []) {
-		$config = [
-			'verify' => true,
-			'timeout' => 30,
-		];
-		$config = $config + $options;
-		
-		return new Client($config);
-	}
-
 }

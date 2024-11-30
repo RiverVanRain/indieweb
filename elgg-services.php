@@ -16,4 +16,5 @@ return [
 	'postcontext' => \DI\create(\Elgg\IndieWeb\PostContext\Client\PostContextClient::class),
 	'indieauth' => \DI\create(\Elgg\IndieWeb\IndieAuth\Client\IndieAuthClient::class),
 	'websub' => \DI\create(\Elgg\IndieWeb\WebSub\Client\WebSubClient::class),
+	'httpClient' => \DI\create(\Elgg\IndieWeb\Services\HttpClient::class),
 ];

@@ -13,7 +13,6 @@ use Elgg\Request;
 use Elgg\IndieWeb\Microsub\Entity\MicrosubChannel;
 use Elgg\IndieWeb\Microsub\Entity\MicrosubSource;
 use Elgg\IndieWeb\Microsub\Entity\MicrosubItem;
-use GuzzleHttp\Client;
 
 class MicrosubController {
 	/**
@@ -799,7 +798,7 @@ class MicrosubController {
 				$xray = new XRay();
 				
 				$options = ['headers' => ['User-Agent' => indieweb_microsub_http_client_user_agent()]];
-				$response = $this->http_client()->get($url, $options);
+				$response = elgg()->httpClient->setup()->get($url, $options);
 				$body = $response->getBody()->getContents();
 				
 				$parsed = $xray->parse($url, $body, ['expect' => 'feed']);
@@ -914,15 +913,5 @@ class MicrosubController {
 		}
 		
 		return elgg_ok_response('');
-	}
-	
-	public function http_client($options = []) {
-		$config = [
-			'verify' => true,
-			'timeout' => 30,
-		];
-		$config = $config + $options;
-		
-		return new Client($config);
 	}
 }

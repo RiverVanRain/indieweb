@@ -33,7 +33,7 @@
 		"pfefferle/openwebicons": "^1.6.3"
 	},
 	"autoload": {
-		"psr-0": {
+		"psr-4": {
 			"": "classes/"
 		}
 	},
