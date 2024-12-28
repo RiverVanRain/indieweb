@@ -327,7 +327,7 @@ $microsub_client = elgg()->microsub;
 $microsub_client->sendNotification($webmention, $parsed);
 
 /** \Elgg\IndieWeb\Cache\MediaCacher **/
-$image = elgg()->mediacacher->saveImageFromUrl($author_value);
+$image = elgg()->mediacacher->saveImageFromUrl($author_value, 'avatar');
 
 // Get the target guid
 $target_guid = indieweb_get_guid($target);
