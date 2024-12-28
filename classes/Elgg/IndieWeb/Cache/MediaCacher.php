@@ -143,11 +143,14 @@ class MediaCacher {
 	}
 
 	/**
-	 * Discover the core views if the system cache did not load
+	 * Save image
+	 *
+	 * @param string $url URL of the resource
+	 * @param string $folder Directory to save images (e.g. 'thumbs', 'avatar')
 	 *
 	 * @return void
 	 */
-	public function saveImageFromUrl($url) {
+	public function saveImageFromUrl($url, string $folder = 'thumbs') {
 		$mime = $this->getContentType($url);
 		switch ($mime) {
 			case 'image/jpeg' :
@@ -190,7 +193,7 @@ class MediaCacher {
 
 		$image = new \ElggFile();
 		$image->owner_guid = $site->guid;
-		$image->setFilename("media_cache/thumbs/$basename.jpg");
+		$image->setFilename("media_cache/$folder/$basename.jpg");
 
 		$image->natural_width = $imagesize[0];
 		$image->natural_height = $imagesize[1];
