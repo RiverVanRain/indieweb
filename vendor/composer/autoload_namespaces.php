@@ -10,5 +10,4 @@ return array(
     'PicoFeed' => array($vendorDir . '/p3k/picofeed/lib'),
     'IndieWeb' => array($vendorDir . '/indieweb/mention-client/src'),
     'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
-    '' => array($baseDir . '/classes'),
 );

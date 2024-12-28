@@ -14,7 +14,8 @@
 	"config": {
         "fxp-asset": {
             "enabled": false
-        }
+        },
+		"optimize-autoloader": true
     },
 	"require": {
 		"php": "^8.3",
@@ -25,12 +26,13 @@
 		"p3k/micropub": "^0.0.3",
 		"rivervanrain/websub": "dev-elgg",
 		"indieauth/client": "^1.1",
-		"lcobucci/jwt": "4.0.*",
+		"lcobucci/jwt": "4.3.0",
 		"symfony/dom-crawler": "^5.4",
-		"pfefferle/openwebicons": "^1.6.3"
+		"pfefferle/openwebicons": "^1.6.3",
+		"paragonie/sodium_compat": "^2.1"
 	},
 	"autoload": {
-		"psr-0": {
+		"psr-4": {
 			"": "classes/"
 		}
 	},

@@ -25,4 +25,5 @@ return array(
     '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
     '7cfc14352f9ec19b570c834b9432e17b' => $vendorDir . '/p3k/xray/lib/helpers.php',
     'e21c794fce41555f3f3cce0c7b13e48e' => $vendorDir . '/p3k/xray/lib/XRay.php',
+    '3109cb1a231dcd04bee1f9f620d46975' => $vendorDir . '/paragonie/sodium_compat/autoload.php',
 );
