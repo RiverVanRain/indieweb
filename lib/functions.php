@@ -98,7 +98,7 @@ function indieweb_get_syndication_targets($return_all_config = false): array {
 						$syndication_targets['options'][$explode[1]] = $explode[0];
 
 						// Selected by default on the form.
-						if (isset($explode[2]) && !empty($explode[2]) && $explode[2] == '1') {
+						if (!empty($explode[2]) && $explode[2] === '1') {
 							$syndication_targets['default'][] = $explode[1];
 						}
 					} else {
