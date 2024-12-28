@@ -7,14 +7,12 @@
  * @link https://wzm.me
 **/
 
-$offset = (int) get_input('offset');
-
 $options = [
 	'type' => 'object',
 	'subtype' => \Elgg\IndieWeb\Webmention\Entity\Syndication::SUBTYPE,
 	'count' => true,
-	'offset' => $offset,
-	'limit' => elgg_get_config('default_limit'),
+	'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
+	'offset' => (int) max(get_input('offset', 0), 0),
 ];
 
 $count = elgg_get_entities($options);
@@ -22,9 +20,9 @@ $count = elgg_get_entities($options);
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
 		'base_url' => elgg_normalize_url('admin/indieweb/webmention/syndications'),
-		'offset' => $offset,
 		'count' => $count,
-		'limit' => elgg_get_config('default_limit'),
+		'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
+		'offset' => (int) max(get_input('offset', 0), 0),
 	]);
 	
 	$rows = [];
