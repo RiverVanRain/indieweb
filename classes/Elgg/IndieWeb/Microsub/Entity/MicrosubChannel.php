@@ -73,6 +73,7 @@ class MicrosubChannel extends \ElggObject {
 			'container_guid' => $this->guid,
 			'limit' => false,
 			'batch' => true,
+			'batch_size' => 50,
 			'batch_inc_offset' => false,
 			'count' => $count,
 		];
@@ -89,6 +90,7 @@ class MicrosubChannel extends \ElggObject {
 			'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubItem::SUBTYPE,
 			'limit' => false,
 			'batch' => true,
+			'batch_size' => 50,
 			'batch_inc_offset' => false,
 			'metadata_name_value_pairs' => [
 				[
@@ -121,6 +123,7 @@ class MicrosubChannel extends \ElggObject {
 			'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubItem::SUBTYPE,
 			'limit' => false,
 			'batch' => true,
+			'batch_size' => 50,
 			'batch_inc_offset' => false,
 			'metadata_name_value_pairs' => [
 				[

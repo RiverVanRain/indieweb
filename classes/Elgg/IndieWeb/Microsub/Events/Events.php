@@ -52,6 +52,7 @@ final class Events {
 				},
 				'limit' => 0,
 				'batch' => true,
+				'batch_size' => 50,
 				'batch_inc_offset' => false,
 			]);
 
@@ -80,6 +81,7 @@ final class Events {
 				},
 				'limit' => 0,
 				'batch' => true,
+				'batch_size' => 50,
 				'batch_inc_offset' => false,
 			]);
 

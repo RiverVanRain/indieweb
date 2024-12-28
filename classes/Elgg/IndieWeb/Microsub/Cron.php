@@ -19,9 +19,6 @@ class Cron {
 			return;
 		}
 		
-		echo "Processes Feed Update starting" . PHP_EOL;
-		elgg_log("Processes Feed Update starting", 'NOTICE');
-		
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$sources = elgg_get_entities([
@@ -29,6 +26,7 @@ class Cron {
                 'subtype' => MicrosubSource::SUBTYPE,
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false,
 				'metadata_name_value_pairs' => [
 					[
@@ -52,9 +50,6 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished Feed Update processing" . PHP_EOL;
-		elgg_log("Finished Feed Update processing", 'NOTICE');
 	}
 	
 	//30 min
@@ -63,9 +58,6 @@ class Cron {
 			return;
 		}
 		
-		echo "Processes Feed Update starting" . PHP_EOL;
-		elgg_log("Processes Feed Update starting", 'NOTICE');
-		
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$sources = elgg_get_entities([
@@ -73,6 +65,7 @@ class Cron {
                 'subtype' => MicrosubSource::SUBTYPE,
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false,
 				'metadata_name_value_pairs' => [
 					[
@@ -96,9 +89,6 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished Feed Update processing" . PHP_EOL;
-		elgg_log("Finished Feed Update processing", 'NOTICE');
 	}
 	
 	//1 hour
@@ -106,10 +96,7 @@ class Cron {
 		if (!(bool) elgg_get_plugin_setting('enable_microsub', 'indieweb')) {
 			return;
 		}
-		
-		echo "Processes Feed Update starting" . PHP_EOL;
-		elgg_log("Processes Feed Update starting", 'NOTICE');
-		
+
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$sources = elgg_get_entities([
@@ -117,6 +104,7 @@ class Cron {
                 'subtype' => MicrosubSource::SUBTYPE,
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false,
 				'metadata_name_value_pairs' => [
 					[
@@ -140,9 +128,6 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished Feed Update processing" . PHP_EOL;
-		elgg_log("Finished Feed Update processing", 'NOTICE');
 	}
 	
 	//1 day
@@ -150,10 +135,7 @@ class Cron {
 		if (!(bool) elgg_get_plugin_setting('enable_microsub', 'indieweb')) {
 			return;
 		}
-		
-		echo "Processes Feed Update starting" . PHP_EOL;
-		elgg_log("Processes Feed Update starting", 'NOTICE');
-		
+
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$sources = elgg_get_entities([
@@ -161,6 +143,7 @@ class Cron {
                 'subtype' => MicrosubSource::SUBTYPE,
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false,
 				'metadata_name_value_pairs' => [
 					[
@@ -184,9 +167,6 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished Feed Update processing" . PHP_EOL;
-		elgg_log("Finished Feed Update processing", 'NOTICE');
 	}
 	
 	//1 week
@@ -194,10 +174,7 @@ class Cron {
 		if (!(bool) elgg_get_plugin_setting('enable_microsub', 'indieweb')) {
 			return;
 		}
-		
-		echo "Processes Feed Update starting" . PHP_EOL;
-		elgg_log("Processes Feed Update starting", 'NOTICE');
-		
+
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$sources = elgg_get_entities([
@@ -205,6 +182,7 @@ class Cron {
                 'subtype' => MicrosubSource::SUBTYPE,
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false,
 				'metadata_name_value_pairs' => [
 					[
@@ -228,9 +206,6 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished Feed Update processing" . PHP_EOL;
-		elgg_log("Finished Feed Update processing", 'NOTICE');
 	}
 	
 	//1 month
@@ -238,10 +213,7 @@ class Cron {
 		if (!(bool) elgg_get_plugin_setting('enable_microsub', 'indieweb')) {
 			return;
 		}
-		
-		echo "Processes Feed Update starting" . PHP_EOL;
-		elgg_log("Processes Feed Update starting", 'NOTICE');
-		
+
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$sources = elgg_get_entities([
@@ -249,6 +221,7 @@ class Cron {
                 'subtype' => MicrosubSource::SUBTYPE,
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false,
 				'metadata_name_value_pairs' => [
 					[
@@ -272,8 +245,5 @@ class Cron {
 
 		// restore access
 		});
-		
-		echo "Finished Feed Update processing" . PHP_EOL;
-		elgg_log("Finished Feed Update processing", 'NOTICE');
 	}
 }

@@ -14,10 +14,6 @@ use Elgg\IndieWeb\IndieAuth\Entity\IndieAuthAuthorizationCode;
 class Cron {
 	
 	public static function processCodes(\Elgg\Event $event) {
-		
-		echo "Processes expired authorization codes starting" . PHP_EOL;
-		elgg_log("Processes expired authorization codes starting", 'NOTICE');
-		
 		// ignore access
 		elgg_call(ELGG_IGNORE_ACCESS, function() {
 			$auth_codes = elgg_get_entities([
@@ -32,6 +28,7 @@ class Cron {
                 ],
                 'limit' => false,
                 'batch' => true,
+				'batch_size' => 50,
                 'batch_inc_offset' => false
             ]);
 			
@@ -45,8 +42,5 @@ class Cron {
 			
 		// restore access
 		});
-		
-		echo "Finished expired authorization codes processing" . PHP_EOL;
-		elgg_log("Finished expired authorization codes processing", 'NOTICE');
 	}
 }
