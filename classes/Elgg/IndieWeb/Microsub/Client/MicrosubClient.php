@@ -290,7 +290,7 @@ class MicrosubClient {
 
 				$source->save();
 		    } catch (\Exception $e) {
-				elgg_log('Error fetching new items for ' . $url  . ' : ' . $e->getMessage(), 'ERROR');
+				elgg_log('Error fetching new items for ' . $url  . ' : ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 				return false;
 			}
 		}
@@ -460,7 +460,7 @@ class MicrosubClient {
 				}
 			}
 			catch (\Exception $e) {
-				elgg_log('Error saving notification for ' . $url  . ' : ' . $e->getMessage(), 'ERROR');
+				elgg_log('Error saving notification for ' . $url  . ' : ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 				return false;
 			}
 		}
@@ -505,7 +505,7 @@ class MicrosubClient {
 			try {
 				elgg()->httpClient->setup($config)->post('https://indigenous.realize.be/send-notification', ['form_params' => $post]);
 			} catch (\Exception $e) {
-				elgg_log('Error sending push notification: ' . $e->getMessage(), 'ERROR');
+				elgg_log('Error sending push notification: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 				return false;
 			}
 		}
@@ -695,7 +695,7 @@ class MicrosubClient {
 			$return['feeds'] = $feeds;
 		}
 		catch (\Exception $e) {
-			elgg_log('Error fetching feeds for ' . $url . ': ' . $e->getMessage(), 'ERROR');
+			elgg_log('Error fetching feeds for ' . $url . ': ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 			return false;
 		}
 

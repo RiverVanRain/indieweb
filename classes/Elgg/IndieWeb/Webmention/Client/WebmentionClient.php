@@ -115,7 +115,7 @@ class WebmentionClient {
 			}
 				
 			catch (Exception $e) {
-				elgg_log(elgg_echo('webmention:create_comment:error', [$e->getMessage()]), 'error');
+				elgg_log(elgg_echo('webmention:create_comment:error', [$e->getMessage()]), \Psr\Log\LogLevel::ERROR);
 				return false;
 			}
 		}

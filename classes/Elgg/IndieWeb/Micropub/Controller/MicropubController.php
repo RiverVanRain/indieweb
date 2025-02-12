@@ -269,7 +269,7 @@ class MicropubController {
 			}
 		} else {
 			$description = $micropub_request->error_description ?: 'Unknown error';
-			elgg_log('Error parsing incoming request: ' . $description . ' - ' . print_r($input, true), 'error');
+			elgg_log('Error parsing incoming request: ' . $description . ' - ' . print_r($input, true), \Psr\Log\LogLevel::ERROR);
 			throw new BadRequestException();
 		}
 
@@ -302,7 +302,7 @@ class MicropubController {
 					}
 				}
 			} catch (\Exception $e) {
-				elgg_log('Error in deleting post: ' . $e->getMessage(), 'error');
+				elgg_log('Error in deleting post: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 			}
 
 			return elgg_ok_response($response_message, '', REFERRER, $response_code);
@@ -385,7 +385,7 @@ class MicropubController {
 					}
 				}
 			} catch (\Exception $e) {
-				elgg_log('Error in updating object: ' . $e->getMessage(), 'error');
+				elgg_log('Error in updating object: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 			}
 
 			return elgg_ok_response($response_message, '', REFERRER, $response_code);
@@ -411,7 +411,7 @@ class MicropubController {
 
 			// Log payload.
 			if ((bool) elgg_get_plugin_setting('micropub_log_payload', 'indieweb')) {
-				elgg_log('New entity - type:' . $this->object_type . ', input: ' . print_r($this->input, true), 'NOTICE');
+				elgg_log('New entity - type:' . $this->object_type . ', input: ' . print_r($this->input, true), \Psr\Log\LogLevel::NOTICE);
 			}
 
 			// Check if we have a location or checkin property in the payload.
@@ -660,7 +660,7 @@ class MicropubController {
 								});
 						}
 					} catch (\Exception $e) {
-						elgg_log('Error trying to create a comment from reply: ' . $e->getMessage(), 'error');
+						elgg_log('Error trying to create a comment from reply: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 					}
 				} else {
 					// We got here, so it's a standard post
@@ -947,7 +947,7 @@ class MicropubController {
 			}
 			
 			if (!$entity->save()) {
-				elgg_log('Error creating entity from post', 'ERROR');
+				elgg_log('Error creating entity from post', \Psr\Log\LogLevel::ERROR);
 				return elgg_error_response('Error creating entity from post', REFERRER, 403);
 			}
 
@@ -1065,7 +1065,7 @@ class MicropubController {
 			}
 			
 			if (!$entity->canAnnotate($owner_guid, 'likes')) {
-				elgg_log('Error creating annotation from likes', 'ERROR');
+				elgg_log('Error creating annotation from likes', \Psr\Log\LogLevel::ERROR);
 				return elgg_error_response('Error creating annotation from likes', REFERRER, 403);
 			}
 			
@@ -1073,7 +1073,7 @@ class MicropubController {
 
 			// tell user annotation didn't work if that is the case
 			if (!$annotation_id) {
-				elgg_log(elgg_echo('likes:failure'), 'ERROR');
+				elgg_log(elgg_echo('likes:failure'), \Psr\Log\LogLevel::ERROR);
 				return elgg_error_response(elgg_echo('likes:failure'), REFERRER, 403);
 			}
 			
@@ -1309,7 +1309,7 @@ class MicropubController {
 			try {
 				$entity->setLatLong($this->location['lat'], $this->location['lon']);
 			} catch (\Exception $e) {
-				elgg_log('Error saving geo location: ' . $e->getMessage(), 'error');
+				elgg_log('Error saving geo location: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 			}
 		}
 	}
@@ -1366,7 +1366,7 @@ class MicropubController {
 					$webmention->status = 0;
 					$webmention->save();
 							
-					elgg_log(elgg_echo('webmention:send:success', [$webmention->guid]), 'NOTICE');
+					elgg_log(elgg_echo('webmention:send:success', [$webmention->guid]), \Psr\Log\LogLevel::NOTICE);
 				});
 			}
 		}
@@ -1388,7 +1388,7 @@ class MicropubController {
 				$websubpub->save();
 				
 				if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
-					elgg_log(elgg_echo('websub:send:success', [$websubpub->guid]), 'NOTICE');
+					elgg_log(elgg_echo('websub:send:success', [$websubpub->guid]), \Psr\Log\LogLevel::NOTICE);
 				}
 			});
 		}
@@ -1441,7 +1441,7 @@ class MicropubController {
 					$webmention->status = 0;
 					$webmention->save();
 							
-					elgg_log(elgg_echo('webmention:send:success', [$webmention->guid]), 'NOTICE');
+					elgg_log(elgg_echo('webmention:send:success', [$webmention->guid]), \Psr\Log\LogLevel::NOTICE);
 				});
 			}
 		}
@@ -1583,14 +1583,14 @@ class MicropubController {
 								$properties['post-status'] = [$entity->published_status ?: $entity->status];
 							}
 						} catch (\Exception $e) {
-							elgg_log('Error parsing node for source: ' . $e->getMessage(), 'NOTICE');
+							elgg_log('Error parsing node for source: ' . $e->getMessage(), \Psr\Log\LogLevel::NOTICE);
 						}
 						
 						$return = ['properties' => $properties];
 					}
 				}
 			} catch (\Exception $e) {
-				elgg_log('Error in getting url post: ' . $e->getMessage(), 'NOTICE');
+				elgg_log('Error in getting url post: ' . $e->getMessage(), \Psr\Log\LogLevel::NOTICE);
 			}
 		} else {
 			// List of posts.

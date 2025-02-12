@@ -462,7 +462,7 @@ class MentionClient {
 	*/
 	private static function _debug($msg) {
 		if (self::$_debugEnabled) {
-			elgg_log($msg, 'ERROR');
+			elgg_log($msg, \Psr\Log\LogLevel::ERROR);
 		}
     }
 

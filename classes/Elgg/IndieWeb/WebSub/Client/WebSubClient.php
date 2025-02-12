@@ -53,10 +53,10 @@ class WebSubClient {
 			$response = $client->post($hub, $options);
 
 			if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
-				elgg_log('Subscribe response for ' . $url . ', ' . $hub . ', ' . $mode . ' - code: ' . $response->getStatusCode() . ' - ' . print_r($response->getBody()->getContents(), true), 'NOTICE');
+				elgg_log('Subscribe response for ' . $url . ', ' . $hub . ', ' . $mode . ' - code: ' . $response->getStatusCode() . ' - ' . print_r($response->getBody()->getContents(), true), \Psr\Log\LogLevel::NOTICE);
 			}
 		} catch (\Exception $e) {
-			elgg_log('Error sending subscribe request: ' . $e->getMessage(), 'ERROR');
+			elgg_log('Error sending subscribe request: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 		}
 
 		return true;
@@ -73,7 +73,7 @@ class WebSubClient {
 			
 			if (!empty($response['hub']) && !empty($response['self'])) {
 				if ($debug) {
-					elgg_log(print_r($response), 'NOTICE');
+					elgg_log(print_r($response), \Psr\Log\LogLevel::NOTICE);
 				}
 				
 				return [
@@ -82,7 +82,7 @@ class WebSubClient {
 				];
 			}
 		} catch (\Exception $e) {
-			elgg_log('Error discovering hub: ' . $e->getMessage(), 'ERROR');
+			elgg_log('Error discovering hub: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 		}
 
 		return false;
@@ -113,7 +113,7 @@ class WebSubClient {
 			$entity->content = $content;
 
 			if (!$entity->save()) {
-				elgg_log(elgg_echo('indieweb:websub:create:notification:item', [$url]), 'error');
+				elgg_log(elgg_echo('indieweb:websub:create:notification:item', [$url]), \Psr\Log\LogLevel::ERROR);
 			}
 		});
 	}

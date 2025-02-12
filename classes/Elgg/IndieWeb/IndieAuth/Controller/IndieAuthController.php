@@ -53,7 +53,7 @@ class IndieAuthController {
 			self::validateAuthenticationRequestParameters($request, $reason, $valid_request, $params);
 			
 			if (!$valid_request) {
-				elgg_log('IndieAuth controller: Missing or invalid parameters to authentication request: ' . $reason, 'ERROR');
+				elgg_log('IndieAuth controller: Missing or invalid parameters to authentication request: ' . $reason, \Psr\Log\LogLevel::ERROR);
 				return elgg_error_response('Missing or invalid parameters', REFERRER, 400);
 			}
 
@@ -75,12 +75,12 @@ class IndieAuthController {
 			});
 		
 			if (!$authorization_code instanceof IndieAuthAuthorizationCode) {
-				elgg_log('IndieAuth controller: No authorization code found for '. $params['code'], 'ERROR');
+				elgg_log('IndieAuth controller: No authorization code found for '. $params['code'], \Psr\Log\LogLevel::ERROR);
 				return elgg_error_response('Authorization code not found', REFERRER, 404);
 			}
 
 			if (!$authorization_code->isValid()) {
-				elgg_log('IndieAuth controller: Authorization expired for '. $params['code'], 'ERROR');
+				elgg_log('IndieAuth controller: Authorization expired for '. $params['code'], \Psr\Log\LogLevel::ERROR);
 				return elgg_error_response('Authorization code expired', REFERRER, 403);
 			}
 
@@ -96,7 +96,7 @@ class IndieAuthController {
 			}
 
 			if (!$valid_request) {
-				elgg_log('IndieAuth controller: Stored values do not match with request values: '. $stored_data . ' - ' . print_r($params, true), 'ERROR');
+				elgg_log('IndieAuth controller: Stored values do not match with request values: '. $stored_data . ' - ' . print_r($params, true), \Psr\Log\LogLevel::ERROR);
 				return elgg_error_response('Session and request values do not match', REFERRER, 400);
 			}
 

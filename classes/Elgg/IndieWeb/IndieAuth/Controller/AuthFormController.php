@@ -82,7 +82,7 @@ class AuthFormController {
 				], $shell));
 			}
 
-			elgg_log('Missing or invalid parameters to authorize as anonymous: '. $reason, 'ERROR');
+			elgg_log('Missing or invalid parameters to authorize as anonymous: '. $reason, \Psr\Log\LogLevel::ERROR);
 			return elgg_error_response(elgg_echo('indieweb:indieauth:auth:invalid'));
 		} else if (!isset($_SESSION['indieauth'])) {
 			// Authenticated user: Store in session in case the indieauth key does not exist yet.
@@ -149,7 +149,7 @@ class AuthFormController {
 		if (!$valid_request) {
 			unset($_SESSION['indieauth']);
 			
-			elgg_log('Missing or invalid parameters to authorize as user: '. $reason, 'ERROR');
+			elgg_log('Missing or invalid parameters to authorize as user: '. $reason, \Psr\Log\LogLevel::ERROR);
 			return elgg_error_response(elgg_echo('indieweb:indieauth:auth:invalid'));
 		}
 

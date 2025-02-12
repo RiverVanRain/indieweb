@@ -78,7 +78,7 @@ class Cron {
 				$response = $client->post($hub_endpoint, $options);
 				
 				if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
-					elgg_log('Publish response for ' . $entity->guid . ' : ' . $response->getStatusCode() . ' - ' . print_r($response->getBody()->getContents(), true), 'NOTICE');
+					elgg_log('Publish response for ' . $entity->guid . ' : ' . $response->getStatusCode() . ' - ' . print_r($response->getBody()->getContents(), true), \Psr\Log\LogLevel::NOTICE);
 				}
 				
 				$websubpub->setMetadata('published', 1);

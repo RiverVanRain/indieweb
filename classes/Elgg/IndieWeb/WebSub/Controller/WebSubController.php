@@ -54,7 +54,7 @@ class WebSubController {
 			
 			// Log payload
 			if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
-				elgg_log('Notification callback:' . print_r($request->getHttpRequest()->headers->all(), true) . ' - ' . print_r($request->getHttpRequest()->getContent(), true), 'NOTICE');
+				elgg_log('Notification callback:' . print_r($request->getHttpRequest()->headers->all(), true) . ' - ' . print_r($request->getHttpRequest()->getContent(), true), \Psr\Log\LogLevel::NOTICE);
 			}
 		}
 		
@@ -140,7 +140,7 @@ class WebSubController {
 			}
 			
 			if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
-				elgg_log('Subscribe callback: ' . print_r($request->getHttpRequest()->headers->all(), true) . ' - ' . print_r($request->getHttpRequest()->query->all(), true), 'NOTICE');
+				elgg_log('Subscribe callback: ' . print_r($request->getHttpRequest()->headers->all(), true) . ' - ' . print_r($request->getHttpRequest()->query->all(), true), \Psr\Log\LogLevel::NOTICE);
 			}
 		}
 

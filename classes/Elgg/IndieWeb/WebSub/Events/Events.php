@@ -64,7 +64,7 @@ class Events {
 			$websubpub->save();
 			
 			if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
-				elgg_log(elgg_echo('websub:send:success', [$websubpub->guid]), 'NOTICE');
+				elgg_log(elgg_echo('websub:send:success', [$websubpub->guid]), \Psr\Log\LogLevel::NOTICE);
 			}
 		});
 	}

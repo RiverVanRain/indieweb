@@ -29,7 +29,7 @@ try {
 	$xray = new XRay();
     $data = $xray->parse($path, $body, ['expect' => 'feed']);
 } catch (\Exception $e) {
-    elgg_log('Error generating JF2 feed: ' . $e->getMessage(), 'NOTICE');
+    elgg_log('Error generating JF2 feed: ' . $e->getMessage(), \Psr\Log\LogLevel::NOTICE);
 }
 
 echo json_encode($data['data'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

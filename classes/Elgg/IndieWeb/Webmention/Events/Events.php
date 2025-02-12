@@ -58,7 +58,7 @@ class Events {
 			$client->enableDebug();
 		}
 		
-		elgg_log('Sending mentions', 'NOTICE');
+		elgg_log('Sending mentions', \Psr\Log\LogLevel::NOTICE);
 		
 		$targets = unserialize($entity->syndication_targets);
 		
@@ -102,7 +102,7 @@ class Events {
 			$webmention->status = 0;
 			$webmention->save();
 					
-			elgg_log(elgg_echo('webmention:send:success', [$webmention->guid]), 'NOTICE');
+			elgg_log(elgg_echo('webmention:send:success', [$webmention->guid]), \Psr\Log\LogLevel::NOTICE);
 		});
 	}
 	

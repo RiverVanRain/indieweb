@@ -812,7 +812,7 @@ class MicrosubController {
 					$response_code = 200;
 				}
 			} catch (\Exception $e) {
-				elgg_log('Error fetching preview for ' . $url  . ' : ' . $e->getMessage(), 'ERROR');
+				elgg_log('Error fetching preview for ' . $url  . ' : ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 				return false;
 			}
 		}

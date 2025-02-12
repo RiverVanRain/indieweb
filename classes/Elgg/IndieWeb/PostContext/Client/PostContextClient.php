@@ -80,7 +80,7 @@ class PostContextClient {
 					}
 				}
 			} catch (\Exception $e) {
-				elgg_log('Error getting post context for ' . $url  . ' : ' . $e->getMessage(), 'ERROR');
+				elgg_log('Error getting post context for ' . $url  . ' : ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 				return false;
 			}
 			

@@ -40,7 +40,7 @@ class AuthorizeAction {
 			if (!$authorization_code->save()) {
 				$authorization_code->delete();
 				
-				elgg_log('Authorization Code creation failed', 'ERROR');
+				elgg_log('Authorization Code creation failed', \Psr\Log\LogLevel::ERROR);
 				return elgg_error_response(elgg_echo('indieweb:indieauth:authorize:fail'));
 			}
 		});

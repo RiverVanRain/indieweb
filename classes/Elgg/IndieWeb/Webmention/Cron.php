@@ -354,7 +354,7 @@ class Cron {
 					if ((bool) elgg_get_plugin_setting('webmention_enable_debug', 'indieweb')) {
 						$message = isset($parsed['error_description']) ? $parsed['error_description'] : 'Unknown parsing error';
 						
-						elgg_log($message . ' - Error processing webmention GUID: ' . $webmention->guid, 'error');
+						elgg_log($message . ' - Error processing webmention GUID: ' . $webmention->guid, \Psr\Log\LogLevel::ERROR);
 					}
 				}
 			}

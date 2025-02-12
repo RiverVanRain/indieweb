@@ -61,12 +61,12 @@ class ApertureClient {
 			$status_code = $response->getStatusCode();
 			$headersLocation = $response->getHeader('Location');
 			if (empty($headersLocation[0]) || $status_code != 201) {
-				elgg_log('Error sending micropub request: ' . $status_code, 'ERROR');
+				elgg_log('Error sending micropub request: ' . $status_code, \Psr\Log\LogLevel::ERROR);
 				return false;
 			}
 		}
 		catch (\Exception $e) {
-			elgg_log('Error sending micropub request: ' . $e->getMessage(), 'ERROR');
+			elgg_log('Error sending micropub request: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 			return false;
 		}
 	}

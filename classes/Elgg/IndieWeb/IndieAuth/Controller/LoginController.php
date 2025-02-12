@@ -50,7 +50,7 @@ class LoginController {
 					$valid_code = true;
 				}
 			} catch (\Exception $e) {
-				elgg_log('Error validating the code: ' . $e->getMessage(), 'ERROR');
+				elgg_log('Error validating the code: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 			}
 
 			// We have a valid token
@@ -154,7 +154,7 @@ class LoginController {
 						elgg_register_error_message($message);
 					}
 				} catch (\Exception $e) {
-					elgg_log('Error on login: ' . $e->getMessage(), 'ERROR');
+					elgg_log('Error on login: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 					$message = 'Unknown user, please try again. : ' . $e->getMessage();
 					elgg_register_error_message($message);
 				}

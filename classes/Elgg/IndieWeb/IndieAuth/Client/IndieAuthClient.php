@@ -116,7 +116,7 @@ class IndieAuthClient {
 				$access_token = $JWT->headers()->get('jti');
 			}
 		} catch (\Exception $e) {
-			elgg_log('Error revoking token: ' . $e->getMessage(), 'ERROR');
+			elgg_log('Error revoking token: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 		}
 		
 		$indieAuthToken = elgg_call(ELGG_IGNORE_ACCESS, function () use ($access_token) {
@@ -192,7 +192,7 @@ class IndieAuthClient {
 
 			$return = $paths;
 		} catch (\Exception $e) {
-			elgg_log('Error generating keys: '. $e->getMessage(), 'ERROR');
+			elgg_log('Error generating keys: '. $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 		}
 
 		return $return;
@@ -247,12 +247,12 @@ class IndieAuthClient {
 				$access_token = $JWT->headers()->get('jti');
 			}
 		} catch (\Exception $e) {
-			elgg_log('Error verifying token: ' . $e->getMessage(), 'ERROR');
+			elgg_log('Error verifying token: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 		}
 		
 		// Return early already, no need to verify further.
 		if (!$access_token) {
-			elgg_log('No access_token', 'error');
+			elgg_log('No access_token', \Psr\Log\LogLevel::ERROR);
 			return false;
 		}
 		
@@ -279,7 +279,7 @@ class IndieAuthClient {
 				
 				if (empty($scopes) || !in_array($scope_to_check, $scopes)) {
 					$valid_token = false;
-					elgg_log("Scope {$scope_to_check} insufficient", 'ERROR');
+					elgg_log("Scope {$scope_to_check} insufficient", \Psr\Log\LogLevel::ERROR);
 				}
 			}
 
@@ -325,12 +325,12 @@ class IndieAuthClient {
 					
 					if (empty($scopes) || !in_array($scope_to_check, $scopes)) {
 						$valid_token = false;
-						elgg_log("Scope {$scope_to_check} insufficient", 'ERROR');
+						elgg_log("Scope {$scope_to_check} insufficient", \Psr\Log\LogLevel::ERROR);
 					}
 				}
 			}
 		} catch (GuzzleException $e) {
-			elgg_log('Error validating the access token: ' . $e->getMessage(), 'ERROR');
+			elgg_log('Error validating the access token: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
 		}
 
 		return $valid_token;

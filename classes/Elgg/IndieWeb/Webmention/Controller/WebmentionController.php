@@ -47,7 +47,7 @@ class WebmentionController {
 			throw new BadRequestException(elgg_echo('webmention:target:url:error'));
 		}
 		
-		elgg_log('Accepting mentions', 'NOTICE');
+		elgg_log('Accepting mentions', \Psr\Log\LogLevel::NOTICE);
 		
 		// We validate the request and store it as a webmention which we'll handle later in cron.
 		if (($source != $target) && (parse_url($source, PHP_URL_HOST) != parse_url($target, PHP_URL_HOST))) {
@@ -65,7 +65,7 @@ class WebmentionController {
 					$webmention->status = 0;
 					$webmention->save();
 					
-					elgg_log(elgg_echo('webmention:recieved:success', [$webmention->guid]), 'NOTICE');
+					elgg_log(elgg_echo('webmention:recieved:success', [$webmention->guid]), \Psr\Log\LogLevel::NOTICE);
 				});
 				
 				$response_code = 202;
@@ -93,7 +93,7 @@ class WebmentionController {
 				if (strlen($trim) > 0) {
 					if (strpos($source, $domain) !== false) {
 						$blocked = true;
-						elgg_log(elgg_echo('webmention:blocked:domain', [$source]), 'error');
+						elgg_log(elgg_echo('webmention:blocked:domain', [$source]), \Psr\Log\LogLevel::ERROR);
 						break;
 					}
 				}
