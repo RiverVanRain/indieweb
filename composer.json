@@ -43,7 +43,7 @@
         }
     ],
 	"conflict": {
-		"elgg/elgg": "<6.0"
+		"elgg/elgg": "<6.1"
 	},
 	"support": {
 		"source": "https://github.com/RiverVanRain/indieweb"
