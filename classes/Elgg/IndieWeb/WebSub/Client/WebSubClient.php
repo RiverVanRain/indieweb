@@ -53,7 +53,7 @@ class WebSubClient {
 			$response = $client->post($hub, $options);
 
 			if ((bool) elgg_get_plugin_setting('websub_log_payload', 'indieweb')) {
-				elgg_log('Subscribe response for ' . $url . ', ' . $hub . ', ' . $mode . ' - code: ' . $response->getStatusCode() . ' - ' . print_r($response->getBody()->getContents(), 1), 'NOTICE');
+				elgg_log('Subscribe response for ' . $url . ', ' . $hub . ', ' . $mode . ' - code: ' . $response->getStatusCode() . ' - ' . print_r($response->getBody()->getContents(), true), 'NOTICE');
 			}
 		} catch (\Exception $e) {
 			elgg_log('Error sending subscribe request: ' . $e->getMessage(), 'ERROR');

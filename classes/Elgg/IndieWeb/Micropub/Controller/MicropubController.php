@@ -269,7 +269,7 @@ class MicropubController {
 			}
 		} else {
 			$description = $micropub_request->error_description ?: 'Unknown error';
-			elgg_log('Error parsing incoming request: ' . $description . ' - ' . print_r($input, 1), 'error');
+			elgg_log('Error parsing incoming request: ' . $description . ' - ' . print_r($input, true), 'error');
 			throw new BadRequestException();
 		}
 
@@ -411,7 +411,7 @@ class MicropubController {
 
 			// Log payload.
 			if ((bool) elgg_get_plugin_setting('micropub_log_payload', 'indieweb')) {
-				elgg_log('New entity - type:' . $this->object_type . ', input: ' . print_r($this->input, 1), 'NOTICE');
+				elgg_log('New entity - type:' . $this->object_type . ', input: ' . print_r($this->input, true), 'NOTICE');
 			}
 
 			// Check if we have a location or checkin property in the payload.
