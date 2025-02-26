@@ -7,14 +7,12 @@
  * @link https://wzm.me
 **/
 
-$offset = (int) get_input('offset');
-
 $options = [
 	'type' => 'object',
 	'subtype' => \Elgg\IndieWeb\Contacts\Entity\Contact::SUBTYPE,
 	'count' => true,
-	'offset' => $offset,
-	'limit' => elgg_get_config('default_limit'),
+	'offset' => (int) max(get_input('offset', 0), 0),
+	'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 	'pagination' => true,
 	'full_view' => false,
 ];

@@ -7,14 +7,12 @@
  * @link https://wzm.me
 **/
 
-$offset = (int) get_input('offset');
-
 $options = [
 	'type' => 'object',
 	'subtype' => \Elgg\IndieWeb\WebSub\Entity\WebSubPub::SUBTYPE,
 	'count' => true,
-	'offset' => $offset,
-	'limit' => elgg_get_config('default_limit'),
+	'offset' => (int) max(get_input('offset', 0), 0),
+	'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 ];
 
 $count = elgg_get_entities($options);
@@ -22,9 +20,9 @@ $count = elgg_get_entities($options);
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
 		'base_url' => elgg_normalize_url('admin/indieweb/websub/pub'),
-		'offset' => $offset,
-		'count' => $count,
-		'limit' => elgg_get_config('default_limit'),
+		'offset' => (int) max(get_input('offset', 0), 0),
+		'count' => (int) $count,
+		'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 	]);
 	
 	$rows = [];
@@ -43,18 +41,18 @@ if (!empty($count)) {
 		$item = false;
 		$item_url = false;
 
-		if ($entity->entity_id > 0) {
-			$item = get_entity($entity->entity_id);
+		if ((int)$entity->entity_id > 0) {
+			$item = get_entity((int)$entity->entity_id);
 			if ($item instanceof \ElggEntity) {
 				$item_url = elgg_view('output/url', [
-					'href' => $item->getURL(),
+					'href' => (string) $item->getURL(),
 					'text' => elgg_echo('indieweb:websub:websubpub:view'),
-					'title' => $item->getDisplayName(),
+					'title' => (string) $item->getDisplayName(),
 				]);
 			}
 		}
 		
-		$row[] = elgg_format_element('td', ['width' => '10%'], $entity->entity_id . ' ' . $item_url);
+		$row[] = elgg_format_element('td', ['width' => '10%'], (int)$entity->entity_id . ' ' . $item_url);
 
 		// published
 		$published = ((bool) $entity->published) ? elgg_echo('option:yes') : elgg_echo('option:no');

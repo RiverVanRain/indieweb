@@ -1,13 +1,11 @@
 <?php
 
-$offset = (int) get_input('offset');
-
 $options = [
 	'type' => 'object',
 	'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubChannel::SUBTYPE,
 	'count' => true,
-	'offset' => $offset,
-	'limit' => elgg_get_config('default_limit'),
+	'offset' => (int) max(get_input('offset', 0), 0),
+	'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 ];
 
 $count = elgg_get_entities($options);
@@ -73,14 +71,12 @@ elgg_register_menu_item('title', [
 
 echo elgg_format_element('div', ['class' => 'mbm'], elgg_echo('indieweb:microsub:channels:title'));
 
-$offset = (int) get_input('offset');
-
 $options = [
 	'type' => 'object',
 	'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubChannel::SUBTYPE,
 	'count' => true,
-	'offset' => $offset,
-	'limit' => elgg_get_config('default_limit'),
+	'offset' => (int) max(get_input('offset', 0), 0),
+	'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 ];
 
 $count = elgg_get_entities($options);
@@ -88,9 +84,9 @@ $count = elgg_get_entities($options);
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
 		'base_url' => elgg_normalize_url('admin/indieweb/microsub/channels'),
-		'offset' => $offset,
-		'count' => $count,
-		'limit' => elgg_get_config('default_limit'),
+		'offset' => (int) max(get_input('offset', 0), 0),
+		'count' => (int) $count,
+		'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 	]);
 	
 	$rows = [];
@@ -121,7 +117,7 @@ if (!empty($count)) {
 		if ($sources > 0) {
 			$list = elgg_format_element('span', ['class' => 'mlm'], elgg_view('output/url', [
 				'href' => elgg_http_add_url_query_elements(elgg_normalize_url('admin/indieweb/microsub/sources'), [
-					'guid' => $entity->guid,
+					'guid' => (int) $entity->guid,
 				]),
 				'text' => elgg_echo('indieweb:microsub:microsub_channel:sources:view'),
 			]));

@@ -19,11 +19,11 @@ $item = false;
 $item_url = false;
 $item_name = false;
 
-if ($entity->entity_id > 0) {
-	$item = get_entity($entity->entity_id);
+if ((int) $entity->entity_id > 0) {
+	$item = get_entity((int) $entity->entity_id);
 	if ($item instanceof \ElggEntity) {
-		$item_url = $item->getURL();
-		$item_name = $item->getDisplayName();
+		$item_url = (string) $item->getURL();
+		$item_name = (string) $item->getDisplayName();
 	}
 }
 
@@ -31,10 +31,10 @@ $params = [
 	'icon' => false,
 	'time_href' => $item_url,
 	'access' => false,
-	'title' => $entity->entity_type_id,
+	'title' => (string) $entity->entity_type_id,
 	'show_summary' => true,
 	'content' => $item_name,
-	'imprint' => elgg_extract('imprint', $vars, []),
+	'imprint' => (array) elgg_extract('imprint', $vars, []),
 	'byline' => false,
 	'class' => elgg_extract_class($vars),
 ];
