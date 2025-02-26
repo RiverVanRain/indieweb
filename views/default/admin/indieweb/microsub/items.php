@@ -12,12 +12,10 @@ echo elgg_format_element('div', ['class' => 'mbm'], elgg_echo('indieweb:microsub
 	elgg_view('output/url', [
 		'text' => $entity->getDisplayName(),
 		'href' => elgg_http_add_url_query_elements(elgg_normalize_url('admin/indieweb/microsub/sources'), [
-			'guid' => $entity->channel_id,
+			'guid' => (int) $entity->channel_id,
 		]),
 	])
 ]));
-
-$offset = (int) get_input('offset');
 
 $options = [
 	'type' => 'object',
@@ -25,12 +23,12 @@ $options = [
 	'metadata_name_value_pairs' => [
 		[
 			'name' => 'source_id',
-			'value' => $entity->guid,
+			'value' => (int) $entity->guid,
 		],
 	],
 	'count' => true,
-	'offset' => $offset,
-	'limit' => elgg_get_config('default_limit'),
+	'offset' => (int) max(get_input('offset', 0), 0),
+	'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 ];
 
 $count = elgg_get_entities($options);
@@ -38,11 +36,11 @@ $count = elgg_get_entities($options);
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
 		'base_url' => elgg_http_add_url_query_elements(elgg_normalize_url('admin/indieweb/microsub/items'), [
-			'guid' => $entity->guid,
+			'guid' => (int) $entity->guid,
 		]),
-		'offset' => $offset,
-		'count' => $count,
-		'limit' => elgg_get_config('default_limit'),
+		'offset' => (int) max(get_input('offset', 0), 0),
+		'count' => (int) $count,
+		'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 	]);
 	
 	$rows = [];
@@ -57,17 +55,17 @@ if (!empty($count)) {
 		// name
 		$row[] = elgg_format_element('td', ['width' => '70%'], elgg_view_entity($entity, [
 			'full_view' => false,
-			'title' => $entity->post_type,
+			'title' => (string) $entity->post_type,
 			'icon' => false,
 			'byline' => false,
 			'access' => false,
-			'content' => $entity->id,
+			'content' => (string) $entity->id,
 		]));
 		
 		//data
 		$row[] = elgg_format_element('td', ['width' => '15%'], elgg_view('output/url', [
 			'href' => elgg_http_add_url_query_elements('ajax/view/resources/microsub/source/item', [
-				'guid' => $entity->guid,
+				'guid' => (int) $entity->guid,
 			]),
 			'text' => elgg_echo('indieweb:microsub:microsub_item:data_view'),
 			'class' => 'elgg-lightbox',

@@ -20,7 +20,7 @@ $count = elgg_get_entities($options);
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
 		'base_url' => elgg_normalize_url('admin/indieweb/webmention/syndications'),
-		'count' => $count,
+		'count' => (int) $count,
 		'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 		'offset' => (int) max(get_input('offset', 0), 0),
 	]);
@@ -42,18 +42,18 @@ if (!empty($count)) {
 		$item_url = false;
 
 		if ($entity->source_id > 0) {
-			$item = get_entity($entity->source_id);
+			$item = get_entity((int) $entity->source_id);
 			
 			if ($item instanceof \ElggEntity) {
 				$item_url = elgg_view('output/url', [
-					'href' => $item->getURL(),
+					'href' => (string) $item->getURL(),
 					'text' => elgg_echo('indieweb:webmention:syndication:view'),
-					'title' => $item->getDisplayName(),
+					'title' => (string) $item->getDisplayName(),
 				]);
 			}
 		}
 		
-		$row[] = elgg_format_element('td', ['width' => '10%'], $entity->source_id . ' ' . $item_url);
+		$row[] = elgg_format_element('td', ['width' => '10%'], (int) $entity->source_id . ' ' . $item_url);
 		
 		$rows[] = elgg_format_element('tr', [], implode('', $row));
 	}

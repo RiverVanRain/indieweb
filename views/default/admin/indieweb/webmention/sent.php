@@ -26,7 +26,7 @@ $count = elgg_get_entities($options);
 if (!empty($count)) {
 	echo elgg_view('navigation/pagination', [
 		'base_url' => elgg_normalize_url('admin/indieweb/webmention/sent'),
-		'count' => $count,
+		'count' => (int) $count,
 		'limit' => (int) max(get_input('limit', max(25, _elgg_services()->config->default_limit)), 0),
 		'offset' => (int) max(get_input('offset', 0), 0),
 	]);
@@ -46,13 +46,13 @@ if (!empty($count)) {
 		]));
 		// source
 		$row[] = elgg_format_element('td', ['width' => '20%'], elgg_view('output/url', [
-			'text' => $entity->source,
-			'href' => $entity->source,
+			'text' => (string) $entity->source,
+			'href' => (string) $entity->source,
 		]));
 		// target
 		$row[] = elgg_format_element('td', ['width' => '20%'], elgg_view('output/url', [
-			'text' => $entity->target,
-			'href' => $entity->target,
+			'text' => (string) $entity->target,
+			'href' => (string) $entity->target,
 		]));
 		// published
 		$published = ((bool) $entity->published) ? elgg_echo('option:yes') : elgg_echo('option:no');
