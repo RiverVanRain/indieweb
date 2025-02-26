@@ -46,6 +46,6 @@
 		"elgg/elgg": "<5.1"
 	},
 	"support": {
-		"source": "https://wzm.me"
+		"source": "https://github.com/RiverVanRain/indieweb"
 	}
 }

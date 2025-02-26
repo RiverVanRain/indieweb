@@ -97,7 +97,7 @@ class IndieAuthController {
 			}
 
 			if (!$valid_request) {
-				elgg_log('IndieAuth controller: Stored values do not match with request values: '. $stored_data . ' - ' . print_r($params, 1), 'ERROR');
+				elgg_log('IndieAuth controller: Stored values do not match with request values: '. $stored_data . ' - ' . print_r($params, true), 'ERROR');
 				return elgg_error_response('Session and request values do not match', REFERRER, 400);
 			}
 

@@ -70,6 +70,18 @@ class Events {
 				
 				$client->sendWebmention($entity->getURL(), $target);
 				self::objectSyndication($entity->guid, $entity->getURL());
+				
+				//ActivityPub
+				if (elgg_is_active_plugin('activitypub')) {
+					if ((int) $entity->activity_reference !== 0) {
+						$activity = get_entity((int) $entity->activity_reference);
+						
+						if ($activity instanceof \Elgg\ActivityPub\Entity\ActivityPubActivity) {
+							self::objectWebmentionActivityPub($activity, $activity->getURL(), $target);
+						}
+					}
+				}
+				
 				self::objectWebmention($entity->getURL(), $target);
 			}
 		} else {
@@ -100,6 +112,33 @@ class Events {
 			$webmention->property = 'send';
 			$webmention->published = 0;
 			$webmention->status = 0;
+			$webmention->save();
+					
+			elgg_log(elgg_echo('webmention:send:success', [$webmention->guid]), 'NOTICE');
+		});
+	}
+	
+	public static function objectWebmentionActivityPub(\Elgg\ActivityPub\Entity\ActivityPubActivity $entity, $source, $target) {
+		elgg_call(ELGG_IGNORE_ACCESS, function () use ($entity, $source, $target) {
+			$webmention = new \Elgg\IndieWeb\Webmention\Entity\Webmention();
+			$webmention->owner_guid = elgg_get_site_entity()->guid;
+			$webmention->container_guid = elgg_get_site_entity()->guid;
+			$webmention->access_id = ACCESS_PRIVATE;
+			$webmention->source = $source;
+			$webmention->target = $target;
+			$webmention->property = 'send';
+			$webmention->published = 0;
+			$webmention->status = 0;
+			
+			$item = elgg()->activityPubReader->buildMicrosubItem($entity);
+			foreach ($item as $k => $v) {
+				if (is_array($v)) {
+					$v = serialize($v);
+				}
+				
+				$webmention->setMetadata($k, $v);
+			}
+			
 			$webmention->save();
 					
 			elgg_log(elgg_echo('webmention:send:success', [$webmention->guid]), 'NOTICE');
