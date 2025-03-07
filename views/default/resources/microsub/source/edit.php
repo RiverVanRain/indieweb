@@ -10,7 +10,7 @@ elgg_entity_gatekeeper($guid, 'object', MicrosubSource::SUBTYPE);
 $entity = get_entity($guid);
 
 if (!$entity->canEdit()) {
-	throw new \Elgg\Exceptions\Http\EntityPermissionsException();
+    throw new \Elgg\Exceptions\Http\EntityPermissionsException();
 }
 
 $title = elgg_echo('edit:object:microsub_source', [$entity->getDisplayName()]);

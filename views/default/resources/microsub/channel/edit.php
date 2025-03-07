@@ -12,7 +12,7 @@ $entity = get_entity($guid);
 $container_guid = (int) elgg_extract('container_guid', $vars);
 
 if (!$entity->canEdit()) {
-	throw new \Elgg\Exceptions\Http\EntityPermissionsException();
+    throw new \Elgg\Exceptions\Http\EntityPermissionsException();
 }
 
 $title = elgg_echo('edit:object:microsub_channel', [$entity->getDisplayName()]);

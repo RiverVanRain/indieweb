@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @uses $vars['entity']       The user entity
  * @uses $vars['microformats'] Mapping of fieldnames to microformats
@@ -6,7 +7,7 @@
 
 $user = elgg_extract('entity', $vars);
 if (!$user instanceof \ElggUser) {
-	return;
+    return;
 }
 
 $fullname = htmlspecialchars($user->getDisplayName() ?? '', ENT_QUOTES, 'UTF-8', false);

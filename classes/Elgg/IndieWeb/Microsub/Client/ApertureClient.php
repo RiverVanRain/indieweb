@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IndieWeb
  * @author Nikolai Shcherbin
@@ -11,32 +12,35 @@ namespace Elgg\IndieWeb\Microsub\Client;
 
 use Elgg\Traits\Di\ServiceFacade;
 
-class ApertureClient {
-	
-	use ServiceFacade;
-	
-	/**
-	 * {@inheritdoc}
-	 */
-	public static function name() {
-		return 'aperture';
-	}
-	
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __get($name) {
-		return $this->$name;
-	}
+class ApertureClient
+{
+    use ServiceFacade;
 
-	/**
-	 * {@inheritdoc}
+    /**
+     * {@inheritdoc}
      */
-	public function sendPost($api_key, $post) {
-		$this->sendMicropubRequest($api_key, $post);
-	}
+    public static function name()
+    {
+        return 'aperture';
+    }
 
-	/**
+    /**
+     * {@inheritdoc}
+     */
+    public function __get($name)
+    {
+        return $this->$name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function sendPost($api_key, $post)
+    {
+        $this->sendMicropubRequest($api_key, $post);
+    }
+
+    /**
      * Send micropub request.
      *
      * @param $api_key
@@ -44,30 +48,30 @@ class ApertureClient {
      * @param $post
      *   The micropub post to send.
      */
-    public function sendMicropubRequest($api_key, $post) {
-		$auth = 'Bearer ' . $api_key;
-		
-		$client = elgg()->httpClient->setup();
-		
-		$headers = [
-			'Accept' => 'application/json',
-		];
+    public function sendMicropubRequest($api_key, $post)
+    {
+        $auth = 'Bearer ' . $api_key;
 
-		// Access token is always in the headers when using Request from p3k.
-		$headers['Authorization'] = $auth;
+        $client = elgg()->httpClient->setup();
 
-		try {
-			$response = $client->post('https://aperture.p3k.io/micropub', ['json' => $post, 'headers' => $headers]);
-			$status_code = $response->getStatusCode();
-			$headersLocation = $response->getHeader('Location');
-			if (empty($headersLocation[0]) || $status_code != 201) {
-				elgg_log('Error sending micropub request: ' . $status_code, \Psr\Log\LogLevel::ERROR);
-				return false;
-			}
-		}
-		catch (\Exception $e) {
-			elgg_log('Error sending micropub request: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
-			return false;
-		}
-	}
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+        // Access token is always in the headers when using Request from p3k.
+        $headers['Authorization'] = $auth;
+
+        try {
+            $response = $client->post('https://aperture.p3k.io/micropub', ['json' => $post, 'headers' => $headers]);
+            $status_code = $response->getStatusCode();
+            $headersLocation = $response->getHeader('Location');
+            if (empty($headersLocation[0]) || $status_code != 201) {
+                elgg_log('Error sending micropub request: ' . $status_code, \Psr\Log\LogLevel::ERROR);
+                return false;
+            }
+        } catch (\Exception $e) {
+            elgg_log('Error sending micropub request: ' . $e->getMessage(), \Psr\Log\LogLevel::ERROR);
+            return false;
+        }
+    }
 }

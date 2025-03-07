@@ -2,12 +2,13 @@
 
 namespace Elgg\IndieWeb\IndieAuth\Actions;
 
-class DeauthorizeAction {
+class DeauthorizeAction
+{
+    public function __invoke(\Elgg\Request $request)
+    {
 
-	public function __invoke(\Elgg\Request $request) {
+        unset($_SESSION['indieauth']);
 
-		unset($_SESSION['indieauth']);
-		
-		return elgg_ok_response('', elgg_echo('indieweb:indieauth:authorize:cancel'), $request->getParam('redirect_uri'));
-	}
+        return elgg_ok_response('', elgg_echo('indieweb:indieauth:authorize:cancel'), $request->getParam('redirect_uri'));
+    }
 }

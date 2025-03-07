@@ -1,15 +1,15 @@
 .indieauth-login {
-	padding: 1rem 0;
+    padding: 1rem 0;
 }
 
 .elgg-form-login {
-	.indieauth-login {
-		text-align: center;
-	}
+    .indieauth-login {
+        text-align: center;
+    }
 }
 
 .webmention-syndication-targets {
-	padding: 0;
+    padding: 0;
 }
 
 .webmention-syndication .elgg-field-label,
@@ -19,5 +19,5 @@
 
 .elgg-module-webmentions {
     margin-top: 1rem;
-	padding-top: 1rem;
+    padding-top: 1rem;
 }

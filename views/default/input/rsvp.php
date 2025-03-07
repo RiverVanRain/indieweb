@@ -14,14 +14,14 @@ $options = [
 $vars['options_values'] = [];
 
 foreach ($options as $value => $text) {
-	$vars['options_values'][] = [
-		'text' => $text,
-		'value' => $value,
-	];
+    $vars['options_values'][] = [
+        'text' => $text,
+        'value' => $value,
+    ];
 }
 
 if (!isset($vars['name'])) {
-	$vars['name'] = 'rsvp';
+    $vars['name'] = 'rsvp';
 }
 
 echo elgg_view('input/select', $vars);

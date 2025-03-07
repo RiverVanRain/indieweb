@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IndieWeb
  * @author Nikolai Shcherbin
@@ -9,10 +10,12 @@
 
 namespace Elgg\IndieWeb\Microsub\Client;
 
-class EmptyHTTP {
-	public function get($url = null, $options = null) {
-		return [
-			'error' => true,
-		];
-	}
+class EmptyHTTP
+{
+    public function get($url = null, $options = null)
+    {
+        return [
+            'error' => true,
+        ];
+    }
 }

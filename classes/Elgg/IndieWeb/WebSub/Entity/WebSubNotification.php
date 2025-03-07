@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IndieWeb
  * @author Nikolai Shcherbin
@@ -9,15 +10,16 @@
 
 namespace Elgg\IndieWeb\WebSub\Entity;
 
-class WebSubNotification extends \ElggObject {
-	
-	const SUBTYPE = 'websubnotofication';
+class WebSubNotification extends \ElggObject
+{
+    const SUBTYPE = 'websubnotofication';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function initializeAttributes() {
-		parent::initializeAttributes();
-		$this->attributes['subtype'] = self::SUBTYPE;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function initializeAttributes()
+    {
+        parent::initializeAttributes();
+        $this->attributes['subtype'] = self::SUBTYPE;
+    }
 }

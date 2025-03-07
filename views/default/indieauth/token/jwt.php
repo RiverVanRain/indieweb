@@ -1,4 +1,5 @@
 <?php
+
 /**
  * View JWT token
  *
@@ -16,7 +17,7 @@ elgg_entity_gatekeeper($guid, 'object', IndieAuthToken::SUBTYPE);
 $entity = get_entity($guid);
 
 if (!$entity->canEdit()) {
-	throw new \Elgg\Exceptions\Http\EntityPermissionsException();
+    throw new \Elgg\Exceptions\Http\EntityPermissionsException();
 }
 
 $title = elgg_echo('indieweb:indieauth:view_jwt:title');
@@ -28,7 +29,8 @@ $signer = new Sha512();
 try {
     $created = new \DateTimeImmutable();
     $created->setTimestamp($entity->getCreated());
-} catch (\Exception $ignored) {}
+} catch (\Exception $ignored) {
+}
 
 $key = Key\InMemory::plainText(file_get_contents(elgg_get_plugin_setting('indieauth_private_key', 'indieweb')));
 
@@ -43,8 +45,7 @@ $JWT = $config->builder()
     ->getToken($config->signer(), $config->signingKey());
 
 $content .= elgg_format_element('pre', [], elgg_view('output/longtext', [
-	'value' => $JWT->toString()
+    'value' => $JWT->toString()
 ]));
 
 echo elgg_view_module('info', $title, $content);
-

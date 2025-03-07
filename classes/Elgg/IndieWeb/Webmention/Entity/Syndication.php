@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IndieWeb
  * @author Nikolai Shcherbin
@@ -9,22 +10,24 @@
 
 namespace Elgg\IndieWeb\Webmention\Entity;
 
-class Syndication extends \ElggObject {
-	
-	const SUBTYPE = 'syndication';
+class Syndication extends \ElggObject
+{
+    const SUBTYPE = 'syndication';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function initializeAttributes() {
-		parent::initializeAttributes();
-		$this->attributes['subtype'] = self::SUBTYPE;
-	}
-	
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getSourceId(): int {
-		return $this->source_id ?? 0;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function initializeAttributes()
+    {
+        parent::initializeAttributes();
+        $this->attributes['subtype'] = self::SUBTYPE;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSourceId(): int
+    {
+        return $this->source_id ?? 0;
+    }
 }
