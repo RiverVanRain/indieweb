@@ -138,10 +138,7 @@ class TokenController
             return elgg_error_response('Redirect URI does not match', REFERRER, 400);
         }
 
-        // Hack: For some reasons many clients don't send 'me' parameter
-        //if ($authorization_code->getMe() != $params['me']) {
         if ($authorization_code->getMe() != elgg_get_site_url()) {
-            //elgg_log('Token controller: Me does not match ' . $params['me'], \Psr\Log\LogLevel::ERROR);
             elgg_log('Token controller: Me does not match ' . elgg_get_site_url(), \Psr\Log\LogLevel::ERROR);
             return elgg_error_response('Me does not match', REFERRER, 400);
         }

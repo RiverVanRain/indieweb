@@ -24,7 +24,7 @@ if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) el
 return [
     'plugin' => [
         'name' => 'IndieWeb',
-        'version' => '2.2.0',
+        'version' => '2.2.2',
     ],
 
     'bootstrap' => \Elgg\IndieWeb\Bootstrap::class,

@@ -179,7 +179,7 @@ class AuthFormController
     public static function validateAuthorizeRequestParameters(\Elgg\Request $request, &$reason, &$valid_request, $in_session = false, &$params = null)
     {
         foreach (self::$auth_parameters as $parameter) {
-            $value = $in_session ? (isset($_SESSION['indieauth'][$parameter]) ? $_SESSION['indieauth'][$parameter] : '') : $request->getParam($parameter); // $request->getParams($parameter)
+            $value = $in_session ? (isset($_SESSION['indieauth'][$parameter]) ? $_SESSION['indieauth'][$parameter] : '') : $request->getParam($parameter);
 
             if (empty($value) && !in_array($parameter, ['response_type', 'scope', 'code_challenge', 'code_challenge_method'])) {
                 $reason = "$parameter is empty";

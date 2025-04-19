@@ -71,7 +71,11 @@ class IndieAuthAuthorizationCode extends \ElggObject
     */
     public function getScopes()
     {
-        return explode(' ', $this->scope);
+        if (!empty($this->scope)) {
+            return explode(' ', $this->scope);
+        }
+
+        return [];
     }
 
     /**
