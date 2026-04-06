@@ -26,7 +26,7 @@ class LoginAction
         $generate_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.{$r1} Safari/537.{$r2}";
 
         $client = new Client();
-        $httpClient = new HTTP();
+        $httpClient = new HTTP('User agent', new HTTP\Curl());
         $httpClient->set_user_agent($generate_ua);
         $client::$http = $httpClient;
 
