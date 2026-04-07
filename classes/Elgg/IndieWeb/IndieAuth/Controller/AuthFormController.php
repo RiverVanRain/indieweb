@@ -49,13 +49,13 @@ class AuthFormController
                 $value = $request->getParam($parameter);
 
                 if (empty($value) && !in_array($parameter, ['response_type', 'scope', 'code_challenge', 'code_challenge_method'])) {
-                    $reason = "$parameter is empty";
+                    $reason = "{$parameter} is empty";
                     $valid_request = false;
                     break;
                 } elseif ($parameter === 'response_type') {
                     if (!empty($value) && ($value != 'code' && $value != 'id')) {
                         $valid_request = false;
-                        $reason = "response type is not code or id ($value)";
+                        $reason = "response type is not code or id ({$value})";
                         break;
                     }
 
@@ -94,13 +94,13 @@ class AuthFormController
                 $value = $request->getParam($parameter);
 
                 if (empty($value) && !in_array($parameter, ['response_type', 'scope', 'code_challenge', 'code_challenge_method'])) {
-                    $reason = "$parameter is empty";
+                    $reason = "{$parameter} is empty";
                     $valid_request = false;
                     break;
                 } elseif ($parameter === 'response_type') {
                     if (!empty($value) && ($value != 'code' && $value != 'id')) {
                         $valid_request = false;
-                        $reason = "response type is not code or id ($value)";
+                        $reason = "response type is not code or id ({$value})";
                         break;
                     }
 
@@ -128,13 +128,13 @@ class AuthFormController
             $value = isset($_SESSION['indieauth'][$parameter]) ? $_SESSION['indieauth'][$parameter] : $request->getParam($parameter);
 
             if (empty($value) && !in_array($parameter, ['response_type', 'scope', 'code_challenge', 'code_challenge_method'])) {
-                $reason = "$parameter is empty";
+                $reason = "{$parameter} is empty";
                 $valid_request = false;
                 break;
             } elseif ($parameter === 'response_type') {
                 if (!empty($value) && ($value != 'code' && $value != 'id')) {
                     $valid_request = false;
-                    $reason = "response type is not code or id ($value)";
+                    $reason = "response type is not code or id ({$value})";
                     break;
                 }
 
@@ -182,7 +182,7 @@ class AuthFormController
             $value = $in_session ? (isset($_SESSION['indieauth'][$parameter]) ? $_SESSION['indieauth'][$parameter] : '') : $request->getParam($parameter);
 
             if (empty($value) && !in_array($parameter, ['response_type', 'scope', 'code_challenge', 'code_challenge_method'])) {
-                $reason = "$parameter is empty";
+                $reason = "{$parameter} is empty";
                 $valid_request = false;
                 break;
             } elseif ($parameter === 'response_type') {

@@ -19,7 +19,7 @@ if ((bool) $user->indieauth_login) {
     $body = elgg_format_element('div', ['class' => 'mtm mbm'], elgg_view('output/url', [
         'text' => elgg_echo('indieauth:account:deauthorise'),
         'href' => elgg_generate_action_url('indieauth/cancel', [
-            'guid' => $user->guid,
+            'guid' => (int) $user->guid,
         ]),
         'class' => 'elgg-button elgg-button-cancel',
         'confirm' => true,

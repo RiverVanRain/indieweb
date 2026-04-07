@@ -166,11 +166,11 @@ foreach ($objects as $subtype) {
 
     echo elgg_view_field([
         '#type' => 'checkbox',
-        'name' => "params[can_webmention:object:$subtype]",
+        'name' => "params[can_webmention:object:{$subtype}]",
         'value' => 1,
         'default' => 0,
-        'checked' => (bool) $entity->{"can_webmention:object:$subtype"},
-        '#label' => elgg_echo("collection:object:$subtype"),
+        'checked' => (bool) $entity->{"can_webmention:object:{$subtype}"},
+        '#label' => elgg_echo("collection:object:{$subtype}"),
         'switch' => true,
     ]);
 }

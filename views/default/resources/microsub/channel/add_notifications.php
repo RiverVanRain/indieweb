@@ -10,7 +10,7 @@ if (!$entity->isAdmin()) {
 
 $title = elgg_echo('add:object:microsub_channel:notifications');
 
-$form = new NotificationsMicrosubChannel(null, $entity->guid);
+$form = new NotificationsMicrosubChannel(null, (int) $entity->guid);
 
 $content = elgg_view_form('microsub/channel/notifications', [], $form());
 

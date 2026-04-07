@@ -51,7 +51,7 @@ final class Events
                 'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubItem::SUBTYPE,
                 'wheres' => function (QueryBuilder $qb, $from_alias = 'e') use ($entity) {
                     $md_alias = $qb->joinMetadataTable($from_alias, 'guid', ['source_id']);
-                    return $qb->compare("$md_alias.value", '=', $entity->guid, ELGG_VALUE_INTEGER);
+                    return $qb->compare("{$md_alias}.value", '=', $entity->guid, ELGG_VALUE_INTEGER);
                 },
                 'limit' => 0,
                 'batch' => true,
@@ -81,7 +81,7 @@ final class Events
                 'subtype' => \Elgg\IndieWeb\Microsub\Entity\MicrosubItem::SUBTYPE,
                 'wheres' => function (QueryBuilder $qb, $from_alias = 'e') use ($entity) {
                     $md_alias = $qb->joinMetadataTable($from_alias, 'guid', ['source_id']);
-                    return $qb->compare("$md_alias.value", '=', $entity->guid, ELGG_VALUE_INTEGER);
+                    return $qb->compare("{$md_alias}.value", '=', $entity->guid, ELGG_VALUE_INTEGER);
                 },
                 'limit' => 0,
                 'batch' => true,

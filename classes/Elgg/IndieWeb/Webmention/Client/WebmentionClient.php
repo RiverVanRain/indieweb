@@ -41,9 +41,9 @@ class WebmentionClient
     }
 
     /**
-     * Checks if url is a silo URL or not. Only handles Twitter urls right now.
+     * Checks if url is a silo URL or not. Only handles X urls right now.
      *
-     * e.g. https://twitter.com/subwebz/status/1576317527466119168 should be marked as a silo url.
+     * e.g. https://x.com/subwebz/status/1576317527466119168 should be marked as a silo url.
      *
      * @param $url
      *
@@ -53,7 +53,7 @@ class WebmentionClient
     {
         $is_silo_url = false;
 
-        if (strpos($url, 'twitter.com') !== false) {
+        if (strpos($url, 'x.com') !== false) {
             $is_silo_url = true;
         }
 

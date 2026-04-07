@@ -12,7 +12,7 @@ class EditMicrosubSourceAction
         elgg_make_sticky_form('microsub/source/edit');
 
         $guid = (int) $request->getParam('guid');
-        $container_guid = $request->getParam('container_guid', 0);
+        $container_guid = (int) $request->getParam('container_guid', 0);
         $title = $request->getParam('title');
         $url = $request->getParam('url');
         $status = (bool) $request->getParam('status', 1);
@@ -30,7 +30,7 @@ class EditMicrosubSourceAction
         ];
 
         foreach ($objects as $subtype) {
-            $post_context["microsub_source:post_context:$subtype"] = (bool) $request->getParam("microsub_source:post_context:$subtype", 0);
+            $post_context["microsub_source:post_context:{$subtype}"] = (bool) $request->getParam("microsub_source:post_context:{$subtype}", 0);
         }
 
         if (empty($title) || empty($url)) {

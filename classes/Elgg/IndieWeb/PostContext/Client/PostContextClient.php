@@ -48,9 +48,9 @@ class PostContextClient
             return;
         }
 
-        // mobile.twitter.com doesn't have the necessary tags.
-        if (strpos($url, 'mobile.twitter.com') !== false) {
-            $url = str_replace('mobile.twitter.com', 'twitter.com', $url);
+        // mobile.x.com doesn't have the necessary tags.
+        if (strpos($url, 'mobile.x.com') !== false) {
+            $url = str_replace('mobile.x.com', 'x.com', $url);
         }
 
         $data = [

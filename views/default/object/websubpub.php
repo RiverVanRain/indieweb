@@ -10,11 +10,11 @@ if (!$entity instanceof \Elgg\IndieWeb\WebSub\Entity\WebSubPub) {
     return;
 }
 
-$vars['entity'] = $entity;
-
 if (!elgg_is_admin_logged_in()) {
-    throw new \Elgg\Exceptions\Http\EntityNotFoundException();
+    throw new \Elgg\Exceptions\Http\EntityPermissionsException();
 }
+
+$vars['entity'] = $entity;
 
 $item = false;
 $item_url = false;

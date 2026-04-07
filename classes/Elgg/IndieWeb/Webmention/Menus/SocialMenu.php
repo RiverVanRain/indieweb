@@ -27,7 +27,7 @@ class SocialMenu
             return null;
         }
 
-        if (!(bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb')) {
+        if (!(bool) elgg_get_plugin_setting("can_webmention:object:{$entity->subtype}", 'indieweb')) {
             return null;
         }
 
@@ -40,7 +40,7 @@ class SocialMenu
             'metadata_name_value_pairs' => [
                 [
                     'name' => 'target_guid',
-                    'value' => $entity->guid,
+                    'value' => (int) $entity->guid,
                 ],
                 [
                     'name' => 'published',

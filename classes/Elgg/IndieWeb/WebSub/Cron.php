@@ -237,7 +237,7 @@ class Cron
                     function (\Elgg\Database\QueryBuilder $qb) {
                         $md_alias = $qb->joinMetadataTable('e', 'guid', 'entity_id', 'left');
 
-                        return $qb->compare("$md_alias.value", 'IS NULL');
+                        return $qb->compare("{$md_alias}.value", 'IS NULL');
                     },
                 ],
                 'limit' => false,

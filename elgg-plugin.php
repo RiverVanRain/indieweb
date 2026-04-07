@@ -40,6 +40,8 @@ return [
                 'commentable' => $webmention_commentable,
                 'likable' => $webmention_likable,
                 'searchable' => false,
+                'subscribable' => false,
+                'restorable' => false,
             ],
         ],
         [
@@ -50,6 +52,8 @@ return [
                 'commentable' => false,
                 'likable' => false,
                 'searchable' => false,
+                'subscribable' => false,
+                'restorable' => false,
             ],
         ],
         //Contacts
@@ -61,6 +65,8 @@ return [
                 'commentable' => false,
                 'likable' => false,
                 'searchable' => false,
+                'subscribable' => false,
+                'restorable' => false,
             ],
         ],
         //MicroSub
@@ -72,6 +78,8 @@ return [
                 'commentable' => false,
                 'likable' => false,
                 'searchable' => false,
+                'subscribable' => false,
+                'restorable' => false,
             ],
         ],
         [
@@ -82,6 +90,8 @@ return [
                 'commentable' => false,
                 'likable' => false,
                 'searchable' => false,
+                'subscribable' => false,
+                'restorable' => false,
             ],
         ],
         [
@@ -92,6 +102,8 @@ return [
                 'commentable' => false,
                 'likable' => false,
                 'searchable' => false,
+                'subscribable' => false,
+                'restorable' => false,
             ],
         ],
         //IndieAuth
@@ -103,6 +115,8 @@ return [
                 'commentable' => false,
                 'likable' => false,
                 'searchable' => false,
+                'subscribable' => false,
+                'restorable' => false,
             ],
         ],
         [
@@ -113,6 +127,8 @@ return [
                 'commentable' => false,
                 'likable' => false,
                 'searchable' => false,
+                'subscribable' => false,
+                'restorable' => false,
             ],
         ],
         //WebSub
@@ -124,6 +140,8 @@ return [
                 'commentable' => false,
                 'likable' => false,
                 'searchable' => false,
+                'subscribable' => false,
+                'restorable' => false,
             ],
         ],
         [

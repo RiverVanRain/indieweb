@@ -45,8 +45,8 @@ class ContactClient
             ]);
 
             if ($contacts === 0) {
-                // Get nickname if the url is from twitter.
-                if (empty($values['nickname']) && !empty($values['url']) && strpos($values['url'], 'twitter.com') !== false) {
+                // Get nickname if the url is from X.
+                if (empty($values['nickname']) && !empty($values['url']) && strpos($values['url'], 'x.com') !== false) {
                     $parsed = parse_url($values['url']);
                     if (!empty($parsed['path'])) {
                         $values['nickname'] = str_replace('/', '', $parsed['path']);

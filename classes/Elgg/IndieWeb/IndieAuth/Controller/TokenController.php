@@ -243,7 +243,7 @@ class TokenController
 
             // For some reasons many clients don't send 'me' parameter
             if (empty($check) && !in_array($parameter, ['me', 'code_verifier'])) {
-                $reason = "$parameter is empty";
+                $reason = "{$parameter} is empty";
                 $valid_request = false;
                 break;
             } elseif ($parameter === 'grant_type' && $check != 'authorization_code') {

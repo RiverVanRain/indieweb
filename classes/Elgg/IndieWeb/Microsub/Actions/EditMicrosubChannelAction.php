@@ -32,7 +32,7 @@ class EditMicrosubChannelAction
         ];
 
         foreach ($objects as $subtype) {
-            $exclude_post_type["microsub_channel:exclude_post_type:$subtype"] = (bool) $request->getParam("microsub_channel:exclude_post_type:$subtype", 0);
+            $exclude_post_type["microsub_channel:exclude_post_type:{$subtype}"] = (bool) $request->getParam("microsub_channel:exclude_post_type:{$subtype}", 0);
         }
 
         if (empty($title)) {

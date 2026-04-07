@@ -61,7 +61,7 @@ class MicrosubController
             // Add a protocol if needed.
             if ($parts = parse_url($input)) {
                 if (!isset($parts["scheme"])) {
-                    $input = "http://$input";
+                    $input = "http://{$input}";
                 }
             }
 
@@ -376,7 +376,7 @@ class MicrosubController
 
                 if ($entity->save()) {
                     $return = [
-                        'uid' => $entity->guid,
+                        'uid' => (int) $entity->guid,
                         'name' => $entity->title
                     ];
                     $response_code = 200;
@@ -578,7 +578,7 @@ class MicrosubController
                     elgg_call(ELGG_IGNORE_ACCESS, function () use ($channel, $channel_id, $uid, $url) {
                         $source = new MicrosubSource();
                         $source->owner_guid = elgg_get_site_entity()->guid;
-                        $source->container_guid = $channel->guid;
+                        $source->container_guid = (int) $channel->guid;
                         $source->access_id = ACCESS_PUBLIC;
                         $source->channel_id = $channel_id;
                         $source->uid = $uid;

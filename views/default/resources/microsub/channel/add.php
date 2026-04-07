@@ -10,7 +10,7 @@ if (!$entity->isAdmin()) {
 
 $title = elgg_echo('add:object:microsub_channel');
 
-$form = new EditMicrosubChannel(null, $entity->guid);
+$form = new EditMicrosubChannel(null, 9int) $entity->guid);
 
 $content = elgg_view_form('microsub/channel/edit', [], $form());
 

@@ -52,7 +52,7 @@ class MicrosubChannel extends \ElggObject
         ];
 
         foreach ($objects as $subtype) {
-            if ((bool) $this->{"microsub_channel:exclude_post_type:$subtype"}) {
+            if ((bool) $this->{"microsub_channel:exclude_post_type:{$subtype}"}) {
                 $return[] = $subtype;
             }
         }

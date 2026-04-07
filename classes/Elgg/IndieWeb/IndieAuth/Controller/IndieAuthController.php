@@ -143,7 +143,7 @@ class IndieAuthController
             $check = $request->getParam($parameter);
 
             if (empty($check)) {
-                $reason = "$parameter is empty";
+                $reason = "{$parameter} is empty";
                 $valid_request = false;
                 break;
             }

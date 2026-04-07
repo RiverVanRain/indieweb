@@ -398,9 +398,9 @@ A subscribe request will be send after submit.',
     'settings:indieweb:indieauth:keys:private_key' => 'Private key',
     'settings:indieweb:indieauth:keys:private_key:help' => 'The path to the private key file',
     'settings:indieweb:indieauth:keys:generate_keys' => 'Generate keys on save',
-    'settings:indieweb:indieauth:keys:help' => 'Configure the paths to the public and private keys which are used for encrypting the access tokens.
-<div>If you choose to generate keys, the default path where these keys are stored is set to DATA_DIRECTORY/indieweb/indieauth.</div>
-<div>Check the README for more information.</div>',
+    'settings:indieweb:indieauth:keys:help' => "Configure the paths to the public and private keys which are used for encrypting the access tokens.
+<div>If you choose to generate keys, the default path where these keys are stored is set to " . elgg_get_data_path() . "indieweb/indieauth.</div>
+<div>Check the README for more information.</div>",
     'settings:indieweb:indieauth:external' => 'External endpoint',
     'settings:indieweb:indieauth:external:auth' => 'External authorization endpoint',
     'settings:indieweb:indieauth:external:endpoint' => 'External token endpoint',

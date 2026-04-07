@@ -12,7 +12,7 @@ class NotificationsMicrosubChannel
     protected $entity;
     protected $container_guid;
 
-    public function __construct(MicrosubChannel $entity = null, $container_guid = null)
+    public function __construct(?MicrosubChannel $entity = null, ?int $container_guid = null)
     {
         $this->entity = $entity;
         $this->container_guid = $container_guid;

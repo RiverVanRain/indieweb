@@ -106,7 +106,7 @@ class MicrosubSource extends \ElggObject
         ];
 
         foreach ($objects as $subtype) {
-            if ((bool) $this->{"microsub_source:post_context:$subtype"}) {
+            if ((bool) $this->{"microsub_source:post_context:{$subtype}"}) {
                 $return[] = $subtype;
             }
         }

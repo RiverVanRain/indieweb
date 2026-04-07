@@ -8,7 +8,7 @@ if ($entity instanceof MicrosubChannel) {
     echo elgg_view_field([
         '#type' => 'hidden',
         'name' => 'guid',
-        'value' => $entity->guid,
+        'value' => (int) $entity->guid,
     ]);
 }
 
@@ -61,11 +61,11 @@ ob_start();
 foreach ($objects as $subtype) {
     echo elgg_view_field([
         '#type' => 'checkbox',
-        'name' => "microsub_channel:exclude_post_type:$subtype",
-        '#label' => elgg_echo("indieweb:microsub:post_type:$subtype"),
+        'name' => "microsub_channel:exclude_post_type:{$subtype}",
+        '#label' => elgg_echo("indieweb:microsub:post_type:{$subtype}"),
         'value' => 1,
         'default' => 0,
-        'checked' => (bool) elgg_extract("microsub_channel:exclude_post_type:$subtype", $vars),
+        'checked' => (bool) elgg_extract("microsub_channel:exclude_post_type:{$subtype}", $vars),
         'switch' => true,
     ]);
 }

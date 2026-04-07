@@ -330,9 +330,9 @@ class Cron
                         }
 
                         // notify owner
-                        notify_user(
-                            $owner->guid,
-                            elgg_get_site_entity()->guid,
+                        elgg_notify_user(
+                            (int) $owner->guid,
+                            (int) elgg_get_site_entity()->guid,
                             elgg_echo('webmention:notification:subject', [$container->getDisplayName()], $owner->getLanguage()),
                             elgg_echo('webmention:notification:body', [
                                 elgg_get_excerpt((string) $description, 200),

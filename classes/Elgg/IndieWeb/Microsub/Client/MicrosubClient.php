@@ -270,7 +270,7 @@ class MicrosubClient
                                     ],
                                     'wheres' => function (QueryBuilder $qb, $from_alias = 'e') use (&$ids) {
                                         $md_alias = $qb->joinMetadataTable($from_alias, 'guid', 'id');
-                                        return $qb->compare("$md_alias.value", 'NOT IN', $ids, ELGG_VALUE_INTEGER);
+                                        return $qb->compare("{$md_alias}.value", 'NOT IN', $ids, ELGG_VALUE_INTEGER);
                                     },
                                     'limit' => $items_to_keep,
                                     'order_by' => new OrderByClause('e.time_created', 'ASC'),
@@ -809,8 +809,8 @@ class MicrosubClient
                         $md_alias_2 = $qb->joinMetadataTable($from_alias, 'guid', ['data']);
 
                         return $qb->merge([
-                            $qb->compare("$md_alias_1.value", 'LIKE', "%$query%", ELGG_VALUE_STRING),
-                            $qb->compare("$md_alias_2.value", 'LIKE', "%$query%", ELGG_VALUE_STRING)
+                            $qb->compare("{$md_alias_1}.value", 'LIKE', "%{$query}%", ELGG_VALUE_STRING),
+                            $qb->compare("{$md_alias_2}.value", 'LIKE', "%{$query}%", ELGG_VALUE_STRING)
                         ], 'OR');
                     },
                     'limit' => 0,

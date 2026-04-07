@@ -36,7 +36,7 @@ class Events
             return;
         }
 
-        if (!(bool) elgg_get_plugin_setting("can_websub:object:$entity->subtype", 'indieweb')) {
+        if (!(bool) elgg_get_plugin_setting("can_websub:object:{$entity->subtype}", 'indieweb')) {
             return;
         }
 
@@ -62,7 +62,7 @@ class Events
             $websubpub->owner_guid = elgg_get_site_entity()->guid;
             $websubpub->container_guid = elgg_get_site_entity()->guid;
             $websubpub->access_id = ACCESS_PRIVATE;
-            $websubpub->entity_id = $entity->guid;
+            $websubpub->entity_id = (int) $entity->guid;
             $websubpub->entity_type_id = $entity->subtype;
             $websubpub->published = 0;
             $websubpub->save();

@@ -31,7 +31,7 @@ class Events
             return;
         }
 
-        if (!(bool) elgg_get_plugin_setting("can_webmention:object:$entity->subtype", 'indieweb')) {
+        if (!(bool) elgg_get_plugin_setting("can_webmention:object:{$entity->subtype}", 'indieweb')) {
             return;
         }
 
@@ -80,7 +80,7 @@ class Events
         }
     }
 
-    public static function objectSyndication($guid, $source)
+    public static function objectSyndication(int $guid, $source)
     {
         elgg_call(ELGG_IGNORE_ACCESS, function () use ($guid, $source) {
             $syndication = new \Elgg\IndieWeb\Webmention\Entity\Syndication();

@@ -28,7 +28,7 @@ $date_created = Values::normalizeTime($entity->time_created);
 $created = elgg_format_element('time', ['class' => 'dt-published', 'datetime' => $date_created->format('c')]);
 
 $summary = elgg_format_element('span', ['class' => 'p-content p-name'], elgg_view('output/longtext', [
-    'value' => $entity->description,
+    'value' => (string) $entity->description,
 ]));
 
 $reply = elgg_view('output/url', [

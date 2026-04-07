@@ -12,7 +12,7 @@ class EditMicrosubSource
      */
     protected $entity;
 
-    public function __construct(MicrosubSource $entity = null)
+    public function __construct(?MicrosubSource $entity = null)
     {
         $this->entity = $entity;
     }
@@ -37,7 +37,7 @@ class EditMicrosubSource
         ];
 
         foreach ($objects as $subtype) {
-            $result["microsub_source:post_context:$subtype"] = 0;
+            $result["microsub_source:post_context:{$subtype}"] = 0;
         }
 
         // edit

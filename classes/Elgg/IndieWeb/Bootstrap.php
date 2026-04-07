@@ -71,13 +71,13 @@ class Bootstrap extends DefaultPluginBootstrap
                     continue;
                 }
 
-                $form_view = elgg_view_exists("forms/$subtype/save") ? "forms/$subtype/save" : (elgg_view_exists("forms/$subtype/add") ? "forms/$subtype/add" : false);
+                $form_view = elgg_view_exists("forms/{$subtype}/save") ? "forms/{$subtype}/save" : (elgg_view_exists("forms/{$subtype}/add") ? "forms/{$subtype}/add" : false);
 
-                if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting("can_webmention:object:$subtype", 'indieweb') && $form_view) {
+                if ((bool) elgg_get_plugin_setting('enable_webmention', 'indieweb') && (bool) elgg_get_plugin_setting("can_webmention:object:{$subtype}", 'indieweb') && $form_view) {
                     elgg_extend_view($form_view, 'input/webmention/syndication_targets');
                 }
 
-                if ((bool) elgg_get_plugin_setting('enable_websub', 'indieweb') && (bool) elgg_get_plugin_setting("can_websub:object:$subtype", 'indieweb') && $form_view) {
+                if ((bool) elgg_get_plugin_setting('enable_websub', 'indieweb') && (bool) elgg_get_plugin_setting("can_websub:object:{$subtype}", 'indieweb') && $form_view) {
                     elgg_extend_view($form_view, 'input/websub/hub_publication');
                 }
             }

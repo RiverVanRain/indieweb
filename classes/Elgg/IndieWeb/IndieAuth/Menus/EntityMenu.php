@@ -32,7 +32,7 @@ class EntityMenu
             'text' => elgg_echo('indieweb:indieauth:token:activate'),
             'icon' => 'check',
             'href' => elgg_generate_action_url('indieauth/token/toggle_status', [
-                'guid' => $entity->guid,
+                'guid' => (int) $entity->guid,
             ]),
             'item_class' => $enabled ? 'hidden' : '',
             'priority' => 177,
@@ -44,7 +44,7 @@ class EntityMenu
             'text' => elgg_echo('indieweb:indieauth:token:revoke'),
             'icon' => 'delete',
             'href' => elgg_generate_action_url('indieauth/token/toggle_status', [
-                'guid' => $entity->guid,
+                'guid' => (int) $entity->guid,
             ]),
             'item_class' => $enabled ? '' : 'hidden',
             'priority' => 178,
@@ -57,7 +57,7 @@ class EntityMenu
             'text' => elgg_echo('indieweb:indieauth:view_jwt'),
             'icon' => 'info',
             'href' => elgg_http_add_url_query_elements('ajax/view/indieauth/token/jwt', [
-                'guid' => $entity->guid,
+                'guid' => (int) $entity->guid,
             ]),
             'class' => 'elgg-lightbox',
             'data-colorbox-opts' => json_encode([
@@ -75,7 +75,7 @@ class EntityMenu
             'text' => elgg_echo('edit'),
             'icon' => 'edit',
             'href' => elgg_http_add_url_query_elements('ajax/form/indieauth/token/save', [
-                'guid' => $entity->guid,
+                'guid' => (int) $entity->guid,
             ]),
             'class' => 'elgg-lightbox',
             'data-colorbox-opts' => json_encode([

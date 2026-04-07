@@ -10,11 +10,11 @@ if (!$entity instanceof \Elgg\IndieWeb\Webmention\Entity\Webmention) {
     return;
 }
 
-$vars['entity'] = $entity;
-
 if (!(bool) $entity->isPublished() && !elgg_is_admin_logged_in()) {
-    throw new \Elgg\Exceptions\Http\EntityNotFoundException();
+    throw new \Elgg\Exceptions\Http\EntityPermissionsException();
 }
+
+$vars['entity'] = $entity;
 
 $body = '';
 

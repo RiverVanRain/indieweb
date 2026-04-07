@@ -187,7 +187,7 @@ class MediaCacher
         $site = elgg_get_site_entity();
         $tmp = new \ElggFile();
         $tmp->owner_guid = $site->guid;
-        $tmp->setFilename("media_cache/tmp/$basename.$ext");
+        $tmp->setFilename("media_cache/tmp/{$basename}.{$ext}");
         $tmp->open('write');
         $tmp->write($raw_bytes);
         $tmp->close();
@@ -201,7 +201,7 @@ class MediaCacher
 
         $image = new \ElggFile();
         $image->owner_guid = $site->guid;
-        $image->setFilename("media_cache/$folder/$basename.jpg");
+        $image->setFilename("media_cache/$folder/{$basename}.jpg");
 
         $image->natural_width = $imagesize[0];
         $image->natural_height = $imagesize[1];

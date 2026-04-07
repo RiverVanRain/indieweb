@@ -20,14 +20,14 @@ $size = elgg_extract('size', $vars, 'small');
 
 $wrapper_class = [
     'elgg-avatar',
-    "elgg-avatar-$size",
+    "elgg-avatar-{$size}",
     'webmention-author-photo'
 ];
 $wrapper_class = elgg_extract_class($vars, $wrapper_class);
 
 $author_name = $entity->getDisplayName();
 $author_url = $entity->website ?? false;
-$author_photo = $entity->photo ?? elgg_get_simplecache_url("icon/user/default/$size.gif");
+$author_photo = $entity->photo ?? elgg_get_simplecache_url("icon/user/default/{$size}.gif");
 
 if (isset($entity->thumbnail_url)) {
     $author_photo = $entity->thumbnail_url;

@@ -8,7 +8,7 @@ if ($entity instanceof MicrosubSource) {
     echo elgg_view_field([
         '#type' => 'hidden',
         'name' => 'guid',
-        'value' => $entity->guid,
+        'value' => (int) $entity->guid,
     ]);
 }
 
@@ -42,7 +42,7 @@ echo elgg_view_field([
     '#type' => 'objectpicker',
     '#label' => elgg_echo('indieweb:microsub:microsub_source:channel'),
     'name' => 'container_guid',
-    'value' => ($entity) ? $entity->container_guid : (int) elgg_extract('container_guid', $vars, get_input('container_guid')),
+    'value' => ($entity) ? (int) $entity->container_guid : (int) elgg_extract('container_guid', $vars, get_input('container_guid')),
     'required' => true,
     'limit' => 1,
     'match_on' => 'objects',

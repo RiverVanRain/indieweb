@@ -70,7 +70,7 @@ class IndieAuthClient
     /**
     * {@inheritdoc}
     */
-    public function isValidToken($auth_header, $scope_to_check = null)
+    public function isValidToken(string $auth_header, ?string $scope_to_check = null): bool
     {
         $token_endpoint = elgg_get_plugin_setting('indieauth_external_endpoint', 'indieweb');
 
@@ -184,7 +184,7 @@ class IndieAuthClient
 
             foreach (['public', 'private'] as $name) {
                 // Key uri
-                $key_uri = "$dir_path/$name.key";
+                $key_uri = "{$dir_path}/{$name}.key";
 
                 // Remove old key
                 if (file_exists($key_uri)) {

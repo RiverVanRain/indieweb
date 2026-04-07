@@ -410,7 +410,7 @@ class MentionClient
     */
     public function sendMentions($sourceURL, $sourceBody = false)
     {
-        self::_debug("sendMentions: Start - sourceURL: $sourceURL, sourceBody: $sourceBody");
+        self::_debug("sendMentions: Start - sourceURL: {$sourceURL}, sourceBody: {$sourceBody}");
 
         if ($sourceBody) {
             $this->_sourceBody = $sourceBody;
