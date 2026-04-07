@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
+class ComposerStaticInit255b2ebf8499819bb1334c77267b7750
 {
     public static $files = array (
         '757772e28a0943a9afe83def8db95bdf' => __DIR__ . '/..' . '/mf2/mf2/Mf2/Parser.php',
@@ -26,48 +26,46 @@ class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '7cfc14352f9ec19b570c834b9432e17b' => __DIR__ . '/..' . '/p3k/xray/lib/helpers.php',
         'e21c794fce41555f3f3cce0c7b13e48e' => __DIR__ . '/..' . '/p3k/xray/lib/XRay.php',
-        '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'p' => 
+        'p' =>
         array (
             'p3k\\XRay\\' => 9,
             'p3k\\WebSub\\' => 11,
             'p3k\\' => 4,
         ),
-        'c' => 
+        'c' =>
         array (
             'cebe\\markdown\\' => 14,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\DomCrawler\\' => 29,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
             'Psr\\Clock\\' => 10,
         ),
-        'M' => 
+        'M' =>
         array (
             'Masterminds\\' => 12,
         ),
-        'L' => 
+        'L' =>
         array (
             'Lcobucci\\JWT\\' => 13,
-            'Lcobucci\\Clock\\' => 15,
             'Laminas\\Xml\\' => 12,
         ),
-        'I' => 
+        'I' =>
         array (
             'IndieAuth\\' => 10,
         ),
-        'G' => 
+        'G' =>
         array (
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
@@ -76,80 +74,76 @@ class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
     );
 
     public static $prefixDirsPsr4 = array (
-        'p3k\\XRay\\' => 
+        'p3k\\XRay\\' =>
         array (
             0 => __DIR__ . '/..' . '/p3k/xray/lib/XRay',
         ),
-        'p3k\\WebSub\\' => 
+        'p3k\\WebSub\\' =>
         array (
             0 => __DIR__ . '/..' . '/rivervanrain/websub/src/p3k/WebSub',
         ),
-        'p3k\\' => 
+        'p3k\\' =>
         array (
             0 => __DIR__ . '/..' . '/p3k/http/src/p3k',
         ),
-        'cebe\\markdown\\' => 
+        'cebe\\markdown\\' =>
         array (
             0 => __DIR__ . '/..' . '/cebe/markdown',
         ),
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Component\\DomCrawler\\' => 
+        'Symfony\\Component\\DomCrawler\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/dom-crawler',
         ),
-        'Psr\\Http\\Message\\' => 
+        'Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Psr\\Http\\Client\\' => 
+        'Psr\\Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
-        'Psr\\Clock\\' => 
+        'Psr\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/clock/src',
         ),
-        'Masterminds\\' => 
+        'Masterminds\\' =>
         array (
             0 => __DIR__ . '/..' . '/masterminds/html5/src',
         ),
-        'Lcobucci\\JWT\\' => 
+        'Lcobucci\\JWT\\' =>
         array (
             0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
         ),
-        'Lcobucci\\Clock\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/lcobucci/clock/src',
-        ),
-        'Laminas\\Xml\\' => 
+        'Laminas\\Xml\\' =>
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-xml/src',
         ),
-        'IndieAuth\\' => 
+        'IndieAuth\\' =>
         array (
             0 => __DIR__ . '/..' . '/indieauth/client/src/IndieAuth',
         ),
-        'GuzzleHttp\\Psr7\\' => 
+        'GuzzleHttp\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
-        'GuzzleHttp\\Promise\\' => 
+        'GuzzleHttp\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
         ),
-        'GuzzleHttp\\' => 
+        'GuzzleHttp\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
@@ -160,30 +154,30 @@ class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
     );
 
     public static $prefixesPsr0 = array (
-        'p' => 
+        'p' =>
         array (
-            'p3k' => 
+            'p3k' =>
             array (
                 0 => __DIR__ . '/..' . '/p3k/micropub/src',
             ),
         ),
-        'P' => 
+        'P' =>
         array (
-            'PicoFeed' => 
+            'PicoFeed' =>
             array (
                 0 => __DIR__ . '/..' . '/p3k/picofeed/lib',
             ),
         ),
-        'I' => 
+        'I' =>
         array (
-            'IndieWeb' => 
+            'IndieWeb' =>
             array (
                 0 => __DIR__ . '/..' . '/indieweb/mention-client/src',
             ),
         ),
-        'H' => 
+        'H' =>
         array (
-            'HTMLPurifier' => 
+            'HTMLPurifier' =>
             array (
                 0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
             ),
@@ -583,9 +577,6 @@ class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
         'Laminas\\Xml\\Exception\\InvalidArgumentException' => __DIR__ . '/..' . '/laminas/laminas-xml/src/Exception/InvalidArgumentException.php',
         'Laminas\\Xml\\Exception\\RuntimeException' => __DIR__ . '/..' . '/laminas/laminas-xml/src/Exception/RuntimeException.php',
         'Laminas\\Xml\\Security' => __DIR__ . '/..' . '/laminas/laminas-xml/src/Security.php',
-        'Lcobucci\\Clock\\Clock' => __DIR__ . '/..' . '/lcobucci/clock/src/Clock.php',
-        'Lcobucci\\Clock\\FrozenClock' => __DIR__ . '/..' . '/lcobucci/clock/src/FrozenClock.php',
-        'Lcobucci\\Clock\\SystemClock' => __DIR__ . '/..' . '/lcobucci/clock/src/SystemClock.php',
         'Lcobucci\\JWT\\Builder' => __DIR__ . '/..' . '/lcobucci/jwt/src/Builder.php',
         'Lcobucci\\JWT\\ClaimsFormatter' => __DIR__ . '/..' . '/lcobucci/jwt/src/ClaimsFormatter.php',
         'Lcobucci\\JWT\\Configuration' => __DIR__ . '/..' . '/lcobucci/jwt/src/Configuration.php',
@@ -611,33 +602,20 @@ class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
         'Lcobucci\\JWT\\Signer\\Ecdsa\\Sha384' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Ecdsa/Sha384.php',
         'Lcobucci\\JWT\\Signer\\Ecdsa\\Sha512' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Ecdsa/Sha512.php',
         'Lcobucci\\JWT\\Signer\\Ecdsa\\SignatureConverter' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Ecdsa/SignatureConverter.php',
-        'Lcobucci\\JWT\\Signer\\Ecdsa\\UnsafeSha256' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Ecdsa/UnsafeSha256.php',
-        'Lcobucci\\JWT\\Signer\\Ecdsa\\UnsafeSha384' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Ecdsa/UnsafeSha384.php',
-        'Lcobucci\\JWT\\Signer\\Ecdsa\\UnsafeSha512' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Ecdsa/UnsafeSha512.php',
         'Lcobucci\\JWT\\Signer\\Eddsa' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Eddsa.php',
         'Lcobucci\\JWT\\Signer\\Hmac' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Hmac.php',
         'Lcobucci\\JWT\\Signer\\Hmac\\Sha256' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Hmac/Sha256.php',
         'Lcobucci\\JWT\\Signer\\Hmac\\Sha384' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Hmac/Sha384.php',
         'Lcobucci\\JWT\\Signer\\Hmac\\Sha512' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Hmac/Sha512.php',
-        'Lcobucci\\JWT\\Signer\\Hmac\\UnsafeSha256' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Hmac/UnsafeSha256.php',
-        'Lcobucci\\JWT\\Signer\\Hmac\\UnsafeSha384' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Hmac/UnsafeSha384.php',
-        'Lcobucci\\JWT\\Signer\\Hmac\\UnsafeSha512' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Hmac/UnsafeSha512.php',
         'Lcobucci\\JWT\\Signer\\InvalidKeyProvided' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/InvalidKeyProvided.php',
         'Lcobucci\\JWT\\Signer\\Key' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Key.php',
         'Lcobucci\\JWT\\Signer\\Key\\FileCouldNotBeRead' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Key/FileCouldNotBeRead.php',
         'Lcobucci\\JWT\\Signer\\Key\\InMemory' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Key/InMemory.php',
-        'Lcobucci\\JWT\\Signer\\Key\\LocalFileReference' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Key/LocalFileReference.php',
-        'Lcobucci\\JWT\\Signer\\None' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/None.php',
         'Lcobucci\\JWT\\Signer\\OpenSSL' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/OpenSSL.php',
         'Lcobucci\\JWT\\Signer\\Rsa' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Rsa.php',
         'Lcobucci\\JWT\\Signer\\Rsa\\Sha256' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Rsa/Sha256.php',
         'Lcobucci\\JWT\\Signer\\Rsa\\Sha384' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Rsa/Sha384.php',
         'Lcobucci\\JWT\\Signer\\Rsa\\Sha512' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Rsa/Sha512.php',
-        'Lcobucci\\JWT\\Signer\\Rsa\\UnsafeSha256' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Rsa/UnsafeSha256.php',
-        'Lcobucci\\JWT\\Signer\\Rsa\\UnsafeSha384' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Rsa/UnsafeSha384.php',
-        'Lcobucci\\JWT\\Signer\\Rsa\\UnsafeSha512' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/Rsa/UnsafeSha512.php',
-        'Lcobucci\\JWT\\Signer\\UnsafeEcdsa' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/UnsafeEcdsa.php',
-        'Lcobucci\\JWT\\Signer\\UnsafeRsa' => __DIR__ . '/..' . '/lcobucci/jwt/src/Signer/UnsafeRsa.php',
         'Lcobucci\\JWT\\SodiumBase64Polyfill' => __DIR__ . '/..' . '/lcobucci/jwt/src/SodiumBase64Polyfill.php',
         'Lcobucci\\JWT\\Token' => __DIR__ . '/..' . '/lcobucci/jwt/src/Token.php',
         'Lcobucci\\JWT\\Token\\Builder' => __DIR__ . '/..' . '/lcobucci/jwt/src/Token/Builder.php',
@@ -653,6 +631,7 @@ class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
         'Lcobucci\\JWT\\Validation\\Constraint' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint.php',
         'Lcobucci\\JWT\\Validation\\ConstraintViolation' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/ConstraintViolation.php',
         'Lcobucci\\JWT\\Validation\\Constraint\\CannotValidateARegisteredClaim' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/CannotValidateARegisteredClaim.php',
+        'Lcobucci\\JWT\\Validation\\Constraint\\HasClaim' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/HasClaim.php',
         'Lcobucci\\JWT\\Validation\\Constraint\\HasClaimWithValue' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/HasClaimWithValue.php',
         'Lcobucci\\JWT\\Validation\\Constraint\\IdentifiedBy' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/IdentifiedBy.php',
         'Lcobucci\\JWT\\Validation\\Constraint\\IssuedBy' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/IssuedBy.php',
@@ -661,8 +640,9 @@ class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
         'Lcobucci\\JWT\\Validation\\Constraint\\PermittedFor' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/PermittedFor.php',
         'Lcobucci\\JWT\\Validation\\Constraint\\RelatedTo' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/RelatedTo.php',
         'Lcobucci\\JWT\\Validation\\Constraint\\SignedWith' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/SignedWith.php',
+        'Lcobucci\\JWT\\Validation\\Constraint\\SignedWithOneInSet' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/SignedWithOneInSet.php',
+        'Lcobucci\\JWT\\Validation\\Constraint\\SignedWithUntilDate' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/SignedWithUntilDate.php',
         'Lcobucci\\JWT\\Validation\\Constraint\\StrictValidAt' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/StrictValidAt.php',
-        'Lcobucci\\JWT\\Validation\\Constraint\\ValidAt' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/Constraint/ValidAt.php',
         'Lcobucci\\JWT\\Validation\\NoConstraintsGiven' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/NoConstraintsGiven.php',
         'Lcobucci\\JWT\\Validation\\RequiredConstraintsViolated' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/RequiredConstraintsViolated.php',
         'Lcobucci\\JWT\\Validation\\SignedWith' => __DIR__ . '/..' . '/lcobucci/jwt/src/Validation/SignedWith.php',
@@ -853,11 +833,11 @@ class ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$prefixDirsPsr4;
-            $loader->fallbackDirsPsr4 = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$fallbackDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitab3e38c9bd63257d5c8ab767c7dc575e::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit255b2ebf8499819bb1334c77267b7750::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit255b2ebf8499819bb1334c77267b7750::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInit255b2ebf8499819bb1334c77267b7750::$fallbackDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit255b2ebf8499819bb1334c77267b7750::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit255b2ebf8499819bb1334c77267b7750::$classMap;
 
         }, null, ClassLoader::class);
     }

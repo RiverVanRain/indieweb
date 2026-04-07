@@ -19,7 +19,6 @@ return array(
     'Psr\\Clock\\' => array($vendorDir . '/psr/clock/src'),
     'Masterminds\\' => array($vendorDir . '/masterminds/html5/src'),
     'Lcobucci\\JWT\\' => array($vendorDir . '/lcobucci/jwt/src'),
-    'Lcobucci\\Clock\\' => array($vendorDir . '/lcobucci/clock/src'),
     'Laminas\\Xml\\' => array($vendorDir . '/laminas/laminas-xml/src'),
     'IndieAuth\\' => array($vendorDir . '/indieauth/client/src/IndieAuth'),
     'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
