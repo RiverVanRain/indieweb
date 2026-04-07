@@ -25,10 +25,15 @@
 		"p3k/micropub": "^0.0.3",
 		"rivervanrain/websub": "dev-elgg",
 		"indieauth/client": "^1.1",
-		"lcobucci/jwt": "4.3.0",
+		"lcobucci/jwt": "^5.0",
 		"symfony/dom-crawler": "^5.4",
 		"pfefferle/openwebicons": "^1.6.3"
 	},
+    "patches": {
+      "p3k/http": {
+        "PHP 8.4 support": "patches/p3k-http-php8.4.patch"
+      }
+    },
 	"autoload": {
 		"psr-4": {
 			"": "classes/"
@@ -41,7 +46,7 @@
         }
     ],
 	"conflict": {
-		"elgg/elgg": "<6.1"
+		"elgg/elgg": "<6.3"
 	},
 	"support": {
 		"source": "https://github.com/RiverVanRain/indieweb"
